@@ -2,7 +2,7 @@ package json.client;
 
 import java.util.List;
 
-public class GetPubKey {
+public class SupportedAlgorithm {
 	private String process;
 	private List<String> supSysKey;
 	private List<String> supPubKey;

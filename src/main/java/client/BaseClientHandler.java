@@ -21,8 +21,8 @@ import client.message.ClientHttpRequestFactory;
 import com.alibaba.fastjson.JSON;
 
 import json.client.SendRandandSysKey;
-import json.server.ACKwithRandom;
-import json.server.SendPubKey;
+import json.server.ServerACKwithRandom;
+import json.server.SelectAlgorithmandPubkey;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -70,7 +70,7 @@ public class BaseClientHandler extends SimpleChannelInboundHandler<HttpObject> {
 	}
 
 	private void VerifyPubKey(ByteBuf content) throws NoSuchAlgorithmException, InvalidKeySpecException {
-		SendPubKey serContent = JSON.parseObject(content.toString(CharsetUtil.UTF_8),SendPubKey.class);
+		SelectAlgorithmandPubkey serContent = JSON.parseObject(content.toString(CharsetUtil.UTF_8),SelectAlgorithmandPubkey.class);
 		setPubKeyAl(serContent.getSelPubKey());
 		setSysKeyAl(serContent.getSelSysKey());
 		byte[] bytes = serContent.getPubKeyEncode();
@@ -83,7 +83,7 @@ public class BaseClientHandler extends SimpleChannelInboundHandler<HttpObject> {
 	
 	private boolean VerifyRandom(ByteBuf content) {
 		String outs = contentdecry(content);
-		ACKwithRandom ack = JSON.parseObject(outs,ACKwithRandom.class);
+		ServerACKwithRandom ack = JSON.parseObject(outs,ServerACKwithRandom.class);
 		if(randomint==ack.getRandom()){
 			hasACK = true;
 			System.out.println("safe");

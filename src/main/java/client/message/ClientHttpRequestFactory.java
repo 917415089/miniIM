@@ -9,7 +9,7 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpVersion;
 import java.net.URI;
 import java.net.URISyntaxException;
-
+@Deprecated
 public class ClientHttpRequestFactory implements ClientMessageFactory {
 	
 	static final String DEFAULT_URI = "http://127.0.0.1:8008/";

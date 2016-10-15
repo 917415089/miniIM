@@ -1,6 +1,6 @@
 package json.client;
 
-public class SendRandandSysKey {
+public class SendRandandSysKey implements ClientJSON {
 
 	private int random;
 	private byte[] syskeyend;

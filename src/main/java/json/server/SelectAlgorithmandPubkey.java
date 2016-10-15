@@ -1,6 +1,6 @@
 package json.server;
 
-public class SendPubKey {
+public class SelectAlgorithmandPubkey {
 	private String process;
 	private String selPubKey;
 	private String selSysKey;

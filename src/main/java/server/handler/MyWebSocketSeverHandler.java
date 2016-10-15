@@ -5,11 +5,9 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPipeline;
 import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.FORBIDDEN;
 import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
-import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -18,30 +16,22 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpUtil;
-import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.util.CharsetUtil;
 import io.netty.example.http.websocketx.server.WebSocketServerIndexPage;
 public class MyWebSocketSeverHandler extends
-		SimpleChannelInboundHandler<Object> {
+		SimpleChannelInboundHandler<FullHttpRequest> {
 
 	private final static String WEBSOCKET_PATH = "/websocket";
 	private WebSocketServerHandshaker handshaker;
 
-	@SuppressWarnings("deprecation")
+
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, Object msg)
+	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg)
 			throws Exception {
         if (msg instanceof FullHttpRequest) {
             handleHttpRequest(ctx, (FullHttpRequest) msg);
-        } else if (msg instanceof WebSocketFrame) {
-            handleWebSocketFrame(ctx, (WebSocketFrame) msg);
         }
 	}
 	
@@ -49,31 +39,8 @@ public class MyWebSocketSeverHandler extends
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
     }
-	
-	private void handleWebSocketFrame(ChannelHandlerContext ctx,
-			WebSocketFrame frame) {
-        // Check for closing frame
-        if (frame instanceof CloseWebSocketFrame) {
-            handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
-            return;
-        }
-        if (frame instanceof PingWebSocketFrame) {
-            ctx.write(new PongWebSocketFrame(frame.content().retain()));
-            return;
-        }
-        if (frame instanceof TextWebSocketFrame) {
-            // Echo the frame
-            ctx.write(frame.retain());
-            return;
-        }
-        if (frame instanceof BinaryWebSocketFrame) {
-            // Echo the frame
-            ctx.write(frame.retain());
-            return;
-        }
-		
-	}
 
+	@SuppressWarnings("deprecation")
 	private void handleHttpRequest(ChannelHandlerContext ctx,
 			FullHttpRequest msg) {
 		if(!msg.getDecoderResult().isSuccess()){

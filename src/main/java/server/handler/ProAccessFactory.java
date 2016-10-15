@@ -12,9 +12,9 @@ import java.util.Map.Entry;
 
 import com.alibaba.fastjson.JSON;
 
-import json.client.GetPubKey;
+import json.client.SupportedAlgorithm;
 import json.client.SendRandandSysKey;
-import json.server.SendPubKey;
+import json.server.SelectAlgorithmandPubkey;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -24,7 +24,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.util.CharsetUtil;
-
+@Deprecated
 public class ProAccessFactory {
 
 	private static PrivateKey privateKey=null;
@@ -65,7 +65,7 @@ public class ProAccessFactory {
     	String selSys = null;
     	
         if (content.isReadable()) {
-        	GetPubKey cliContent = JSON.parseObject(content.toString(CharsetUtil.UTF_8),GetPubKey.class);
+        	SupportedAlgorithm cliContent = JSON.parseObject(content.toString(CharsetUtil.UTF_8),SupportedAlgorithm.class);
         	List<String> pubkeyal = cliContent.getSupPubKey();
         	List<String> syskeyal = cliContent.getSupSysKey();
 
@@ -88,7 +88,7 @@ public class ProAccessFactory {
     		privateKey = keyPair.getPrivate();
     		
     		DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,HttpResponseStatus.OK);
-    		SendPubKey rescontent = new SendPubKey();
+    		SelectAlgorithmandPubkey rescontent = new SelectAlgorithmandPubkey();
     		rescontent.setProcess("sendPubKey");
     		rescontent.setSelPubKey(selPub);
     		rescontent.setSelSysKey(selSys);

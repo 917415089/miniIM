@@ -10,19 +10,20 @@ import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PongWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 
 
 
 public class MyWebSocketFrameHandler extends
 		SimpleChannelInboundHandler<WebSocketFrame> {
 
+	private ServerAccessHandler accessHandler = null;
+	
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame)
 			throws Exception {
 		if (frame instanceof CloseWebSocketFrame) {
-//			WebSocketServerHandshaker handshaker = ((WebSocketServerHandshaker) ctx.pipeline().get("http")).getHandshaker();
-//			handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
+			MyWebSocketSeverHandler tmp = (MyWebSocketSeverHandler) ctx.pipeline().get("shaker");
+			tmp.getHandshaker().close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
             return;
         }
         if (frame instanceof PingWebSocketFrame) {
@@ -36,8 +37,19 @@ public class MyWebSocketFrameHandler extends
         }
 		if(frame instanceof TextWebSocketFrame){
 			String request  = ((TextWebSocketFrame) frame).text();
-			System.out.println(request);
-			ctx.channel().writeAndFlush(new TextWebSocketFrame(request.toUpperCase(Locale.US)));
+			
+			if(accessHandler ==null){
+				accessHandler = new ServerAccessHandler();
+			}
+			
+			if(!accessHandler.getAccess()){
+				accessHandler.handle(request);
+				ctx.channel().writeAndFlush(new TextWebSocketFrame(accessHandler.getResult()));
+			}else{
+//				access;
+			}
+			
+//			ctx.channel().writeAndFlush(new TextWebSocketFrame(request.toUpperCase(Locale.US)));
 		}else{
 			String message = "unsupported frame type:" + frame.getClass().getName();
 			throw new UnsupportedOperationException(message);

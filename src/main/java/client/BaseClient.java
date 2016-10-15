@@ -5,12 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-
-import com.alibaba.fastjson.JSON;
-
-import json.client.GetPubKey;
-import client.message.ClientHttpRequestFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -20,11 +14,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.example.http.websocketx.client.WebSocketClientHandler;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -32,7 +24,6 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
-import io.netty.handler.codec.http2.DefaultHttp2Headers;
 
 
 public class BaseClient {
@@ -102,7 +93,7 @@ public class BaseClient {
 			final MyWebSocketClientHandler handler = 
 					new MyWebSocketClientHandler(
 							WebSocketClientHandshakerFactory.newHandshaker(
-									uri, WebSocketVersion.V13, null, false, new DefaultHttpHeaders()));
+									uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()));
 			Bootstrap b = new Bootstrap();
 			b.group(group)
 			.channel(NioSocketChannel.class)
@@ -121,6 +112,9 @@ public class BaseClient {
 			
 			Channel ch = b.connect(uri.getHost(),port).sync().channel();
 			handler.handshakeFuture().sync();
+//			handler.getAccessHandler().handle("init");
+//			ch.writeAndFlush(new TextWebSocketFrame(handler.getAccessHandler().getResult()));
+			
 			BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 			while(true){
 				String msg = console.readLine();
