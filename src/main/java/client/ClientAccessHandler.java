@@ -4,34 +4,29 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
-import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-
 import com.alibaba.fastjson.JSON;
-
 import json.client.ClientACKwithRandom;
 import json.client.SendRandandSysKey;
 import json.client.SupportedAlgorithm;
 import json.server.ServerACKwithRandom;
 import json.server.SelectAlgorithmandPubkey;
 
+@SuppressWarnings("restriction")
 public class ClientAccessHandler {
 
 	enum Status{ClientInit,SupportedAlgorithm,SyskeyandRandom,Access,ERROR}
@@ -43,7 +38,9 @@ public class ClientAccessHandler {
 	private String SelectedSysKey = null;
 	private  PublicKey publicKey = null;
 	private  SecretKey secretKey;
+	@SuppressWarnings("restriction")
 	private final BASE64Encoder base64Encoder = new BASE64Encoder();
+	@SuppressWarnings("restriction")
 	private final BASE64Decoder base64decoder = new BASE64Decoder();
 	private String result = null;
 	private int Random;
@@ -53,7 +50,6 @@ public class ClientAccessHandler {
 		currStatus = Status.ClientInit;
 	}
 	
-	@SuppressWarnings("incomplete-switch")
 	public boolean handle(String request){
 		try{
 			switch(currStatus){
@@ -98,6 +94,7 @@ public class ClientAccessHandler {
 		}
 	}
 
+	@SuppressWarnings("restriction")
 	private String CommenEncry(String ret) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
 		Cipher cipher = Cipher.getInstance(SelectedSysKey);
 		cipher.init(Cipher.ENCRYPT_MODE, secretKey);
@@ -105,6 +102,7 @@ public class ClientAccessHandler {
 		return base64Encoder.encode(out);
 	}
 
+	@SuppressWarnings("restriction")
 	private String CommenDecry(String request) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException {
 		byte[] in = base64decoder.decodeBuffer(request);
 		Cipher cipher = Cipher.getInstance(SelectedSysKey);
@@ -142,6 +140,7 @@ public class ClientAccessHandler {
 		return ret;
 	}
 	
+	@SuppressWarnings("restriction")
 	private String pubkeyEncry(String ret) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
 		Cipher cipher = Cipher.getInstance(SelectedPubKey);
 		cipher.init(Cipher.ENCRYPT_MODE, publicKey);

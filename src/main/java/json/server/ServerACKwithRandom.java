@@ -1,6 +1,6 @@
 package json.server;
 
-public class ServerACKwithRandom {
+public class ServerACKwithRandom implements ServerJSON{
 
 	private int random;
 

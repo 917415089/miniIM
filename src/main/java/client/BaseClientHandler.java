@@ -30,8 +30,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.util.CharsetUtil;
-
-
+@Deprecated
 public class BaseClientHandler extends SimpleChannelInboundHandler<HttpObject> {
 
 	private boolean access = false;

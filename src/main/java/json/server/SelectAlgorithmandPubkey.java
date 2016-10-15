@@ -1,6 +1,6 @@
 package json.server;
 
-public class SelectAlgorithmandPubkey {
+public class SelectAlgorithmandPubkey implements ServerJSON{
 	private String process;
 	private String selPubKey;
 	private String selSysKey;

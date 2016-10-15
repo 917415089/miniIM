@@ -9,24 +9,21 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.List;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
-
 import com.alibaba.fastjson.JSON;
-
 import json.client.ClientACKwithRandom;
 import json.client.SendRandandSysKey;
 import json.client.SupportedAlgorithm;
 import json.server.ServerACKwithRandom;
 import json.server.SelectAlgorithmandPubkey;
 
+@SuppressWarnings("restriction")
 public class ServerAccessHandler {
 
 	private enum Status {ServerInit,SelectAlgorithmandPubKey, ServerACK,Access,ERROR}
@@ -48,7 +45,6 @@ public class ServerAccessHandler {
 		currStatus = Status.ServerInit;
 	}
 	
-	@SuppressWarnings("incomplete-switch")
 	public boolean handle(String request) {
 		try{
 			switch(currStatus){

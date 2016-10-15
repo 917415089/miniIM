@@ -1,7 +1,7 @@
 package client.message;
 
 import io.netty.handler.codec.http.HttpRequest;
-
+@Deprecated
 public interface ClientMessageFactory {
 
 	public boolean addUri(String parturi);

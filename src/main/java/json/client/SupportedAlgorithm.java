@@ -2,7 +2,7 @@ package json.client;
 
 import java.util.List;
 
-public class SupportedAlgorithm {
+public class SupportedAlgorithm implements ClientJSON{
 	private String process;
 	private List<String> supSysKey;
 	private List<String> supPubKey;
