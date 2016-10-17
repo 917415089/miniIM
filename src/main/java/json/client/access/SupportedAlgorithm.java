@@ -1,6 +1,8 @@
-package json.client;
+package json.client.access;
 
 import java.util.List;
+
+import json.client.ClientJSON;
 
 public class SupportedAlgorithm implements ClientJSON{
 	private String process;

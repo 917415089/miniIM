@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import client.message.MessageFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -32,6 +34,7 @@ public class BaseClient {
 	static final String HOST = System.getProperty("HOST", "127.0.0.1");
 	static final int PORT =  Integer.parseInt(System.getProperty("port", "8080"));
 	static final String URL = System.getProperty("url", "ws://127.0.0.1:8080/websocket");
+
 	
 	public static void main(String[] args) throws URISyntaxException, InterruptedException, IOException {
 		URI uri = new URI(URL);
@@ -77,7 +80,8 @@ public class BaseClient {
 			
 			Channel ch = b.connect(uri.getHost(),port).sync().channel();
 			handler.handshakeFuture().sync();
-			
+//			MessageFactory messageFactory = new MessageFactory();
+//			messageFactory.init("user1", "111", handler.getAccessHandler().getRandom(), handler.getAccessHandler().getSecretKey(),ch);
 			BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 			while(true){
 				String msg = console.readLine();
@@ -91,8 +95,16 @@ public class BaseClient {
                     WebSocketFrame frame = new PingWebSocketFrame(Unpooled.wrappedBuffer(new byte[] { 8, 1, 8, 1 }));
                     ch.writeAndFlush(frame);
                 } else {
+//                	if(!messageFactory.isHasLogin()){
+//                		messageFactory.login();
+//                	}else{
+//                		
+//                	}
+
+                	//test access
                     WebSocketFrame frame = new TextWebSocketFrame(msg);
                     ch.writeAndFlush(frame);
+                    System.out.println(handler.getAccessHandler().getRandom());
                 }
 			}
 		}finally{

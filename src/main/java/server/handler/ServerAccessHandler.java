@@ -10,20 +10,18 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.List;
 import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import util.EnDeCryProcess;
 import com.alibaba.fastjson.JSON;
-import json.client.ClientACKwithRandom;
-import json.client.SendRandandSysKey;
-import json.client.SupportedAlgorithm;
-import json.server.ServerACKwithRandom;
-import json.server.SelectAlgorithmandPubkey;
+import json.client.access.ClientACKwithRandom;
+import json.client.access.SendRandandSysKey;
+import json.client.access.SupportedAlgorithm;
+import json.server.access.SelectAlgorithmandPubkey;
+import json.server.access.ServerACKwithRandom;
 
-@SuppressWarnings("restriction")
+
 public class ServerAccessHandler {
 
 	private enum Status {ServerInit,SelectAlgorithmandPubKey, ServerACK,Access,ERROR}
@@ -35,8 +33,6 @@ public class ServerAccessHandler {
 	private String SelectedSysKey = null;
 	private PublicKey publicKey = null;
 	private PrivateKey privateKey = null;
-	private final BASE64Encoder base64Encoder = new BASE64Encoder();
-	private final BASE64Decoder base64decoder = new BASE64Decoder();
 	private String result = null;
 	private int Random;
 	private SecretKeySpec secretKeySpec;
@@ -50,17 +46,28 @@ public class ServerAccessHandler {
 			switch(currStatus){
 			case ServerInit :
 				result =SelectAlgorithm(request);
-				currStatus = Status.SelectAlgorithmandPubKey;
-				return true;
+				if(result != null){
+					currStatus = Status.SelectAlgorithmandPubKey;
+					return true;
+				}else{
+					currStatus = Status.ERROR;
+					return false;
+				}
 			case SelectAlgorithmandPubKey:
 				result = SendServerACK(request);
-				currStatus = Status.ServerACK;
-				return true;
+				if(result != null){
+					currStatus = Status.ServerACK;
+					return true;	
+				}else{
+					currStatus = Status.ERROR;
+					return false;
+				}
 			case ServerACK:
 				if(verify(request)){
 					currStatus = Status.Access;
 					return true;
 				}else{
+					currStatus = Status.ERROR;
 					return false;
 				}
 			case Access:
@@ -79,26 +86,17 @@ public class ServerAccessHandler {
 
 
 	private boolean verify(String request) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException {
-		String json = CommenDecry(request);
+		String json = EnDeCryProcess.SysKeyDecryWithBase64(request, secretKeySpec);
 		ClientACKwithRandom clientAckwithRandom = JSON.parseObject(json,ClientACKwithRandom.class);
 		if(clientAckwithRandom.getRandom()==++Random){
 			Random++;
-			System.out.println("pass");
 			return true;
 		}
 		return false;
 	}
-
-	private String CommenDecry(String request) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IOException, IllegalBlockSizeException, BadPaddingException {
-		byte[] in = base64decoder.decodeBuffer(request);
-		Cipher cipher = Cipher.getInstance(SelectedSysKey);
-		cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
-		byte[] out = cipher.doFinal(in);
-		return new String(out);
-	}
-
+	
 	private String SendServerACK(String request) throws UnsupportedEncodingException, IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
-		String jsonstr = pubkeyDecry(request);
+		String jsonstr = EnDeCryProcess.priKeyDecryWithBase64(request, privateKey);
 		SendRandandSysKey sendRandandSysKey = JSON.parseObject(jsonstr,SendRandandSysKey.class);
 		Random = sendRandandSysKey.getRandom();
 		secretKeySpec = new SecretKeySpec(sendRandandSysKey.getSyskeyend(),SelectedSysKey);
@@ -106,25 +104,10 @@ public class ServerAccessHandler {
 		ServerACKwithRandom acKwithRandom = new ServerACKwithRandom();
 		acKwithRandom.setRandom(++Random);
 		String ret = JSON.toJSONString(acKwithRandom);
-		ret = commenEncry(ret);
+		ret = EnDeCryProcess.SysKeyEncryWithBase64(ret, secretKeySpec);
 		return ret;
 	}
-
-	private String commenEncry(String ret) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-		Cipher cipher = Cipher.getInstance(SelectedSysKey);
-		cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
-		byte[] out = cipher.doFinal(ret.getBytes());
-		return base64Encoder.encode(out);
-	}
-
-	private String pubkeyDecry(String request) throws UnsupportedEncodingException, IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-		byte[] in = base64decoder.decodeBuffer(request);
-		Cipher cipher = Cipher.getInstance(SelectedPubKey);
-		cipher.init(Cipher.DECRYPT_MODE, privateKey);
-		byte[] out = cipher.doFinal(in);
-		return new String(out);
-	}
-
+	
 	private String SelectAlgorithm(String request) throws NoSuchAlgorithmException {
 		SupportedAlgorithm supportedAlgorithm = JSON.parseObject(request, SupportedAlgorithm.class);
 		
@@ -178,5 +161,13 @@ public class ServerAccessHandler {
 		String returnresponse = result;
 		result = null;
 		return returnresponse;
+	}
+
+	public SecretKeySpec getSecretKeySpec() {
+		return secretKeySpec;
+	}
+
+	public int getRandom() {
+		return Random;
 	}
 }

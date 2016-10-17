@@ -1,6 +1,8 @@
-package json.server;
+package json.client.access;
 
-public class ServerACKwithRandom implements ServerJSON{
+import json.client.ClientJSON;
+
+public class ClientACKwithRandom implements ClientJSON {
 
 	private int random;
 

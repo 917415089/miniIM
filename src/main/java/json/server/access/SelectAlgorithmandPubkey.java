@@ -1,4 +1,6 @@
-package json.server;
+package json.server.access;
+
+import json.server.ServerJSON;
 
 public class SelectAlgorithmandPubkey implements ServerJSON{
 	private String process;

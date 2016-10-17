@@ -1,4 +1,6 @@
-package json.client;
+package json.client.access;
+
+import json.client.ClientJSON;
 
 public class SendRandandSysKey implements ClientJSON {
 

@@ -54,12 +54,6 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
             ctx.channel().writeAndFlush(new TextWebSocketFrame(accessHandler.getResult()));
             return;
         }
-
-//        if(accessHandler.getCurrStatus()==Status.ClientInit){
-//        	accessHandler.handle(null);
-//            ctx.channel().writeAndFlush(new TextWebSocketFrame(accessHandler.getResult()));
-//            return;
-//        }
         
         if (msg instanceof FullHttpResponse) {
             FullHttpResponse response = (FullHttpResponse) msg;
@@ -74,10 +68,9 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         		if(!accessHandler.getAccess()){
         			accessHandler.handle(request);
         			ctx.channel().writeAndFlush(new TextWebSocketFrame(accessHandler.getResult()));
+        		}else{
+        			//finish access
         		}
-        		System.out.println(request);
-//            TextWebSocketFrame textFrame = (TextWebSocketFrame) frame;
-//            System.out.println("WebSocket Client received message: " + textFrame.text());
         } else if (frame instanceof PongWebSocketFrame) {
             System.out.println("WebSocket Client received pong");
         } else if (frame instanceof CloseWebSocketFrame) {

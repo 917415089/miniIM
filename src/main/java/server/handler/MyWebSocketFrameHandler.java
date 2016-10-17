@@ -27,7 +27,6 @@ public class MyWebSocketFrameHandler extends
             return;
         }
         if (frame instanceof BinaryWebSocketFrame) {
-            // Echo the frame
             ctx.write(frame.retain());
             return;
         }
@@ -42,10 +41,9 @@ public class MyWebSocketFrameHandler extends
 				accessHandler.handle(request);
 				ctx.channel().writeAndFlush(new TextWebSocketFrame(accessHandler.getResult()));
 			}else{
-//				access;
+				//finish access
+				System.out.println(accessHandler.getRandom());
 			}
-			
-//			ctx.channel().writeAndFlush(new TextWebSocketFrame(request.toUpperCase(Locale.US)));
 		}else{
 			String message = "unsupported frame type:" + frame.getClass().getName();
 			throw new UnsupportedOperationException(message);

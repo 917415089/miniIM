@@ -24,7 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.alibaba.fastjson.JSON;
 
-import json.server.SelectAlgorithmandPubkey;
+import json.server.access.SelectAlgorithmandPubkey;
 
 public class Test {
 	public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
