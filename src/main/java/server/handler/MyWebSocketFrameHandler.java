@@ -1,5 +1,6 @@
 package server.handler;
 
+import server.session.ServerSession;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
@@ -13,6 +14,8 @@ public class MyWebSocketFrameHandler extends
 		SimpleChannelInboundHandler<WebSocketFrame> {
 
 	private ServerAccessHandler accessHandler = null;
+	private ServerSession session;
+	
 	
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame)
@@ -41,13 +44,24 @@ public class MyWebSocketFrameHandler extends
 				accessHandler.handle(request);
 				ctx.channel().writeAndFlush(new TextWebSocketFrame(accessHandler.getResult()));
 			}else{
-				//finish access
-				System.out.println(accessHandler.getRandom());
+				if(!session.isHasinit()){
+					ctx.channel().writeAndFlush(new TextWebSocketFrame(session.init(request, accessHandler.getSecretKeySpec())));
+				}
+				System.out.println(request);
 			}
 		}else{
 			String message = "unsupported frame type:" + frame.getClass().getName();
 			throw new UnsupportedOperationException(message);
 		}
+		
+	}
+
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		// TODO Auto-generated method stub
+		super.channelActive(ctx);
+		System.out.println("active");
+		session = new ServerSession();
 		
 	}
 

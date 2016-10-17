@@ -1,5 +1,6 @@
 package client;
 
+import client.session.ClientSession;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,6 +19,7 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
     private final WebSocketClientHandshaker handshaker;
     private ChannelPromise handshakeFuture;
     private ClientAccessHandler accessHandler = null;
+    private ClientSession session;
 
     public MyWebSocketClientHandler(WebSocketClientHandshaker handshaker) {
         this.handshaker = handshaker;
@@ -35,6 +37,7 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         handshaker.handshake(ctx.channel());
+        session = new ClientSession();
     }
 
     @Override
@@ -69,7 +72,9 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         			accessHandler.handle(request);
         			ctx.channel().writeAndFlush(new TextWebSocketFrame(accessHandler.getResult()));
         		}else{
-        			//finish access
+        			if(!session.isHasLogin()){
+        				session.receiveACK(request,accessHandler.getSecretKey());
+        			}
         		}
         } else if (frame instanceof PongWebSocketFrame) {
             System.out.println("WebSocket Client received pong");
@@ -90,6 +95,10 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
 
 	public ClientAccessHandler getAccessHandler() {
 		return accessHandler;
+	}
+
+	public ClientSession getSession() {
+		return session;
 	}
 
     

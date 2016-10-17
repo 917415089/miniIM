@@ -5,11 +5,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import client.message.MessageFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
@@ -36,7 +43,7 @@ public class BaseClient {
 	static final String URL = System.getProperty("url", "ws://127.0.0.1:8080/websocket");
 
 	
-	public static void main(String[] args) throws URISyntaxException, InterruptedException, IOException {
+	public static void main(String[] args) throws URISyntaxException, InterruptedException, IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
 		URI uri = new URI(URL);
 		String scheme = uri.getScheme() ==null?"ws":uri.getScheme();
 //		final String host = uri.getHost() == null ?"127.0.0.1":uri.getHost();
@@ -80,8 +87,7 @@ public class BaseClient {
 			
 			Channel ch = b.connect(uri.getHost(),port).sync().channel();
 			handler.handshakeFuture().sync();
-//			MessageFactory messageFactory = new MessageFactory();
-//			messageFactory.init("user1", "111", handler.getAccessHandler().getRandom(), handler.getAccessHandler().getSecretKey(),ch);
+			handler.getSession().setUserName("user1").setUserPassword("123");
 			BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 			while(true){
 				String msg = console.readLine();
@@ -95,16 +101,16 @@ public class BaseClient {
                     WebSocketFrame frame = new PingWebSocketFrame(Unpooled.wrappedBuffer(new byte[] { 8, 1, 8, 1 }));
                     ch.writeAndFlush(frame);
                 } else {
-//                	if(!messageFactory.isHasLogin()){
-//                		messageFactory.login();
-//                	}else{
-//                		
-//                	}
-
-                	//test access
-                    WebSocketFrame frame = new TextWebSocketFrame(msg);
-                    ch.writeAndFlush(frame);
-                    System.out.println(handler.getAccessHandler().getRandom());
+                	if(!handler.getSession().isHasLogin()){
+                		String str = handler.getSession().setSecretKey(handler.getAccessHandler().getSecretKey()).login();
+                		ch.writeAndFlush(new TextWebSocketFrame(str));
+                		while(!handler.getSession().isHasLogin());
+                	}
+	                	//test access
+	                    WebSocketFrame frame = new TextWebSocketFrame(msg);
+	                    ch.writeAndFlush(frame);
+	                    System.out.println(handler.getAccessHandler().getRandom());
+                	
                 }
 			}
 		}finally{

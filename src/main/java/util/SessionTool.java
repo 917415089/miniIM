@@ -1,20 +1,14 @@
-package server;
+package util;
 
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
-public class Test2 {
-	public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
-
-		String str = "123";
+public class SessionTool {
+	
+	static public String GenerateSID(String name,String password) throws NoSuchAlgorithmException{
+		String str= name+password+System.currentTimeMillis();
 		MessageDigest instance = MessageDigest.getInstance("SHA-1");
-		instance.update(str.getBytes());
 		byte[] md = instance.digest();
 		StringBuffer stringBuffer = new StringBuffer();
 
@@ -25,7 +19,7 @@ public class Test2 {
 			}
 			stringBuffer.append(shahex);
 		}
-		System.out.println(stringBuffer.toString());
 		
+		return stringBuffer.toString();
 	}
 }
