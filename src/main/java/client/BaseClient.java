@@ -32,41 +32,6 @@ public class BaseClient {
 	static final String HOST = System.getProperty("HOST", "127.0.0.1");
 	static final int PORT =  Integer.parseInt(System.getProperty("port", "8080"));
 	static final String URL = System.getProperty("url", "ws://127.0.0.1:8080/websocket");
-    /*public static void main(String[] args) {
-        
-        EventLoopGroup group = new NioEventLoopGroup();
-        try{
-        	Bootstrap boot = new Bootstrap();
-        	boot.group(group)
-        		.channel(NioSocketChannel.class)
-        		.handler(new BaseClientInitializer());
-        	
-        	Channel ch = boot.connect(HOST, PORT).sync().channel();
-
-    		GetPubKey content = new GetPubKey();
-    		content.setProcess("getPubKey");
-    		ArrayList<String> supPubKey = new ArrayList<String>();
-    		ArrayList<String> supSysKey = new ArrayList<String>();
-    		supPubKey.add("RSA");
-    		supSysKey.add("AES");
-    		content.setSupPubKey(supPubKey);
-    		content.setSupSysKey(supSysKey);
-    		
-        	ClientHttpRequestFactory initRequest = new ClientHttpRequestFactory();
-        	initRequest.addUri("access/?process=getPubKey");
-        	initRequest.addContent(JSON.toJSONString(content));
-        	
-        	HttpRequest request = initRequest.product();
-            ch.writeAndFlush(request);
-
-            ch.closeFuture().sync();
-        } catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}finally{
-        	group.shutdownGracefully();
-        }
-	}*/
 	
 	public static void main(String[] args) throws URISyntaxException, InterruptedException, IOException {
 		URI uri = new URI(URL);
@@ -112,8 +77,6 @@ public class BaseClient {
 			
 			Channel ch = b.connect(uri.getHost(),port).sync().channel();
 			handler.handshakeFuture().sync();
-//			handler.getAccessHandler().handle("init");
-//			ch.writeAndFlush(new TextWebSocketFrame(handler.getAccessHandler().getResult()));
 			
 			BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 			while(true){

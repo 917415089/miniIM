@@ -38,9 +38,7 @@ public class ClientAccessHandler {
 	private String SelectedSysKey = null;
 	private  PublicKey publicKey = null;
 	private  SecretKey secretKey;
-	@SuppressWarnings("restriction")
 	private final BASE64Encoder base64Encoder = new BASE64Encoder();
-	@SuppressWarnings("restriction")
 	private final BASE64Decoder base64decoder = new BASE64Decoder();
 	private String result = null;
 	private int Random;
@@ -94,7 +92,6 @@ public class ClientAccessHandler {
 		}
 	}
 
-	@SuppressWarnings("restriction")
 	private String CommenEncry(String ret) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
 		Cipher cipher = Cipher.getInstance(SelectedSysKey);
 		cipher.init(Cipher.ENCRYPT_MODE, secretKey);
@@ -102,7 +99,6 @@ public class ClientAccessHandler {
 		return base64Encoder.encode(out);
 	}
 
-	@SuppressWarnings("restriction")
 	private String CommenDecry(String request) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException {
 		byte[] in = base64decoder.decodeBuffer(request);
 		Cipher cipher = Cipher.getInstance(SelectedSysKey);
@@ -140,7 +136,6 @@ public class ClientAccessHandler {
 		return ret;
 	}
 	
-	@SuppressWarnings("restriction")
 	private String pubkeyEncry(String ret) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
 		Cipher cipher = Cipher.getInstance(SelectedPubKey);
 		cipher.init(Cipher.ENCRYPT_MODE, publicKey);
