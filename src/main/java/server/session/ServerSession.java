@@ -10,8 +10,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 import json.client.login.ClientLogin;
-import json.server.session.SuccessLogin;
-import json.server.session.WrongNameorPassword;
+import json.server.login.SuccessLogin;
+import json.server.login.WrongNameorPassword;
 
 import com.alibaba.fastjson.JSON;
 

@@ -1,4 +1,4 @@
-package json.server.session;
+package json.server.login;
 
 public class WrongNameorPassword {
 

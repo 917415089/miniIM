@@ -1,6 +1,6 @@
 package json.util;
 
-public class JSONnameandString {
+public class JSONNameandString {
 
 	String JSONName; 
 	String JSONStr;

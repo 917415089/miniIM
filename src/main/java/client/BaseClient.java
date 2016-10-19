@@ -12,7 +12,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import client.message.MessageFactory;
+import client.session.MessageFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -89,6 +89,7 @@ public class BaseClient {
 			handler.handshakeFuture().sync();
 			handler.getSession().setUserName("user1").setUserPassword("123");
 			BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+			MessageFactory messageFactory = new MessageFactory();
 			while(true){
 				String msg = console.readLine();
 				if(msg == null){
@@ -105,12 +106,12 @@ public class BaseClient {
                 		String str = handler.getSession().setSecretKey(handler.getAccessHandler().getSecretKey()).login();
                 		ch.writeAndFlush(new TextWebSocketFrame(str));
                 		while(!handler.getSession().isHasLogin());
+                		messageFactory.setSecretKey(handler.getAccessHandler().getSecretKey());
                 	}
+                		String send = messageFactory.product(msg);
 	                	//test access
-	                    WebSocketFrame frame = new TextWebSocketFrame(msg);
+	                    WebSocketFrame frame = new TextWebSocketFrame(send);
 	                    ch.writeAndFlush(frame);
-	                    System.out.println(handler.getAccessHandler().getRandom());
-                	
                 }
 			}
 		}finally{

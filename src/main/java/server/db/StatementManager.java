@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import json.util.JSONnameandString;
+import json.util.JSONNameandString;
 
 public class StatementManager {
 	
