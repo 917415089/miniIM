@@ -54,7 +54,13 @@ public class ServerSession {
 			return ret;
 		}
 	}
-	
 
+	public String getUsername() {
+		return username;
+	}
+
+	public String getUserpassword() {
+		return userpassword;
+	}
 
 }

@@ -1,6 +1,6 @@
 package json.client.session;
 
-public class FriendList {
+public class RequestFriendList {
 
 	private String group;
 

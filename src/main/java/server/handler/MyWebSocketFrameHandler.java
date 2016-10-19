@@ -1,6 +1,16 @@
 package server.handler;
 
+import java.util.List;
+
+import json.util.JSONMessage;
+import json.util.JSONNameandString;
+
+import com.alibaba.fastjson.JSON;
+
+import server.session.DealWithJSON;
 import server.session.ServerSession;
+import util.EnDeCryProcess;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
@@ -15,6 +25,7 @@ public class MyWebSocketFrameHandler extends
 
 	private ServerAccessHandler accessHandler = null;
 	private ServerSession session;
+	private DealWithJSON dealexcutor;
 	
 	
 	@Override
@@ -46,8 +57,13 @@ public class MyWebSocketFrameHandler extends
 			}else{
 				if(!session.isHasinit()){
 					ctx.channel().writeAndFlush(new TextWebSocketFrame(session.init(request, accessHandler.getSecretKeySpec())));
+					dealexcutor.setUsername(session.getUsername());
+					dealexcutor.setUserpassword(session.getUserpassword());
+				}else{
+					JSONMessage jsons = JSON.parseObject(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKeySpec()),JSONMessage.class);
+					dealexcutor.dealwith(jsons,ctx.channel());
+					System.out.println("receive");
 				}
-				System.out.println(request);
 			}
 		}else{
 			String message = "unsupported frame type:" + frame.getClass().getName();
@@ -56,13 +72,14 @@ public class MyWebSocketFrameHandler extends
 		
 	}
 
+
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		// TODO Auto-generated method stub
 		super.channelActive(ctx);
 		System.out.println("active");
 		session = new ServerSession();
-		
+		dealexcutor = new DealWithJSON();
 	}
 
 }

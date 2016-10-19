@@ -1,8 +1,6 @@
-package json.client.session;
+package json.util;
 
 import java.util.List;
-
-import json.util.JSONNameandString;
 
 public class JSONMessage {
 

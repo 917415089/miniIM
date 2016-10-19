@@ -109,7 +109,6 @@ public class BaseClient {
                 		messageFactory.setSecretKey(handler.getAccessHandler().getSecretKey());
                 	}
                 		String send = messageFactory.product(msg);
-	                	//test access
 	                    WebSocketFrame frame = new TextWebSocketFrame(send);
 	                    ch.writeAndFlush(frame);
                 }

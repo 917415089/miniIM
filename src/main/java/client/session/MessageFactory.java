@@ -17,9 +17,9 @@ import util.EnDeCryProcess;
 import com.alibaba.fastjson.JSON;
 
 import json.client.session.AddFriend;
-import json.client.session.FriendList;
-import json.client.session.JSONMessage;
+import json.client.session.RequestFriendList;
 import json.client.session.RemoveFriend;
+import json.util.JSONMessage;
 import json.util.JSONNameandString;
 
 public class MessageFactory {
@@ -47,6 +47,8 @@ public class MessageFactory {
 					Value.add(inputList[i++]);
 				}
 				paramlist.put(Key, Value);
+			}else{
+				i++;
 			}
 		}
 		
@@ -110,7 +112,7 @@ public class MessageFactory {
 		RemoveFriend rf = new RemoveFriend();
 		rf.setFriends(list);
 		JSONNameandString jsonNameandString = new JSONNameandString();
-		jsonNameandString.setJSONName("RemoveFriend");
+		jsonNameandString.setJSONName(rf.getClass().getName());
 		jsonNameandString.setJSONStr(JSON.toJSONString(rf));
 		return jsonNameandString;
 	}
@@ -119,13 +121,13 @@ public class MessageFactory {
 		AddFriend addFriend = new AddFriend();
 		addFriend.setFriends(list);
 		JSONNameandString jsonNameandString = new JSONNameandString();
-		jsonNameandString.setJSONName("AddFriend");
+		jsonNameandString.setJSONName(addFriend.getClass().getName());
 		jsonNameandString.setJSONStr(JSON.toJSONString(addFriend));
 		return jsonNameandString;
 	}
 
 	private JSONNameandString getFriendList(List<String> list) {
-		FriendList fl = new FriendList();
+		RequestFriendList fl = new RequestFriendList();
 		if(list==null || list.size()==0){
 			fl.setGroup("all");
 		}else{
@@ -135,7 +137,7 @@ public class MessageFactory {
 			fl.setGroup(added);
 		}
 		JSONNameandString jsonNameandString = new JSONNameandString();
-		jsonNameandString.setJSONName("FriendList");
+		jsonNameandString.setJSONName(fl.getClass().getName());
 		jsonNameandString.setJSONStr(JSON.toJSONString(fl));
 		return jsonNameandString;
 	}

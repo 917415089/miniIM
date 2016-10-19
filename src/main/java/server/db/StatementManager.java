@@ -11,6 +11,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import json.util.JSONNameandString;
@@ -19,7 +20,10 @@ public class StatementManager {
 	
 	static private int MAX_STATEMTN_NUMBER = 100;
 	static private int FIX_THREAD_NUMBER=4;
+	static private int MAX_JSONque = 1000;
 	static private StatementManager UniqueInstance;
+	static private ExecutorCompletionService service;
+	static private BlockingQueue JSONque;
 	
 	private Statement statement;
 //	private CompletionService<JSONnameandString> service;
@@ -31,11 +35,14 @@ public class StatementManager {
 		    String username = "root" ;   
 		    String userpassword = "123456" ;   
 		    Connection conn = DriverManager.getConnection(url , username , userpassword);
-		    statement = conn.createStatement();
-
 		    
-//		    ExecutorService threadPool = Executors.newFixedThreadPool(FIX_THREAD_NUMBER);
-//		    service = new ExecutorCompletionService<JSONnameandString>(threadPool);
+		    statement = conn.createStatement();
+		    
+		    JSONque = new LinkedBlockingQueue<Future<JSONNameandString>>(MAX_JSONque);
+		    ExecutorService threadPool = Executors.newFixedThreadPool(FIX_THREAD_NUMBER);
+//		    service = new ExecutorCompletionService<JSONNameandString>(threadPool,JSONque);
+		    service = new ExecutorCompletionService<JSONNameandString>(threadPool);
+		    
 		    
 		} catch (ClassNotFoundException e) {
 			System.err.println("can't find jdbc driver");
@@ -52,6 +59,21 @@ public class StatementManager {
 		}
 		return UniqueInstance.statement;
 	}
+
+	public static ExecutorCompletionService<JSONNameandString> getService() {
+		if(UniqueInstance ==null){
+			UniqueInstance = new StatementManager();
+		}
+		return UniqueInstance.service;
+	}
+
+	public static BlockingQueue getJSONque() {
+		if(UniqueInstance ==null){
+			UniqueInstance = new StatementManager();
+		}
+		return UniqueInstance.JSONque;
+	}
+	
 	
 
 /*	public static CompletionService<JSONnameandString> getServerice(){

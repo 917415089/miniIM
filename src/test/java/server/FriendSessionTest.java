@@ -2,10 +2,13 @@ package server;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+
 import com.alibaba.fastjson.JSON;
-import json.client.session.JSONMessage;
+
+import json.util.JSONMessage;
 import util.EnDeCryProcess;
 import client.session.MessageFactory;
 
