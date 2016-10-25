@@ -7,6 +7,7 @@ import json.util.JSONNameandString;
 
 import com.alibaba.fastjson.JSON;
 
+import server.session.ChannelManager;
 import server.session.DealWithJSON;
 import server.session.ServerSession;
 import util.EnDeCryProcess;
@@ -54,6 +55,7 @@ public class MyWebSocketFrameHandler extends
 			if(!accessHandler.getAccess()){
 				accessHandler.handle(request);
 				ctx.channel().writeAndFlush(new TextWebSocketFrame(accessHandler.getResult()));
+				ChannelManager.addKey(ctx.channel().id().asLongText(),accessHandler.getSecretKeySpec());
 			}else{
 				if(!session.isHasinit()){
 					ctx.channel().writeAndFlush(new TextWebSocketFrame(session.init(request, accessHandler.getSecretKeySpec())));
@@ -75,11 +77,19 @@ public class MyWebSocketFrameHandler extends
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		// TODO Auto-generated method stub
 		super.channelActive(ctx);
 		System.out.println("active");
 		session = new ServerSession();
 		dealexcutor = new DealWithJSON();
+		ChannelManager.add(ctx.channel().id().asLongText(),ctx.channel());
 	}
+
+
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		super.channelInactive(ctx);
+		ChannelManager.remove(ctx.channel().id().asLongText());
+	}
+	
 
 }

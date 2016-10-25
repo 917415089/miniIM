@@ -1,5 +1,6 @@
 package client;
 
+import util.EnDeCryProcess;
 import client.session.ClientSession;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -36,8 +37,8 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        handshaker.handshake(ctx.channel());
         session = new ClientSession();
+        handshaker.handshake(ctx.channel());
     }
 
     @Override
@@ -74,6 +75,8 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         		}else{
         			if(!session.isHasLogin()){
         				session.receiveACK(request,accessHandler.getSecretKey());
+        			}else{
+        				System.out.println(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKey()));	
         			}
         		}
         } else if (frame instanceof PongWebSocketFrame) {

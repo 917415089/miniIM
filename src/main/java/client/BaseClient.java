@@ -90,6 +90,7 @@ public class BaseClient {
 			handler.getSession().setUserName("user1").setUserPassword("123");
 			BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 			MessageFactory messageFactory = new MessageFactory();
+
 			while(true){
 				String msg = console.readLine();
 				if(msg == null){
@@ -105,9 +106,10 @@ public class BaseClient {
                 	if(!handler.getSession().isHasLogin()){
                 		String str = handler.getSession().setSecretKey(handler.getAccessHandler().getSecretKey()).login();
                 		ch.writeAndFlush(new TextWebSocketFrame(str));
-                		while(!handler.getSession().isHasLogin());
+                		while( handler.getSession().isHasLogin());
                 		messageFactory.setSecretKey(handler.getAccessHandler().getSecretKey());
                 	}
+
                 		String send = messageFactory.product(msg);
 	                    WebSocketFrame frame = new TextWebSocketFrame(send);
 	                    ch.writeAndFlush(frame);

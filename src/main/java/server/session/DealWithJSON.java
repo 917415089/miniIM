@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSON;
 import io.netty.channel.Channel;
 import json.client.session.AddFriend;
 import json.client.session.RequestFriendList;
+import json.server.session.DataBaseResult;
 import json.server.session.FriendList;
 import json.util.JSONMessage;
 import json.util.JSONNameandString;
@@ -28,20 +29,20 @@ public class DealWithJSON {
 			switch(name){
 			case "json.client.session.RequestFriendList":
 				{
-					dealwithFriendList(json);
+					dealwithFriendList(json,channel.id().asLongText());
 				}break;
 			}
 		}
 		
 	}
 
-	private void dealwithFriendList(JSONNameandString json) {
+	private void dealwithFriendList(JSONNameandString json, final String channelid) {
 		RequestFriendList friendList = JSON.parseObject(json.getJSONStr(),RequestFriendList.class);
 		if(friendList.getGroup().equalsIgnoreCase("all")){
 			
-			 StatementManager.getService().submit(new Callable<JSONNameandString>(){
+			 StatementManager.getService().submit(new Callable<DataBaseResult>(){
 				@Override
-				public JSONNameandString call() throws Exception {
+				public DataBaseResult call() throws Exception {
 					String sql = "Select * from friends where mastername = \""+username+"\";";
 					ResultSet set = StatementManager.getStatement().executeQuery(sql);
 					FriendList list = new FriendList();
@@ -51,12 +52,14 @@ public class DealWithJSON {
 						friends.add(string);
 					}
 					list.setFriends(friends);
-					JSONNameandString ret = new JSONNameandString();
+					DataBaseResult ret = new DataBaseResult();
 					ret.setJSONName(FriendList.class.getName());
 					ret.setJSONStr(JSON.toJSONString(list));
+					ret.setChannelID(channelid);
 					return ret;
 				}
 			 });
+			 
 /*			 try {
 				JSONNameandString string = StatementManager.getService().take().get();
 				System.out.println(string.getJSONName());
