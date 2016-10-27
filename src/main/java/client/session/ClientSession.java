@@ -1,20 +1,15 @@
 package client.session;
 
-import io.netty.channel.Channel;
-
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-
 import json.client.login.ClientLogin;
 import json.server.login.SuccessLogin;
 import util.EnDeCryProcess;
-
 import com.alibaba.fastjson.JSON;
 
 public class ClientSession {
@@ -92,7 +87,6 @@ public class ClientSession {
 		this.token = token;
 	}
 
-	
 }
 	
 	

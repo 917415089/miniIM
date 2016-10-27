@@ -9,6 +9,7 @@ public class SessionTool {
 	static public String GenerateSID(String name,String password) throws NoSuchAlgorithmException{
 		String str= name+password+System.currentTimeMillis();
 		MessageDigest instance = MessageDigest.getInstance("SHA-1");
+		instance.update(str.getBytes());
 		byte[] md = instance.digest();
 		StringBuffer stringBuffer = new StringBuffer();
 

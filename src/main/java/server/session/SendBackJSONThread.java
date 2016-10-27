@@ -9,16 +9,17 @@ import java.util.concurrent.Future;
 
 import com.alibaba.fastjson.JSON;
 
-import server.db.StatementManager;
 import util.EnDeCryProcess;
 import json.server.session.DataBaseResult;
 import json.util.JSONNameandString;
 
+@SuppressWarnings("rawtypes")
 public class SendBackJSONThread implements Callable {
 
-	private BlockingQueue<Future<JSONNameandString>> que;
+	private BlockingQueue<Future<DataBaseResult>> que;
 	
 	
+	@SuppressWarnings("unchecked")
 	public SendBackJSONThread(BlockingQueue jSONque) {
 		super();
 		this.que = jSONque;
@@ -28,9 +29,9 @@ public class SendBackJSONThread implements Callable {
 	@Override
 	public Object call() throws Exception {
 		while(true){
-			DataBaseResult DBResult = StatementManager.getService().take().get();
+			DataBaseResult DBResult = que.take().get();
 			JSONNameandString SendBack = new JSONNameandString();
-			SendBack.setJSONName(SendBack.getJSONName());
+			SendBack.setJSONName(DBResult.getJSONName());
 			SendBack.setJSONStr(DBResult.getJSONStr());
 			String ret = JSON.toJSONString(SendBack);
 			ret = EnDeCryProcess.SysKeyEncryWithBase64(ret, ChannelManager.getKey(DBResult.getChannelID()));

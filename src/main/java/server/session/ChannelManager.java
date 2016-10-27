@@ -1,11 +1,7 @@
 package server.session;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelId;
-
-import java.nio.channels.Channels;
 import java.util.HashMap;
-
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -15,6 +11,7 @@ public class ChannelManager {
 	
 	volatile private HashMap<String,Channel> ChannelMap = new HashMap<String,Channel> ();
 	volatile private HashMap<String,SecretKey> KeyMap = new HashMap<String,SecretKey>();
+	volatile private HashMap<String,String> NameMap = new HashMap<String,String>();
 	
 	private ChannelManager(){
 		super();
@@ -30,20 +27,25 @@ public class ChannelManager {
 		channelmanager.ChannelMap.remove(asLongText);
 	}
 
-	public static synchronized Channel getChannel(String ID){
+	public static  Channel getChannel(String ID){
 		return channelmanager.ChannelMap.get(ID);
 	}
 
 
 	public static synchronized void addKey(String asLongText, SecretKeySpec secretKeySpec) {
-		channelmanager.KeyMap.put(asLongText, secretKeySpec);
-		
+		channelmanager.KeyMap.put(asLongText, secretKeySpec);	
 	}
 
-
-	public static synchronized SecretKey getKey(String channelID) {
+	public static  SecretKey getKey(String channelID) {
 		return channelmanager.KeyMap.get(channelID);
 	}
+	
+	public static synchronized void addName(String asLongText, String Name){
+		channelmanager.NameMap.put(asLongText, Name);
+	}
 
+	public static  String getName(String asLongText){
+		return channelmanager.NameMap.get(asLongText);
+	}
 	
 }

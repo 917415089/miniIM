@@ -95,6 +95,8 @@ public class MessageFactory {
 			return getAddFriend(list);
 		case "-f":
 			return getRemoveFriend(list);
+		default:
+			System.out.println("please input right command!");
 		}
 		return null;
 	}

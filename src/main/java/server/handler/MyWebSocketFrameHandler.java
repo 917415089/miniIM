@@ -1,17 +1,11 @@
 package server.handler;
 
-import java.util.List;
-
 import json.util.JSONMessage;
-import json.util.JSONNameandString;
-
 import com.alibaba.fastjson.JSON;
-
 import server.session.ChannelManager;
 import server.session.DealWithJSON;
 import server.session.ServerSession;
 import util.EnDeCryProcess;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
@@ -61,6 +55,7 @@ public class MyWebSocketFrameHandler extends
 					ctx.channel().writeAndFlush(new TextWebSocketFrame(session.init(request, accessHandler.getSecretKeySpec())));
 					dealexcutor.setUsername(session.getUsername());
 					dealexcutor.setUserpassword(session.getUserpassword());
+					ChannelManager.addName(ctx.channel().id().asLongText(), session.getUsername());
 				}else{
 					JSONMessage jsons = JSON.parseObject(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKeySpec()),JSONMessage.class);
 					dealexcutor.dealwith(jsons,ctx.channel());

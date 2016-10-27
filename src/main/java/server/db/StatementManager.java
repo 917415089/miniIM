@@ -5,9 +5,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,20 +14,22 @@ import java.util.concurrent.LinkedBlockingQueue;
 import server.session.SendBackJSONThread;
 import json.server.session.DataBaseResult;
 
-
+@SuppressWarnings("unused")
 public class StatementManager {
 	
+
 	static private int MAX_STATEMTN_NUMBER = 100;
 	static private int THREAD_NUMBER_OF_DATABASE_ACCESS=4;
 	static private int THREAD_NUMER_OF_SENDBACK_JSON = 2;
 	static private int MAX_JSONque = 1000;
 	static volatile private StatementManager UniqueInstance;
-	static private ExecutorCompletionService service;
-	static private BlockingQueue JSONque;
+	static private ExecutorCompletionService<DataBaseResult> service;
+	static private BlockingQueue<Future<DataBaseResult>> JSONque;
 	
 	private Statement statement;
-//	private CompletionService<JSONnameandString> service;
+
 	
+	@SuppressWarnings("unchecked")
 	private StatementManager(){
 		try {
 //			System.out.println("StatementManager");
@@ -73,6 +72,8 @@ public class StatementManager {
 		return UniqueInstance.statement;
 	}
 
+
+	@SuppressWarnings("static-access")
 	public static ExecutorCompletionService<DataBaseResult> getService() {
 		if(UniqueInstance ==null){
 			synchronized (StatementManager.class) {
@@ -85,7 +86,8 @@ public class StatementManager {
 		return UniqueInstance.service;
 	}
 
-	public static BlockingQueue getJSONque() {
+	@SuppressWarnings("static-access")
+	public static BlockingQueue<Future<DataBaseResult>> getJSONque() {
 		if(UniqueInstance ==null){
 			synchronized (StatementManager.class) {
 				if(UniqueInstance ==null){
