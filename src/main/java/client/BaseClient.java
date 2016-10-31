@@ -93,7 +93,7 @@ public class BaseClient {
 			MessageFactory messageFactory = new MessageFactory();
 
 
-			while(handler.getAccessHandler()==null || handler.getAccessHandler().getSecretKey()==null) Thread.sleep(1);; ;
+			while(handler.getAccessHandler()==null || handler.getAccessHandler().getSecretKey()==null) Thread.sleep(1);//while bug
     		messageFactory.setSecretKey(handler.getAccessHandler().getSecretKey());
 
 			while(true){
