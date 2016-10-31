@@ -29,7 +29,6 @@ public class ClientSession {
 			token = successLogin.getToken();
 			setHasLogin(true);
 			System.out.println("login");
-			
 	}
 	public String login() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException{
 		if(userName==null || userPassword == null) 

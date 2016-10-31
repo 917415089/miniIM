@@ -12,7 +12,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import server.session.SendBackJSONThread;
-import json.server.session.DataBaseResult;
+import json.server.session.SendBackJSON;
 
 @SuppressWarnings("unused")
 public class StatementManager {
@@ -22,9 +22,9 @@ public class StatementManager {
 	static private int THREAD_NUMBER_OF_DATABASE_ACCESS=4;
 	static private int THREAD_NUMER_OF_SENDBACK_JSON = 2;
 	static private int MAX_JSONque = 1000;
-	static volatile private StatementManager UniqueInstance;
-	static private ExecutorCompletionService<DataBaseResult> service;
-	static private BlockingQueue<Future<DataBaseResult>> JSONque;
+	static volatile private StatementManager UniqueInstance = new StatementManager();
+	static private ExecutorCompletionService<SendBackJSON> service;
+	static private BlockingQueue<Future<SendBackJSON>> JSONque;
 	
 	private Statement statement;
 
@@ -32,7 +32,6 @@ public class StatementManager {
 	@SuppressWarnings("unchecked")
 	private StatementManager(){
 		try {
-//			System.out.println("StatementManager");
 			Class.forName("com.mysql.jdbc.Driver");
 			String url = "jdbc:mysql://localhost:3306/test" ;    
 		    String username = "root" ;   
@@ -41,16 +40,14 @@ public class StatementManager {
 		    
 		    statement = conn.createStatement();
 		    
-		    JSONque = new LinkedBlockingQueue<Future<DataBaseResult>>(MAX_JSONque);
+		    JSONque = new LinkedBlockingQueue<Future<SendBackJSON>>(MAX_JSONque);
 		    ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_NUMBER_OF_DATABASE_ACCESS);
-		    service = new ExecutorCompletionService<DataBaseResult>(threadPool,JSONque);
+		    service = new ExecutorCompletionService<SendBackJSON>(threadPool,JSONque);
 		    
 		    ExecutorService sendBackPool = Executors.newFixedThreadPool(THREAD_NUMER_OF_SENDBACK_JSON);
 		    for(int i = 0 ; i <THREAD_NUMER_OF_SENDBACK_JSON ; i++){
 		    	sendBackPool.submit(new SendBackJSONThread(JSONque));
 		    }
-//		    service = new ExecutorCompletionService<JSONNameandString>(threadPool);
-		    
 		    
 		} catch (ClassNotFoundException e) {
 			System.err.println("can't find jdbc driver");
@@ -62,51 +59,16 @@ public class StatementManager {
 	}
 
 	static public Statement getStatement() {
-		if(UniqueInstance ==null){
-			synchronized (StatementManager.class) {
-				if(UniqueInstance ==null){
-					UniqueInstance = new StatementManager();				
-				}
-			}
-		}
 		return UniqueInstance.statement;
 	}
 
-
 	@SuppressWarnings("static-access")
-	public static ExecutorCompletionService<DataBaseResult> getService() {
-		if(UniqueInstance ==null){
-			synchronized (StatementManager.class) {
-				if(UniqueInstance ==null){
-					UniqueInstance = new StatementManager();				
-				}
-			}
-		}
-//		System.out.println(UniqueInstance.hashCode());
+	public static ExecutorCompletionService<SendBackJSON> getService() {
 		return UniqueInstance.service;
 	}
 
 	@SuppressWarnings("static-access")
-	public static BlockingQueue<Future<DataBaseResult>> getJSONque() {
-		if(UniqueInstance ==null){
-			synchronized (StatementManager.class) {
-				if(UniqueInstance ==null){
-					UniqueInstance = new StatementManager();				
-				}
-			}
-		}
+	public static BlockingQueue<Future<SendBackJSON>> getJSONque() {
 		return UniqueInstance.JSONque;
 	}
-	
-	
-
-/*	public static CompletionService<JSONnameandString> getServerice(){
-		if(UniqueInstance==null){
-			UniqueInstance= new StatementManager();
-		}
-		return UniqueInstance.service;
-	}*/
-	
-	
-
 }

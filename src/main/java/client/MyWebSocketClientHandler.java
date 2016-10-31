@@ -75,8 +75,14 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         		if(!accessHandler.getAccess()){
         			accessHandler.handle(request);
         			ctx.channel().writeAndFlush(new TextWebSocketFrame(accessHandler.getResult()));
+        			if(accessHandler.getAccess()){
+        				session.setSecretKey(accessHandler.getSecretKey());
+        				String login = session.login();
+        				ctx.channel().writeAndFlush(new TextWebSocketFrame(login));
+        			}
         		}else{
         			if(!session.isHasLogin()){
+        				System.out.println("session.isnot HasLogin())");
         				session.receiveACK(request,accessHandler.getSecretKey());
         				dealer.setSecretKey(accessHandler.getSecretKey());
         			}else{

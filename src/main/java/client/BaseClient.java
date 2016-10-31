@@ -7,9 +7,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+
 import client.session.MessageFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
@@ -84,9 +87,14 @@ public class BaseClient {
 			
 			Channel ch = b.connect(uri.getHost(),port).sync().channel();
 			handler.handshakeFuture().sync();
+
 			handler.getSession().setUserName("user1").setUserPassword("123");
 			BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 			MessageFactory messageFactory = new MessageFactory();
+
+
+			while(handler.getAccessHandler()==null || handler.getAccessHandler().getSecretKey()==null) Thread.sleep(1);; ;
+    		messageFactory.setSecretKey(handler.getAccessHandler().getSecretKey());
 
 			while(true){
 				String msg = console.readLine();
@@ -101,15 +109,17 @@ public class BaseClient {
                     ch.writeAndFlush(frame);
                 } else {
                 	if(!handler.getSession().isHasLogin()){
+                		System.out.println("pass");
                 		String str = handler.getSession().setSecretKey(handler.getAccessHandler().getSecretKey()).login();
                 		ch.writeAndFlush(new TextWebSocketFrame(str));
                 		while( handler.getSession().isHasLogin());
                 		messageFactory.setSecretKey(handler.getAccessHandler().getSecretKey());
                 	}
-
+                		
                 		String send = messageFactory.product(msg);
 	                    WebSocketFrame frame = new TextWebSocketFrame(send);
 	                    ch.writeAndFlush(frame);
+	                    System.out.println(msg);
                 }
 			}
 		}finally{

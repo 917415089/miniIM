@@ -1,6 +1,6 @@
 package json.server.session;
 
-public class DataBaseResult {
+public class SendBackJSON {
 
 	private String JSONName;
 	private String JSONStr;

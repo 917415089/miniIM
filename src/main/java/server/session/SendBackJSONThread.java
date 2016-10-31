@@ -10,13 +10,13 @@ import java.util.concurrent.Future;
 import com.alibaba.fastjson.JSON;
 
 import util.EnDeCryProcess;
-import json.server.session.DataBaseResult;
+import json.server.session.SendBackJSON;
 import json.util.JSONNameandString;
 
 @SuppressWarnings("rawtypes")
 public class SendBackJSONThread implements Callable {
 
-	private BlockingQueue<Future<DataBaseResult>> que;
+	private BlockingQueue<Future<SendBackJSON>> que;
 	
 	
 	@SuppressWarnings("unchecked")
@@ -29,7 +29,7 @@ public class SendBackJSONThread implements Callable {
 	@Override
 	public Object call() throws Exception {
 		while(true){
-			DataBaseResult DBResult = que.take().get();
+			SendBackJSON DBResult = que.take().get();
 			JSONNameandString SendBack = new JSONNameandString();
 			SendBack.setJSONName(DBResult.getJSONName());
 			SendBack.setJSONStr(DBResult.getJSONStr());

@@ -20,7 +20,7 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import json.client.session.RequestFriendList;
 import json.server.session.CannotFindCommand;
-import json.server.session.DataBaseResult;
+import json.server.session.SendBackJSON;
 import json.server.session.FriendList;
 import json.util.JSONMessage;
 import json.util.JSONNameandString;
@@ -65,9 +65,9 @@ public class DealWithJSON {
 		RequestFriendList friendList = JSON.parseObject(json.getJSONStr(),RequestFriendList.class);
 		if(friendList.getGroup().equalsIgnoreCase("all")){
 			
-			 StatementManager.getService().submit(new Callable<DataBaseResult>(){
+			 StatementManager.getService().submit(new Callable<SendBackJSON>(){
 				@Override
-				public DataBaseResult call() throws Exception {
+				public SendBackJSON call() throws Exception {
 					String sql = "Select * from friends where mastername = \""+username+"\";";
 					ResultSet set = StatementManager.getStatement().executeQuery(sql);
 					FriendList list = new FriendList();
@@ -77,7 +77,7 @@ public class DealWithJSON {
 						friends.add(string);
 					}
 					list.setFriends(friends);
-					DataBaseResult ret = new DataBaseResult();
+					SendBackJSON ret = new SendBackJSON();
 					ret.setJSONName(FriendList.class.getName());
 					ret.setJSONStr(JSON.toJSONString(list));
 					ret.setChannelID(channelid);
