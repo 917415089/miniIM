@@ -1,12 +1,5 @@
 package client.session;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 import util.EnDeCryProcess;
@@ -16,20 +9,11 @@ import json.util.JSONNameandString;
 
 import com.alibaba.fastjson.JSON;
 
-
-	
 public class DealwithJSON {
 	private SecretKey secretKey;
 	
 	public void product(String request) {
-		try {
-			request = EnDeCryProcess.SysKeyDecryWithBase64(request, secretKey);
-		} catch (InvalidKeyException | NoSuchAlgorithmException
-				| NoSuchPaddingException | IllegalBlockSizeException
-				| BadPaddingException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		request = EnDeCryProcess.SysKeyDecryWithBase64(request, secretKey);
 		JSONNameandString Json = JSON.parseObject(request, JSONNameandString.class);
 		switch(Json.getJSONName()){
 		case "json.server.session.CannotFindCommand":

@@ -10,8 +10,10 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 import json.client.login.ClientLogin;
+import json.client.login.ClientRegister;
 import json.server.login.SuccessLogin;
 import json.server.login.WrongNameorPassword;
+import json.util.JSONNameandString;
 
 import com.alibaba.fastjson.JSON;
 
@@ -26,17 +28,40 @@ public class ServerSession {
 	private SecretKey secretKey;
 	private String username;
 	private String userpassword;
+	private String useremail;
 
 	public boolean isHasinit() {
 		return hasinit;
 	}
 	
-	public String init(String request,SecretKey secretKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException {
+	public String init(String request,SecretKey secretKey){
 		String str = EnDeCryProcess.SysKeyDecryWithBase64(request, secretKey);
-		ClientLogin clientLogin = JSON.parseObject(str,ClientLogin.class);
+		JSONNameandString json = JSON.parseObject(str, JSONNameandString.class);
+		this.secretKey = secretKey;
+		
+		switch(json.getJSONName()){
+		case "json.client.login.ClientLogin":
+			return deallogin(json.getJSONStr());
+		case "json.client.login.ClientRegister":
+			return dealregister(json.getJSONStr());
+		}
+		
+		return null;
+	}
+
+	private String dealregister(String jsonStr) {
+		ClientRegister clientRegister = JSON.parseObject(jsonStr, ClientRegister.class);
+		username = clientRegister.getUserName();
+		userpassword = clientRegister.getUserPassword();
+		useremail = clientRegister.getEmail();
+		//unfinished
+		return null;
+	}
+
+	private String deallogin(String jsonStr) {
+		ClientLogin clientLogin = JSON.parseObject(jsonStr,ClientLogin.class);
 		username = clientLogin.getName();
 		userpassword = clientLogin.getPassword();
-		this.secretKey = secretKey;
 		if(VerifyLogin.verifyNameandPassword(username,userpassword)){
 			hasinit = true;
 			SuccessLogin successLogin = new SuccessLogin();
@@ -63,4 +88,13 @@ public class ServerSession {
 		return userpassword;
 	}
 
+	public String getUseremail() {
+		return useremail;
+	}
+
+	public void setUseremail(String useremail) {
+		this.useremail = useremail;
+	}
+
+	
 }

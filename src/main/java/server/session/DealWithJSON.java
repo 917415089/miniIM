@@ -1,15 +1,9 @@
 package server.session;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import server.db.StatementManager;
 import util.EnDeCryProcess;
@@ -47,14 +41,7 @@ public class DealWithJSON {
 					sendjson.setJSONName(CannotFindCommand.class.getName());
 					sendjson.setJSONStr(Jsonstr);
 					String send = JSON.toJSONString(sendjson);
-					try {
-						send = EnDeCryProcess.SysKeyEncryWithBase64(send, ChannelManager.getKey(channel.id().asLongText()));
-					} catch (InvalidKeyException | NoSuchAlgorithmException
-							| NoSuchPaddingException | IllegalBlockSizeException
-							| BadPaddingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					send = EnDeCryProcess.SysKeyEncryWithBase64(send, ChannelManager.getKey(channel.id().asLongText()));
 					channel.writeAndFlush(new TextWebSocketFrame(send));
 			}
 		}

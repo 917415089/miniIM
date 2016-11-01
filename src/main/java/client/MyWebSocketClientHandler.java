@@ -24,6 +24,7 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
     private ClientSession session;
     private DealwithJSON dealer;
 
+
     public MyWebSocketClientHandler(WebSocketClientHandshaker handshaker) {
         this.handshaker = handshaker;
     }
@@ -77,8 +78,9 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         			ctx.channel().writeAndFlush(new TextWebSocketFrame(accessHandler.getResult()));
         			if(accessHandler.getAccess()){
         				session.setSecretKey(accessHandler.getSecretKey());
-        				String login = session.login();
-        				ctx.channel().writeAndFlush(new TextWebSocketFrame(login));
+        				String login_register = session.isRegister() ? session.register():session.login();
+        				if(login_register!=null)
+        					ctx.channel().writeAndFlush(new TextWebSocketFrame(login_register));
         			}
         		}else{
         			if(!session.isHasLogin()){
@@ -115,6 +117,5 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
 		return session;
 	}
 
-    
-    
+       
 }
