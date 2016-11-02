@@ -53,7 +53,8 @@ public class MyWebSocketFrameHandler extends
 			}else{
 				if(!session.isHasinit()){
 					System.out.println("session.isnot Hasinit()");
-					ctx.channel().writeAndFlush(new TextWebSocketFrame(session.init(request, accessHandler.getSecretKeySpec())));
+//					ctx.channel().writeAndFlush(new TextWebSocketFrame(session.init(request, accessHandler.getSecretKeySpec())));
+					session.init(request, accessHandler.getSecretKeySpec());
 					dealexcutor.setUsername(session.getUsername());
 					dealexcutor.setUserpassword(session.getUserpassword());
 					ChannelManager.addName(ctx.channel().id().asLongText(), session.getUsername());
@@ -75,7 +76,7 @@ public class MyWebSocketFrameHandler extends
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		super.channelActive(ctx);
 		System.out.println("active");
-		session = new ServerSession();
+		session = new ServerSession(ctx.channel());
 		dealexcutor = new DealWithJSON();
 		ChannelManager.add(ctx.channel().id().asLongText(),ctx.channel());
 	}

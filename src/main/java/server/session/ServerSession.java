@@ -1,8 +1,14 @@
 package server.session;
 
+import io.netty.channel.Channel;
+
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.concurrent.Callable;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -13,71 +19,108 @@ import json.client.login.ClientLogin;
 import json.client.login.ClientRegister;
 import json.server.login.SuccessLogin;
 import json.server.login.WrongNameorPassword;
+import json.server.session.SendBackJSON;
 import json.util.JSONNameandString;
 
 import com.alibaba.fastjson.JSON;
 
+import server.db.StatementManager;
 import util.EnDeCryProcess;
 import util.SessionTool;
 import util.VerifyLogin;
 
 public class ServerSession {
 
-
+	private Channel ch;
 	private boolean hasinit;
 	private SecretKey secretKey;
 	private String username;
 	private String userpassword;
 	private String useremail;
+	
+	public ServerSession(Channel channel){
+		ch = channel;
+	}
+	
+	@SuppressWarnings("unused")
+	private ServerSession(){
+		
+	}
 
 	public boolean isHasinit() {
 		return hasinit;
 	}
 	
-	public String init(String request,SecretKey secretKey){
+	
+	private void setHasinit(boolean hasinit) {
+		this.hasinit = hasinit;
+	}
+
+	public void init(String request,SecretKey secretKey){
 		String str = EnDeCryProcess.SysKeyDecryWithBase64(request, secretKey);
 		JSONNameandString json = JSON.parseObject(str, JSONNameandString.class);
 		this.secretKey = secretKey;
 		
 		switch(json.getJSONName()){
 		case "json.client.login.ClientLogin":
-			return deallogin(json.getJSONStr());
+			deallogin(json.getJSONStr());
+			break;
 		case "json.client.login.ClientRegister":
-			return dealregister(json.getJSONStr());
+			dealregister(json.getJSONStr());
 		}
-		
-		return null;
+
 	}
 
-	private String dealregister(String jsonStr) {
+	private void dealregister(String jsonStr) {
 		ClientRegister clientRegister = JSON.parseObject(jsonStr, ClientRegister.class);
 		username = clientRegister.getUserName();
 		userpassword = clientRegister.getUserPassword();
 		useremail = clientRegister.getEmail();
-		//unfinished
-		return null;
 	}
 
-	private String deallogin(String jsonStr) {
+	private void deallogin(String jsonStr) {
 		ClientLogin clientLogin = JSON.parseObject(jsonStr,ClientLogin.class);
 		username = clientLogin.getName();
 		userpassword = clientLogin.getPassword();
-		if(VerifyLogin.verifyNameandPassword(username,userpassword)){
-			hasinit = true;
-			SuccessLogin successLogin = new SuccessLogin();
-			successLogin.setToken(SessionTool.GenerateSID(username, userpassword));
-			String ret = JSON.toJSONString(successLogin);
-			ret = EnDeCryProcess.SysKeyEncryWithBase64(ret, secretKey);
-			return ret;
-		}else{
-			hasinit = false;
-			WrongNameorPassword wrongNameorPassword = new WrongNameorPassword();
-			wrongNameorPassword.setVerifyName(VerifyLogin.verifyName(username));
-			wrongNameorPassword.setVerfyPassword(VerifyLogin.verifyPassword(userpassword, userpassword));
-			String ret = JSON.toJSONString(wrongNameorPassword);
-			ret = EnDeCryProcess.SysKeyEncryWithBase64(ret, secretKey);
-			return ret;
-		}
+		
+		StatementManager.getService().submit(new Callable<SendBackJSON>(){
+
+			@Override
+			public SendBackJSON call() throws Exception {
+				Statement statement = StatementManager.getStatement();
+				String sql = "select * from USER where username=\""+username+"\";";
+				String ret;
+				try {
+					ResultSet resultSet = statement.executeQuery(sql);
+					if(resultSet.next()){
+						SendBackJSON backJSON = new SendBackJSON();
+						backJSON.setChannelID(ch.id().asLongText());
+						
+						if(username.equals(resultSet.getString("username"))&&userpassword.equals(resultSet.getString("userpassword"))){
+							SuccessLogin successLogin = new SuccessLogin();
+							successLogin.setToken(SessionTool.GenerateSID(username, userpassword));
+							ret = JSON.toJSONString(successLogin);
+							backJSON.setJSONName(SuccessLogin.class.getName());
+							backJSON.setJSONStr(ret);
+							setHasinit(true);
+						}else{
+							WrongNameorPassword wrongNameorPassword = new WrongNameorPassword();
+							wrongNameorPassword.setVerifyName(username.equals(resultSet.getString("username")) ? true:false);
+							wrongNameorPassword.setVerfyPassword(userpassword.equals(resultSet.getString("userpassword"))?true :false);
+							ret = JSON.toJSONString(wrongNameorPassword);
+							backJSON.setJSONName(WrongNameorPassword.class.getName());
+							backJSON.setJSONStr(ret);
+						}
+						return backJSON;
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return null;
+			}
+		});
+		
 	}
 
 	public String getUsername() {

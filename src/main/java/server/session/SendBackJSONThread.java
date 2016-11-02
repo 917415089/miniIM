@@ -13,21 +13,18 @@ import util.EnDeCryProcess;
 import json.server.session.SendBackJSON;
 import json.util.JSONNameandString;
 
-@SuppressWarnings("rawtypes")
-public class SendBackJSONThread implements Callable {
+
+public class SendBackJSONThread implements Callable<Future<SendBackJSON>> {
 
 	private BlockingQueue<Future<SendBackJSON>> que;
-	
-	
-	@SuppressWarnings("unchecked")
-	public SendBackJSONThread(BlockingQueue jSONque) {
+
+	public SendBackJSONThread(BlockingQueue<Future<SendBackJSON>> jSONque) {
 		super();
 		this.que = jSONque;
 	}
 
-
 	@Override
-	public Object call() throws Exception {
+	public Future<SendBackJSON> call() throws Exception {
 		while(true){
 			SendBackJSON DBResult = que.take().get();
 			JSONNameandString SendBack = new JSONNameandString();

@@ -40,7 +40,7 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        session = new ClientSession();
+        session = new ClientSession(ctx.channel());
         handshaker.handshake(ctx.channel());
         dealer = new DealwithJSON(); 
     }

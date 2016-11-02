@@ -1,5 +1,7 @@
 package client.session;
 
+import io.netty.channel.Channel;
+
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -12,6 +14,7 @@ import javax.crypto.SecretKey;
 import json.client.login.ClientLogin;
 import json.client.login.ClientRegister;
 import json.server.login.SuccessLogin;
+import json.server.session.SendBackJSON;
 import json.util.JSONNameandString;
 import util.EnDeCryProcess;
 
@@ -19,6 +22,7 @@ import com.alibaba.fastjson.JSON;
 
 public class ClientSession {
 	
+	private Channel ch;
 	private String token;
 	private String userName;
 	private String userPassword;
@@ -26,16 +30,43 @@ public class ClientSession {
 	private  SecretKey secretKey;
 	private boolean register;
 	private boolean hasLogin;
+	
+	public ClientSession(Channel channel){
+		ch = channel;
+	}
+	
+	protected ClientSession(){
+		
+	}
 
 	public void receiveACK(String json, SecretKey secretKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException {
 			
 			this.secretKey = secretKey;
 			String str = EnDeCryProcess.SysKeyDecryWithBase64(json, secretKey);
-			SuccessLogin successLogin = JSON.parseObject(str, SuccessLogin.class);
-			token = successLogin.getToken();
-			setHasLogin(true);
-			System.out.println("login");
+			JSONNameandString backJSON = JSON.parseObject(str, JSONNameandString.class);
+			switch(backJSON.getJSONName()){
+			case "json.server.login.SuccessLogin":
+				dealwithSuccessLogin(str);
+				return ;
+			case "json.server.login.WrongNameorPassword":
+				dealwithWrongNameorPassword(str);
+				return;
+			}
+			System.err.println("receive wrong ACK");
 	}
+	
+	
+	private void dealwithWrongNameorPassword(String str) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void dealwithSuccessLogin(String str) {
+		SuccessLogin successLogin = JSON.parseObject(str, SuccessLogin.class);
+		token = successLogin.getToken();
+		setHasLogin(true);
+	}
+
 	public String login(){
 		if(userName==null || userPassword == null) 
 			System.err.println("please input Name or password! ");
