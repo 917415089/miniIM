@@ -1,5 +1,8 @@
 package client;
 
+import java.util.concurrent.ArrayBlockingQueue;
+
+import json.util.JSONNameandString;
 import util.EnDeCryProcess;
 import client.session.ClientSession;
 import client.session.DealwithJSON;
@@ -18,11 +21,13 @@ import io.netty.util.CharsetUtil;
 
 public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object> {
 
+	static public  final int RECEIVE_QUE = 100; 
     private final WebSocketClientHandshaker handshaker;
     private ChannelPromise handshakeFuture;
     private ClientAccessHandler accessHandler = null;
     private ClientSession session;
     private DealwithJSON dealer;
+    private ArrayBlockingQueue<JSONNameandString> receiveque= new ArrayBlockingQueue<>(RECEIVE_QUE);
 
 
     public MyWebSocketClientHandler(WebSocketClientHandshaker handshaker) {
@@ -84,12 +89,12 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         			}
         		}else{
         			if(!session.isHasLogin()){
-        				System.out.println("session.isnot HasLogin())");
+//        				System.out.println("session.isnot HasLogin())");
         				session.receiveACK(request,accessHandler.getSecretKey());
         				dealer.setSecretKey(accessHandler.getSecretKey());
         			}else{
-        				dealer.product(request);
-        				System.out.println(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKey()));	
+        				receiveque.add(dealer.product(request));
+//        				System.out.println(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKey()));	
         			}
         		}
         } else if (frame instanceof PongWebSocketFrame) {
@@ -117,5 +122,7 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
 		return session;
 	}
 
-       
+	public ArrayBlockingQueue<JSONNameandString> getReceiveque() {
+		return receiveque;
+	}
 }

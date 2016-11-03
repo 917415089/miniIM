@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSON;
 public class DealwithJSON {
 	private SecretKey secretKey;
 	
-	public void product(String request) {
+	public JSONNameandString product(String request) {
 		request = EnDeCryProcess.SysKeyDecryWithBase64(request, secretKey);
 		JSONNameandString Json = JSON.parseObject(request, JSONNameandString.class);
 		switch(Json.getJSONName()){
@@ -25,7 +25,7 @@ public class DealwithJSON {
 		default:
 				System.out.println("receive wrong JSON");
 		}
-		
+		return Json;
 	}
 
 	private void DealWithFriendList(String jsonStr) {

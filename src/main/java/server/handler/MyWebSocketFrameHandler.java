@@ -52,7 +52,7 @@ public class MyWebSocketFrameHandler extends
 				ChannelManager.addKey(ctx.channel().id().asLongText(),accessHandler.getSecretKeySpec());
 			}else{
 				if(!session.isHasinit()){
-					System.out.println("session.isnot Hasinit()");
+//					System.out.println("session.isnot Hasinit()");
 //					ctx.channel().writeAndFlush(new TextWebSocketFrame(session.init(request, accessHandler.getSecretKeySpec())));
 					session.init(request, accessHandler.getSecretKeySpec());
 					dealexcutor.setUsername(session.getUsername());
@@ -61,7 +61,7 @@ public class MyWebSocketFrameHandler extends
 				}else{
 					JSONMessage jsons = JSON.parseObject(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKeySpec()),JSONMessage.class);
 					dealexcutor.dealwith(jsons,ctx.channel());
-					System.out.println("receive");
+//					System.out.println("receive");
 				}
 			}
 		}else{

@@ -48,7 +48,7 @@ public class ServerAccessHandler {
 				result =SelectAlgorithm(request);
 				if(result != null){
 					currStatus = Status.SelectAlgorithmandPubKey;
-					System.out.println("ServerInit");
+//					System.out.println("ServerInit");
 					return true;
 				}else{
 					currStatus = Status.ERROR;
@@ -58,7 +58,7 @@ public class ServerAccessHandler {
 				result = SendServerACK(request);
 				if(result != null){
 					currStatus = Status.ServerACK;
-					System.out.println("SelectAlgorithmandPubKey");
+//					System.out.println("SelectAlgorithmandPubKey");
 					return true;	
 				}else{
 					currStatus = Status.ERROR;
@@ -67,7 +67,7 @@ public class ServerAccessHandler {
 			case ServerACK:
 				if(verify(request)){
 					currStatus = Status.Access;
-					System.out.println("ServerACK");
+//					System.out.println("ServerACK");
 					return true;
 				}else{
 					currStatus = Status.ERROR;

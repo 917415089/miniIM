@@ -22,6 +22,7 @@ import json.client.session.RemoveFriend;
 import json.util.JSONMessage;
 import json.util.JSONNameandString;
 
+@Deprecated
 public class MessageFactory {
 
 	static HashSet<String> param;

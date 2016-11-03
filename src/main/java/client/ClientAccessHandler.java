@@ -52,7 +52,7 @@ public class ClientAccessHandler {
 				result = SendSupportedKey();
 				if(result != null){
 					currStatus=Status.SupportedAlgorithm;
-					System.out.println("ClientInit");
+//					System.out.println("ClientInit");
 					return true;
 				}else{
 					currStatus = Status.ERROR;
@@ -62,7 +62,7 @@ public class ClientAccessHandler {
 				result = SendSysKeyandRandom(request);
 				if(result != null){
 					currStatus = Status.SyskeyandRandom;
-					System.out.println("SupportedAlgorithm");
+//					System.out.println("SupportedAlgorithm");
 					return true;
 				}else{
 					currStatus = Status.ERROR;
@@ -72,7 +72,7 @@ public class ClientAccessHandler {
 				result = SendClientACK(request);
 				if(result != null){
 					currStatus = Status.Access;
-					System.out.println("SyskeyandRandom");
+//					System.out.println("SyskeyandRandom");
 					return true;
 				}else{
 					currStatus = Status.ERROR;
