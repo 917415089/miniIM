@@ -38,7 +38,6 @@ public class BaseClientandServer {
 		Thread.sleep(3000);
 		
 		ClosingChannel closingChannel = new ClosingChannel();
-//		closingChannel.setReaseon("null");
 		JSONNameandString json = new JSONNameandString();
 		json.setJSONName(ClosingChannel.class.getName());
 		json.setJSONStr(JSON.toJSONString(closingChannel));
@@ -48,7 +47,8 @@ public class BaseClientandServer {
 		
 		JSONMessage sendmsg = new JSONMessage();
 		sendmsg.setJson(msg);
-		BlockingQueue<JSONMessage> que = baseclient.getQue();
+		BlockingQueue<JSONMessage> que = baseclient.getSendque();
 		que.add(sendmsg);
+		Thread.sleep(1000);
 	}
 }

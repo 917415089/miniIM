@@ -52,9 +52,7 @@ public class MyWebSocketFrameHandler extends
 				ChannelManager.addKey(ctx.channel().id().asLongText(),accessHandler.getSecretKeySpec());
 			}else{
 				if(!session.isHasinit()){
-//					System.out.println("session.isnot Hasinit()");
-//					ctx.channel().writeAndFlush(new TextWebSocketFrame(session.init(request, accessHandler.getSecretKeySpec())));
-					session.init(request, accessHandler.getSecretKeySpec());
+					session.init(request);
 					dealexcutor.setUsername(session.getUsername());
 					dealexcutor.setUserpassword(session.getUserpassword());
 					ChannelManager.addName(ctx.channel().id().asLongText(), session.getUsername());

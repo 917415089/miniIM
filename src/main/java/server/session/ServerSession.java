@@ -56,10 +56,10 @@ public class ServerSession {
 		this.hasinit = hasinit;
 	}
 
-	public void init(String request,SecretKey secretKey){
+	public void init(String request){
+		secretKey = ChannelManager.getKey(ch.id().asLongText());
 		String str = EnDeCryProcess.SysKeyDecryWithBase64(request, secretKey);
 		JSONNameandString json = JSON.parseObject(str, JSONNameandString.class);
-		this.secretKey = secretKey;
 		
 		switch(json.getJSONName()){
 		case "json.client.login.ClientLogin":
@@ -76,6 +76,19 @@ public class ServerSession {
 		username = clientRegister.getUserName();
 		userpassword = clientRegister.getUserPassword();
 		useremail = clientRegister.getEmail();
+		
+		StatementManager.getService().submit(new Callable<SendBackJSON>(){
+
+			@Override
+			public SendBackJSON call() throws Exception {
+				Statement statement = StatementManager.getStatement();
+				String sql = "insert into user (username,userpassword,useremail) values (\""+username+"\",\""+userpassword+"\",\""+useremail+"\");";
+				int resultSet = statement.executeUpdate(sql);
+				//unfinished
+				return null;
+			}
+			
+		});
 	}
 
 	private void deallogin(String jsonStr) {
@@ -88,31 +101,29 @@ public class ServerSession {
 			@Override
 			public SendBackJSON call() throws Exception {
 				Statement statement = StatementManager.getStatement();
-				String sql = "select * from USER where username=\""+username+"\";";
+				String sql = "select * from user where username=\""+username+"\";";
 				String ret;
 				try {
 					ResultSet resultSet = statement.executeQuery(sql);
-					if(resultSet.next()){
-						SendBackJSON backJSON = new SendBackJSON();
-						backJSON.setChannelID(ch.id().asLongText());
-						
-						if(username.equals(resultSet.getString("username"))&&userpassword.equals(resultSet.getString("userpassword"))){
+					SendBackJSON backJSON = new SendBackJSON();
+					backJSON.setChannelID(ch.id().asLongText());
+					if(resultSet.next() && username.equals(resultSet.getString("username"))&&userpassword.equals(resultSet.getString("userpassword"))){						
 							SuccessLogin successLogin = new SuccessLogin();
 							successLogin.setToken(SessionTool.GenerateSID(username, userpassword));
 							ret = JSON.toJSONString(successLogin);
 							backJSON.setJSONName(SuccessLogin.class.getName());
 							backJSON.setJSONStr(ret);
 							setHasinit(true);
-						}else{
-							WrongNameorPassword wrongNameorPassword = new WrongNameorPassword();
-							wrongNameorPassword.setVerifyName(username.equals(resultSet.getString("username")) ? true:false);
-							wrongNameorPassword.setVerfyPassword(userpassword.equals(resultSet.getString("userpassword"))?true :false);
-							ret = JSON.toJSONString(wrongNameorPassword);
-							backJSON.setJSONName(WrongNameorPassword.class.getName());
-							backJSON.setJSONStr(ret);
-						}
-						return backJSON;
+					}else{
+						WrongNameorPassword wrongNameorPassword = new WrongNameorPassword();
+						wrongNameorPassword.setVerifyName(false);
+						wrongNameorPassword.setVerfyPassword(false);
+						ret = JSON.toJSONString(wrongNameorPassword);
+						backJSON.setJSONName(WrongNameorPassword.class.getName());
+						backJSON.setJSONStr(ret);
 					}
+					
+					return backJSON;
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

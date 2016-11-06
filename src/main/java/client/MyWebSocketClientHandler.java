@@ -29,7 +29,6 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
     private DealwithJSON dealer;
     private ArrayBlockingQueue<JSONNameandString> receiveque= new ArrayBlockingQueue<>(RECEIVE_QUE);
 
-
     public MyWebSocketClientHandler(WebSocketClientHandshaker handshaker) {
         this.handshaker = handshaker;
     }
@@ -90,11 +89,11 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         		}else{
         			if(!session.isHasLogin()){
 //        				System.out.println("session.isnot HasLogin())");
-        				session.receiveACK(request,accessHandler.getSecretKey());
+        				session.receiveACK(request);
         				dealer.setSecretKey(accessHandler.getSecretKey());
         			}else{
         				receiveque.add(dealer.product(request));
-//        				System.out.println(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKey()));	
+//        				System.out.println(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKey()));
         			}
         		}
         } else if (frame instanceof PongWebSocketFrame) {

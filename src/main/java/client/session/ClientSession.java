@@ -39,9 +39,8 @@ public class ClientSession {
 		
 	}
 
-	public void receiveACK(String json, SecretKey secretKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException {
+	public void receiveACK(String json) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException {
 			
-			this.secretKey = secretKey;
 			String str = EnDeCryProcess.SysKeyDecryWithBase64(json, secretKey);
 			JSONNameandString backJSON = JSON.parseObject(str, JSONNameandString.class);
 			switch(backJSON.getJSONName()){
@@ -58,7 +57,7 @@ public class ClientSession {
 	
 	private void dealwithWrongNameorPassword(String str) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("wrong name or password");
 	}
 
 	private void dealwithSuccessLogin(String str) {

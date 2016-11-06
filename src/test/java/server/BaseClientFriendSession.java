@@ -21,7 +21,7 @@ public class BaseClientFriendSession {
 	@Test
 	public void TestshowAllFriendList() throws InterruptedException{
 		
-		BaseClient baseclient = new BaseClient("user1","123");
+		BaseClient baseclient = new BaseClient("1user1","123");
 		BaseServer baseserver = new BaseServer();
 		ExecutorService threadPool = Executors.newCachedThreadPool();
 		threadPool.submit(baseserver);
@@ -38,8 +38,8 @@ public class BaseClientFriendSession {
 		JSONMessage msg = new JSONMessage();
 		msg.setJson(list);
 
-		BlockingQueue<JSONMessage> send = baseclient.getQue();
-		BlockingQueue<JSONNameandString> receive = baseclient.getReceiveque();
+		BlockingQueue<JSONMessage> send = baseclient.getSendque();
+		BlockingQueue<JSONNameandString> receive = baseclient.getReceque();
 		send.add(msg);
 		JSONNameandString take = receive.take();
 		String jsonString = JSON.toJSONString(take);

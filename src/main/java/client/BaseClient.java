@@ -45,7 +45,7 @@ public class BaseClient extends Thread {
 	static final int QUEUE_LENGTH = 100;
 	
 	private BlockingQueue<JSONMessage> sendque = new ArrayBlockingQueue<>(QUEUE_LENGTH);
-	private BlockingQueue<JSONNameandString> receiveque;
+	private BlockingQueue<JSONNameandString> receque;
 	private String userName;
 	private String userPassword;
 	private SecretKey secretKey;
@@ -171,7 +171,7 @@ public class BaseClient extends Thread {
 					new MyWebSocketClientHandler(
 							WebSocketClientHandshakerFactory.newHandshaker(
 									uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()));
-			setReceiveque(handler.getReceiveque());
+			setReceque(handler.getReceiveque());
 			Bootstrap b = new Bootstrap();
 			b.group(group)
 			.channel(NioSocketChannel.class)
@@ -191,13 +191,11 @@ public class BaseClient extends Thread {
 			Channel ch = b.connect(uri.getHost(),port).sync().channel();
 			handler.handshakeFuture().sync();
 			handler.getSession().setUserName(userName).setUserPassword(userPassword);
-//			BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-//			MessageFactory messageFactory = new MessageFactory();
+
 			while(handler.getAccessHandler()==null || handler.getAccessHandler().getSecretKey()==null) Thread.sleep(1);//while bug
 			secretKey = handler.getAccessHandler().getSecretKey();
 
 			while(true){
-//				String msg = console.readLine();
 				JSONMessage msg = sendque.take();
 				if(msg == null){
 					break;
@@ -206,14 +204,12 @@ public class BaseClient extends Thread {
                     ch.closeFuture().sync();
                     break;
                 } else {
-                	if(!handler.getSession().isHasLogin()){
+/*                	if(!handler.getSession().isHasLogin()){
                 		System.out.println("pass");
                 		String str = handler.getSession().setSecretKey(handler.getAccessHandler().getSecretKey()).login();
                 		ch.writeAndFlush(new TextWebSocketFrame(str));
                 		while( handler.getSession().isHasLogin());
-//                		messageFactory.setSecretKey(handler.getAccessHandler().getSecretKey());
-                	}
-//                		String send = messageFactory.product(msg);
+                	}*/
                 	String send = JSON.toJSONString(msg);
                 	System.out.println(send);
             		send = EnDeCryProcess.SysKeyEncryWithBase64(send, secretKey);
@@ -233,18 +229,19 @@ public class BaseClient extends Thread {
 		}
 	}
 
-	public BlockingQueue<JSONMessage> getQue() {
+	public BlockingQueue<JSONMessage> getSendque() {
 		return sendque;
 	}
 
-	public void setQue(BlockingQueue<JSONMessage> que) {
-		this.sendque = que;
+	public void setSendque(BlockingQueue<JSONMessage> sendque) {
+		this.sendque = sendque;
 	}
-	public BlockingQueue<JSONNameandString> getReceiveque() {
-		return receiveque;
+
+	public BlockingQueue<JSONNameandString> getReceque() {
+		return receque;
 	}
-	public void setReceiveque(BlockingQueue<JSONNameandString> receiveque) {
-		this.receiveque = receiveque;
+
+	public void setReceque(BlockingQueue<JSONNameandString> receque) {
+		this.receque = receque;
 	}
-	
 }
