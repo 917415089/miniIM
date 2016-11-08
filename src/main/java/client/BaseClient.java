@@ -43,9 +43,10 @@ public class BaseClient extends Thread {
 	static final int PORT =  Integer.parseInt(System.getProperty("port", "8080"));
 	static final String URL = System.getProperty("url", "ws://127.0.0.1:8080/websocket");
 	static final int QUEUE_LENGTH = 100;
+	static public  final int RECEQUE_LENGTH = 100; 
 	
 	private BlockingQueue<JSONMessage> sendque = new ArrayBlockingQueue<>(QUEUE_LENGTH);
-	private BlockingQueue<JSONNameandString> receque;
+	private BlockingQueue<JSONNameandString> receque = new ArrayBlockingQueue<>(RECEQUE_LENGTH);
 	private String userName;
 	private String userPassword;
 	private SecretKey secretKey;
@@ -61,6 +62,7 @@ public class BaseClient extends Thread {
 	}
 	
 	public static void main(String[] args) throws URISyntaxException, InterruptedException, IOException{
+		BaseClient baseClient = new BaseClient();
 		URI uri = new URI(URL);
 		String scheme = uri.getScheme() ==null?"ws":uri.getScheme();
 //		final String host = uri.getHost() == null ?"127.0.0.1":uri.getHost();
@@ -85,7 +87,7 @@ public class BaseClient extends Thread {
 			final MyWebSocketClientHandler handler = 
 					new MyWebSocketClientHandler(
 							WebSocketClientHandshakerFactory.newHandshaker(
-									uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()));
+									uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()),baseClient.receque);
 
 			
 			Bootstrap b = new Bootstrap();
@@ -148,30 +150,33 @@ public class BaseClient extends Thread {
 	@Override
 	public void run() {
 		EventLoopGroup group = new NioEventLoopGroup();
-		try{
-		URI uri = new URI(URL);
-		String scheme = uri.getScheme() ==null?"ws":uri.getScheme();
-//		final String host = uri.getHost() == null ?"127.0.0.1":uri.getHost();
-		final int port;
-		if(uri.getPort() == -1){
-			if("ws".equalsIgnoreCase(scheme)){
-				port = 80;
-			}else{
-				port = -1;
-			}
-		}else{
-			port = uri.getPort();
-		}
 		
-		if(!"ws".equalsIgnoreCase(scheme)){
-			System.err.println("Only WS(S) is supported");
-			return;
-		}
+		try{
+			Thread thread = new Thread(new DealWithReceQue(receque));
+			thread.start();
+			URI uri = new URI(URL);
+			String scheme = uri.getScheme() ==null?"ws":uri.getScheme();
+	//		final String host = uri.getHost() == null ?"127.0.0.1":uri.getHost();
+			final int port;
+			if(uri.getPort() == -1){
+				if("ws".equalsIgnoreCase(scheme)){
+					port = 80;
+				}else{
+					port = -1;
+				}
+			}else{
+				port = uri.getPort();
+			}
+			
+			if(!"ws".equalsIgnoreCase(scheme)){
+				System.err.println("Only WS(S) is supported");
+				return;
+			}
+			
 			final MyWebSocketClientHandler handler = 
 					new MyWebSocketClientHandler(
 							WebSocketClientHandshakerFactory.newHandshaker(
-									uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()));
-			setReceque(handler.getReceiveque());
+									uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()),receque);
 			Bootstrap b = new Bootstrap();
 			b.group(group)
 			.channel(NioSocketChannel.class)
@@ -239,9 +244,5 @@ public class BaseClient extends Thread {
 
 	public BlockingQueue<JSONNameandString> getReceque() {
 		return receque;
-	}
-
-	public void setReceque(BlockingQueue<JSONNameandString> receque) {
-		this.receque = receque;
 	}
 }

@@ -1,9 +1,8 @@
 package client;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import json.util.JSONNameandString;
-import util.EnDeCryProcess;
 import client.session.ClientSession;
 import client.session.DealwithJSON;
 import io.netty.channel.Channel;
@@ -21,16 +20,17 @@ import io.netty.util.CharsetUtil;
 
 public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object> {
 
-	static public  final int RECEIVE_QUE = 100; 
+
     private final WebSocketClientHandshaker handshaker;
     private ChannelPromise handshakeFuture;
     private ClientAccessHandler accessHandler = null;
     private ClientSession session;
     private DealwithJSON dealer;
-    private ArrayBlockingQueue<JSONNameandString> receiveque= new ArrayBlockingQueue<>(RECEIVE_QUE);
+    private BlockingQueue<JSONNameandString> receque;
 
-    public MyWebSocketClientHandler(WebSocketClientHandshaker handshaker) {
+    public MyWebSocketClientHandler(WebSocketClientHandshaker handshaker, BlockingQueue<JSONNameandString> receque) {
         this.handshaker = handshaker;
+        this.receque = receque;
     }
 
     public ChannelFuture handshakeFuture() {
@@ -88,11 +88,14 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         			}
         		}else{
         			if(!session.isHasLogin()){
-//        				System.out.println("session.isnot HasLogin())");
-        				session.receiveACK(request);
-        				dealer.setSecretKey(accessHandler.getSecretKey());
+        				JSONNameandString backjson =  session.receiveACK(request);
+        				if(session.isHasLogin())
+        					dealer.setSecretKey(accessHandler.getSecretKey());
+        				else{
+        					receque.offer(backjson);
+        				}
         			}else{
-        				receiveque.add(dealer.product(request));
+        				receque.add(dealer.product(request));
 //        				System.out.println(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKey()));
         			}
         		}
@@ -121,7 +124,7 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
 		return session;
 	}
 
-	public ArrayBlockingQueue<JSONNameandString> getReceiveque() {
-		return receiveque;
+	public BlockingQueue<JSONNameandString> getReceque() {
+		return receque;
 	}
 }

@@ -21,7 +21,7 @@ public class BaseClientFriendSession {
 	@Test
 	public void TestshowAllFriendList() throws InterruptedException{
 		
-		BaseClient baseclient = new BaseClient("1user1","123");
+		BaseClient baseclient = new BaseClient("user1","123");
 		BaseServer baseserver = new BaseServer();
 		ExecutorService threadPool = Executors.newCachedThreadPool();
 		threadPool.submit(baseserver);

@@ -29,6 +29,26 @@ public class BaseClientandServer {
 	}
 	
 	@Test
+	public void TestBaseLoginWithWrongName() throws InterruptedException{
+		BaseClient baseclient = new BaseClient("1user1","123");
+		BaseServer baseserver = new BaseServer();
+		ExecutorService threadPool = Executors.newCachedThreadPool();
+		threadPool.submit(baseserver);
+		threadPool.submit(baseclient);
+		Thread.sleep(3000);
+	}
+	
+	@Test
+	public void TestBaseLoginWithWrongPassword() throws InterruptedException{
+		BaseClient baseclient = new BaseClient("1user1","123");
+		BaseServer baseserver = new BaseServer();
+		ExecutorService threadPool = Executors.newCachedThreadPool();
+		threadPool.submit(baseserver);
+		threadPool.submit(baseclient);
+		Thread.sleep(3000);
+	}
+	
+	@Test
 	public void TestCloseChannel() throws InterruptedException{
 		BaseClient baseclient = new BaseClient("user1","123");
 		BaseServer baseserver = new BaseServer();

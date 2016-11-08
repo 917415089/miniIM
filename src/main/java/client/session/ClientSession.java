@@ -39,19 +39,21 @@ public class ClientSession {
 		
 	}
 
-	public void receiveACK(String json) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException {
+	public JSONNameandString receiveACK(String json) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException {
 			
 			String str = EnDeCryProcess.SysKeyDecryWithBase64(json, secretKey);
 			JSONNameandString backJSON = JSON.parseObject(str, JSONNameandString.class);
 			switch(backJSON.getJSONName()){
 			case "json.server.login.SuccessLogin":
 				dealwithSuccessLogin(str);
-				return ;
+				break;
 			case "json.server.login.WrongNameorPassword":
 				dealwithWrongNameorPassword(str);
-				return;
+				break;
+			default:
+				System.err.println("receive wrong ACK");
 			}
-			System.err.println("receive wrong ACK");
+			return backJSON;
 	}
 	
 	
@@ -64,6 +66,7 @@ public class ClientSession {
 		SuccessLogin successLogin = JSON.parseObject(str, SuccessLogin.class);
 		token = successLogin.getToken();
 		setHasLogin(true);
+		System.out.println("Login successfully");
 	}
 
 	public String login(){
