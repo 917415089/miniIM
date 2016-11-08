@@ -49,18 +49,25 @@ public class BaseClient extends Thread {
 	private BlockingQueue<JSONNameandString> receque = new ArrayBlockingQueue<>(RECEQUE_LENGTH);
 	private String userName;
 	private String userPassword;
+	private String userEmail;
 	private SecretKey secretKey;
+	private MyWebSocketClientHandler handler;
 
 	private BaseClient(){
 		
 	}
 	
-	@SuppressWarnings("unused")
 	public BaseClient(String userName,String userPassword){
 		this.userName =userName;
 		this.userPassword = userPassword;
 	}
-	
+	public BaseClient(String userName, String userPassword, String useremail) {
+		super();
+		this.userName = userName;
+		this.userPassword = userPassword;
+		this.userEmail = useremail;
+	}
+
 	public static void main(String[] args) throws URISyntaxException, InterruptedException, IOException{
 		BaseClient baseClient = new BaseClient();
 		URI uri = new URI(URL);
@@ -89,7 +96,7 @@ public class BaseClient extends Thread {
 							WebSocketClientHandshakerFactory.newHandshaker(
 									uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()),baseClient.receque);
 
-			
+			baseClient.handler =  handler;
 			Bootstrap b = new Bootstrap();
 			b.group(group)
 			.channel(NioSocketChannel.class)
@@ -177,6 +184,8 @@ public class BaseClient extends Thread {
 					new MyWebSocketClientHandler(
 							WebSocketClientHandshakerFactory.newHandshaker(
 									uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()),receque);
+			
+			this.handler = handler;
 			Bootstrap b = new Bootstrap();
 			b.group(group)
 			.channel(NioSocketChannel.class)
@@ -196,6 +205,7 @@ public class BaseClient extends Thread {
 			Channel ch = b.connect(uri.getHost(),port).sync().channel();
 			handler.handshakeFuture().sync();
 			handler.getSession().setUserName(userName).setUserPassword(userPassword);
+			if(userEmail!=null) handler.getSession().setUserEmail(userEmail);
 
 			while(handler.getAccessHandler()==null || handler.getAccessHandler().getSecretKey()==null) Thread.sleep(1);//while bug
 			secretKey = handler.getAccessHandler().getSecretKey();
@@ -209,12 +219,6 @@ public class BaseClient extends Thread {
                     ch.closeFuture().sync();
                     break;
                 } else {
-/*                	if(!handler.getSession().isHasLogin()){
-                		System.out.println("pass");
-                		String str = handler.getSession().setSecretKey(handler.getAccessHandler().getSecretKey()).login();
-                		ch.writeAndFlush(new TextWebSocketFrame(str));
-                		while( handler.getSession().isHasLogin());
-                	}*/
                 	String send = JSON.toJSONString(msg);
                 	System.out.println(send);
             		send = EnDeCryProcess.SysKeyEncryWithBase64(send, secretKey);
@@ -244,5 +248,9 @@ public class BaseClient extends Thread {
 
 	public BlockingQueue<JSONNameandString> getReceque() {
 		return receque;
+	}
+	
+	public void setRegister(boolean flag){
+		handler.getSession().setRegister(flag);
 	}
 }

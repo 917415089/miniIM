@@ -17,6 +17,7 @@ import javax.crypto.SecretKey;
 
 import json.client.login.ClientLogin;
 import json.client.login.ClientRegister;
+import json.server.login.RegisiterResult;
 import json.server.login.SuccessLogin;
 import json.server.login.WrongNameorPassword;
 import json.server.session.SendBackJSON;
@@ -80,12 +81,27 @@ public class ServerSession {
 		StatementManager.getService().submit(new Callable<SendBackJSON>(){
 
 			@Override
-			public SendBackJSON call() throws Exception {
+			public SendBackJSON call(){
 				Statement statement = StatementManager.getStatement();
 				String sql = "insert into user (username,userpassword,useremail) values (\""+username+"\",\""+userpassword+"\",\""+useremail+"\");";
-				int resultSet = statement.executeUpdate(sql);
-				//unfinished
-				return null;
+				RegisiterResult regisiterResult = new RegisiterResult();
+				SendBackJSON sendBackJSON = new SendBackJSON();
+				sendBackJSON.setJSONName(RegisiterResult.class.getName());
+				try {
+					int updatelinenumber = statement.executeUpdate(sql);
+					if(updatelinenumber==1){
+						regisiterResult.setSuccess(true);
+					}
+				} catch (SQLException e) {
+					regisiterResult.setSuccess(false);
+					if(e.getMessage().substring(0,15).equalsIgnoreCase("Duplicate entry")){
+						regisiterResult.setReason("username is exist");
+					}else{
+						regisiterResult.setReason("other");
+					}
+				}
+				sendBackJSON.setJSONStr(JSON.toJSONString(regisiterResult));
+				return sendBackJSON;
 			}
 			
 		});

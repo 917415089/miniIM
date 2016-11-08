@@ -48,6 +48,18 @@ public class BaseClientandServer {
 		Thread.sleep(3000);
 	}
 	
+	
+	@Test
+	public void TestBaseRegister() throws InterruptedException{
+		BaseClient baseclient = new BaseClient("user10","123");
+		baseclient.setRegister(true);//null error
+		BaseServer baseserver = new BaseServer();
+		ExecutorService threadPool = Executors.newCachedThreadPool();
+		threadPool.submit(baseserver);
+		threadPool.submit(baseclient);
+		Thread.sleep(3000);
+	}
+	
 	@Test
 	public void TestCloseChannel() throws InterruptedException{
 		BaseClient baseclient = new BaseClient("user1","123");

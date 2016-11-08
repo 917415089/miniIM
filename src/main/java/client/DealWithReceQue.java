@@ -22,6 +22,9 @@ public class DealWithReceQue implements Runnable{
 				case "json.server.login.WrongNameorPassword":
 					dealwithWrongNameorPassword(take.getJSONStr());
 					break;
+				case "json.server.lgoin.RegisiterResult":
+					dealwithRegisterResult(take.getJSONStr());
+					break;
 				default:
 					System.err.println("can't deal "+take.getJSONName());
 				}
@@ -30,6 +33,11 @@ public class DealWithReceQue implements Runnable{
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void dealwithRegisterResult(String jsonStr) {
+		System.out.println("user's name has been registered");
+		
 	}
 
 	private void dealwithWrongNameorPassword(String jsonStr) {

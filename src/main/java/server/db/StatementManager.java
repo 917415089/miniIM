@@ -29,7 +29,6 @@ public class StatementManager {
 	private Statement statement;
 
 	
-	@SuppressWarnings("unchecked")
 	private StatementManager(){
 		try {
 			Class.forName("com.mysql.jdbc.Driver");

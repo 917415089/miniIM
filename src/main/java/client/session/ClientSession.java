@@ -13,6 +13,7 @@ import javax.crypto.SecretKey;
 
 import json.client.login.ClientLogin;
 import json.client.login.ClientRegister;
+import json.server.login.RegisiterResult;
 import json.server.login.SuccessLogin;
 import json.server.session.SendBackJSON;
 import json.util.JSONNameandString;
@@ -50,6 +51,9 @@ public class ClientSession {
 			case "json.server.login.WrongNameorPassword":
 				dealwithWrongNameorPassword(str);
 				break;
+			case "json.server.lgoin.RegisiterResult":
+				dealwithRegisterResult(str);
+				break;
 			default:
 				System.err.println("receive wrong ACK");
 			}
@@ -57,6 +61,11 @@ public class ClientSession {
 	}
 	
 	
+	private void dealwithRegisterResult(String str) {
+		RegisiterResult regisiterResult = JSON.parseObject(str, RegisiterResult.class);
+		System.out.println("user's name has been registered");
+	}
+
 	private void dealwithWrongNameorPassword(String str) {
 		// TODO Auto-generated method stub
 		System.out.println("wrong name or password");

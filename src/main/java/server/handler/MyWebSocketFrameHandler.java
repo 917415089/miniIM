@@ -53,8 +53,10 @@ public class MyWebSocketFrameHandler extends
 			}else{
 				if(!session.isHasinit()){
 					session.init(request);
-					dealexcutor.setUsername(session.getUsername());
-					dealexcutor.setUserpassword(session.getUserpassword());
+					if(session.isHasinit()){//
+						dealexcutor.setUsername(session.getUsername());
+						dealexcutor.setUserpassword(session.getUserpassword());
+					}
 					ChannelManager.addName(ctx.channel().id().asLongText(), session.getUsername());
 				}else{
 					JSONMessage jsons = JSON.parseObject(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKeySpec()),JSONMessage.class);
