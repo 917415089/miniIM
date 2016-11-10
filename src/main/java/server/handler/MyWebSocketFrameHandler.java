@@ -1,6 +1,6 @@
 package server.handler;
 
-import json.util.JSONMessage;
+import json.util.JSONNameandString;
 import com.alibaba.fastjson.JSON;
 import server.session.ChannelManager;
 import server.session.DealWithJSON;
@@ -59,7 +59,7 @@ public class MyWebSocketFrameHandler extends
 					}
 					ChannelManager.addName(ctx.channel().id().asLongText(), session.getUsername());
 				}else{
-					JSONMessage jsons = JSON.parseObject(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKeySpec()),JSONMessage.class);
+					JSONNameandString jsons = JSON.parseObject(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKeySpec()),JSONNameandString.class);
 					dealexcutor.dealwith(jsons,ctx.channel());
 //					System.out.println("receive");
 				}

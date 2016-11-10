@@ -16,15 +16,14 @@ import json.client.session.RequestFriendList;
 import json.server.session.CannotFindCommand;
 import json.server.session.SendBackJSON;
 import json.server.session.FriendList;
-import json.util.JSONMessage;
 import json.util.JSONNameandString;
 
 public class DealWithJSON {
 
 	private String username;
 	private String userpassword;
-	public void dealwith(JSONMessage jsons, Channel channel) {
-		for(JSONNameandString json :jsons.getJson()){
+	public void dealwith(JSONNameandString json, Channel channel) {
+
 			String name = json.getJSONName();
 			switch(name){
 			case "json.client.session.RequestFriendList":
@@ -44,7 +43,6 @@ public class DealWithJSON {
 					send = EnDeCryProcess.SysKeyEncryWithBase64(send, ChannelManager.getKey(channel.id().asLongText()));
 					channel.writeAndFlush(new TextWebSocketFrame(send));
 			}
-		}
 		
 	}
 

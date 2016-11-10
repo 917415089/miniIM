@@ -7,14 +7,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-
 import javax.crypto.SecretKey;
-
 import util.EnDeCryProcess;
-
 import com.alibaba.fastjson.JSON;
-
-import json.util.JSONMessage;
 import json.util.JSONNameandString;
 import client.session.MessageFactory;
 import io.netty.bootstrap.Bootstrap;
@@ -45,15 +40,21 @@ public class BaseClient extends Thread {
 	static final int QUEUE_LENGTH = 100;
 	static public  final int RECEQUE_LENGTH = 100; 
 	
-	private BlockingQueue<JSONMessage> sendque = new ArrayBlockingQueue<>(QUEUE_LENGTH);
-	private BlockingQueue<JSONNameandString> receque = new ArrayBlockingQueue<>(RECEQUE_LENGTH);
+	private BlockingQueue<JSONNameandString> sendque = new ArrayBlockingQueue<JSONNameandString>(QUEUE_LENGTH);
+	private BlockingQueue<JSONNameandString> receque = new ArrayBlockingQueue<JSONNameandString>(RECEQUE_LENGTH);
+	
+	private String RegisterName;
+	private String RegisterPassword;
+	private String RegisterEmail;
+	
 	private String userName;
 	private String userPassword;
 	private String userEmail;
 	private SecretKey secretKey;
 	private MyWebSocketClientHandler handler;
 
-	private BaseClient(){
+
+	public BaseClient(){
 		
 	}
 	
@@ -186,6 +187,7 @@ public class BaseClient extends Thread {
 									uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()),receque);
 			
 			this.handler = handler;
+			handler.setClient(this);
 			Bootstrap b = new Bootstrap();
 			b.group(group)
 			.channel(NioSocketChannel.class)
@@ -211,10 +213,10 @@ public class BaseClient extends Thread {
 			secretKey = handler.getAccessHandler().getSecretKey();
 
 			while(true){
-				JSONMessage msg = sendque.take();
+				JSONNameandString msg = sendque.take();
 				if(msg == null){
 					break;
-				}else if("json.client.access.ClosingChannel".equals(msg.getJson().get(0).getJSONName())) {
+				}else if("json.client.access.ClosingChannel".equals(msg.getJSONName())) {
                     ch.writeAndFlush(new CloseWebSocketFrame());
                     ch.closeFuture().sync();
                     break;
@@ -238,19 +240,41 @@ public class BaseClient extends Thread {
 		}
 	}
 
-	public BlockingQueue<JSONMessage> getSendque() {
+	public BlockingQueue<JSONNameandString> getSendque() {
 		return sendque;
 	}
 
-	public void setSendque(BlockingQueue<JSONMessage> sendque) {
+	public void setSendque(BlockingQueue<JSONNameandString> sendque) {
 		this.sendque = sendque;
 	}
 
 	public BlockingQueue<JSONNameandString> getReceque() {
 		return receque;
 	}
-	
-	public void setRegister(boolean flag){
-		handler.getSession().setRegister(flag);
+
+	public String getRegisterName() {
+		return RegisterName;
 	}
+
+	public void setRegisterName(String registerName) {
+		RegisterName = registerName;
+	}
+
+	public String getRegisterPassword() {
+		return RegisterPassword;
+	}
+
+	public void setRegisterPassword(String registerPassword) {
+		RegisterPassword = registerPassword;
+	}
+
+	public String getRegisterEmail() {
+		return RegisterEmail;
+	}
+
+	public void setRegisterEmail(String registerEmail) {
+		RegisterEmail = registerEmail;
+	}
+	
+	
 }

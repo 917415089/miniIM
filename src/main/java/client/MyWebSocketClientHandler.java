@@ -2,6 +2,9 @@ package client;
 
 import java.util.concurrent.BlockingQueue;
 
+import util.EnDeCryProcess;
+import com.alibaba.fastjson.JSON;
+import json.client.login.ClientRegister;
 import json.util.JSONNameandString;
 import client.session.ClientSession;
 import client.session.DealwithJSON;
@@ -27,6 +30,7 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
     private ClientSession session;
     private DealwithJSON dealer;
     private BlockingQueue<JSONNameandString> receque;
+    private BaseClient client;
 
     public MyWebSocketClientHandler(WebSocketClientHandshaker handshaker, BlockingQueue<JSONNameandString> receque) {
         this.handshaker = handshaker;
@@ -82,9 +86,11 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         			ctx.channel().writeAndFlush(new TextWebSocketFrame(accessHandler.getResult()));
         			if(accessHandler.getAccess()){
         				session.setSecretKey(accessHandler.getSecretKey());
-        				String login_register = session.isRegister() ? session.register():session.login();
-        				if(login_register!=null)
-        					ctx.channel().writeAndFlush(new TextWebSocketFrame(login_register));
+        				String login;
+						if(session.getUserName()!=null){
+        					login =session.login();
+        					ctx.channel().writeAndFlush(new TextWebSocketFrame(login));
+						}
         			}
         		}else{
         			if(!session.isHasLogin()){
@@ -95,6 +101,7 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         					receque.offer(backjson);
         				}
         			}else{
+        				
         				receque.add(dealer.product(request));
 //        				System.out.println(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKey()));
         			}
@@ -107,7 +114,16 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         }
     }
 
-    @Override
+    private String RegisterMessage() {
+    	ClientRegister clientRegister = new ClientRegister();
+    	clientRegister.setUserName(client.getRegisterName());
+    	clientRegister.setUserPassword(client.getRegisterPassword());
+    	clientRegister.setEmail(client.getRegisterEmail());
+    	String ret = JSON.toJSONString(clientRegister);
+		return EnDeCryProcess.SysKeyEncryWithBase64(ret, accessHandler.getSecretKey());
+	}
+
+	@Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
         if (!handshakeFuture.isDone()) {
@@ -127,4 +143,13 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
 	public BlockingQueue<JSONNameandString> getReceque() {
 		return receque;
 	}
+
+	public BaseClient getClient() {
+		return client;
+	}
+
+	public void setClient(BaseClient client) {
+		this.client = client;
+	}
+
 }

@@ -1,39 +1,30 @@
 package client.session;
 
 import io.netty.channel.Channel;
-
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-
 import json.client.login.ClientLogin;
-import json.client.login.ClientRegister;
 import json.server.login.RegisiterResult;
 import json.server.login.SuccessLogin;
-import json.server.session.SendBackJSON;
 import json.util.JSONNameandString;
 import util.EnDeCryProcess;
-
 import com.alibaba.fastjson.JSON;
 
 public class ClientSession {
 	
-	private Channel ch;
 	private String token;
 	private String userName;
 	private String userPassword;
 	private String userEmail;
 	private  SecretKey secretKey;
-	private boolean register;
 	private boolean hasLogin;
 	
 	public ClientSession(Channel channel){
-		ch = channel;
 	}
 	
 	protected ClientSession(){
@@ -63,6 +54,7 @@ public class ClientSession {
 	
 	private void dealwithRegisterResult(String str) {
 		RegisiterResult regisiterResult = JSON.parseObject(str, RegisiterResult.class);
+		//unfinished
 		System.out.println("user's name has been registered");
 	}
 
@@ -95,7 +87,7 @@ public class ClientSession {
 		return ret;
 	}
 	
-	public String register(){
+/*	public String register(){
 		if(userName == null || userPassword == null)
 			System.err.println("please input Name or password! ");
 		
@@ -110,7 +102,7 @@ public class ClientSession {
 		String ret = JSON.toJSONString(json);
 		ret = EnDeCryProcess.SysKeyEncryWithBase64(ret, secretKey);
 		return ret;
-	}
+	}*/
 	
 	public String getUserName() {
 		return userName;
@@ -159,13 +151,6 @@ public class ClientSession {
 	public void setUserEmail(String userEmail) {
 		this.userEmail = userEmail;
 	}
-	public boolean isRegister() {
-		return register;
-	}
-	public void setRegister(boolean register) {
-		this.register = register;
-	}
-	
 
 }
 	

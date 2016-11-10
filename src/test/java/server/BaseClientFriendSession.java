@@ -1,13 +1,10 @@
 package server;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import json.client.session.RequestFriendList;
-import json.util.JSONMessage;
 import json.util.JSONNameandString;
 
 import org.junit.Test;
@@ -33,18 +30,15 @@ public class BaseClientFriendSession {
 		JSONNameandString jsonNameandString = new JSONNameandString();
 		jsonNameandString.setJSONName(requestFriendList.getClass().getName());
 		jsonNameandString.setJSONStr(JSON.toJSONString(requestFriendList));
-		List<JSONNameandString> list = new ArrayList<JSONNameandString>();
-		list.add(jsonNameandString);
-		JSONMessage msg = new JSONMessage();
-		msg.setJson(list);
 
-		BlockingQueue<JSONMessage> send = baseclient.getSendque();
+
+		BlockingQueue<JSONNameandString> send = baseclient.getSendque();
 		BlockingQueue<JSONNameandString> receive = baseclient.getReceque();
-		send.add(msg);
+		Thread.sleep(1000);//if I remove this sentence, send JSONNameandString may be send to early so that session's username haven't be set; 
+		send.add(jsonNameandString);
 		JSONNameandString take = receive.take();
 		String jsonString = JSON.toJSONString(take);
 		System.out.println(jsonString);
 
-		Thread.sleep(1000);
 	}
 }

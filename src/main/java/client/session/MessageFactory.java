@@ -1,21 +1,12 @@
 package client.session;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-
 import util.EnDeCryProcess;
-
 import com.alibaba.fastjson.JSON;
-
 import json.client.session.AddFriend;
 import json.client.session.RequestFriendList;
 import json.client.session.RemoveFriend;
