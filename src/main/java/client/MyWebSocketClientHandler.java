@@ -80,6 +80,7 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
 
         WebSocketFrame frame = (WebSocketFrame) msg;
         if (frame instanceof TextWebSocketFrame) {
+
         		String request = ((TextWebSocketFrame) frame).text();
         		if(!accessHandler.getAccess()){
         			accessHandler.handle(request);
@@ -114,14 +115,14 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         }
     }
 
-    private String RegisterMessage() {
+/*    private String RegisterMessage() {
     	ClientRegister clientRegister = new ClientRegister();
     	clientRegister.setUserName(client.getRegisterName());
     	clientRegister.setUserPassword(client.getRegisterPassword());
     	clientRegister.setEmail(client.getRegisterEmail());
     	String ret = JSON.toJSONString(clientRegister);
 		return EnDeCryProcess.SysKeyEncryWithBase64(ret, accessHandler.getSecretKey());
-	}
+	}*/
 
 	@Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {

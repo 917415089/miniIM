@@ -119,6 +119,7 @@ public class ServerSession {
 							ret = JSON.toJSONString(successLogin);
 							backJSON.setJSONName(SuccessLogin.class.getName());
 							backJSON.setJSONStr(ret);
+							
 							setHasinit(true);
 					}else{
 						WrongNameorPassword wrongNameorPassword = new WrongNameorPassword();

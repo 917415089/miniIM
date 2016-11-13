@@ -43,9 +43,9 @@ public class BaseClient extends Thread {
 	private BlockingQueue<JSONNameandString> sendque = new ArrayBlockingQueue<JSONNameandString>(QUEUE_LENGTH);
 	private BlockingQueue<JSONNameandString> receque = new ArrayBlockingQueue<JSONNameandString>(RECEQUE_LENGTH);
 	
-	private String RegisterName;
+/*	private String RegisterName;
 	private String RegisterPassword;
-	private String RegisterEmail;
+	private String RegisterEmail;*/
 	
 	private String userName;
 	private String userPassword;
@@ -252,7 +252,7 @@ public class BaseClient extends Thread {
 		return receque;
 	}
 
-	public String getRegisterName() {
+/*	public String getRegisterName() {
 		return RegisterName;
 	}
 
@@ -274,7 +274,7 @@ public class BaseClient extends Thread {
 
 	public void setRegisterEmail(String registerEmail) {
 		RegisterEmail = registerEmail;
-	}
+	}*/
 	
 	
 }
