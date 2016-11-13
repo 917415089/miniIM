@@ -2,6 +2,9 @@ package client;
 
 import java.util.concurrent.BlockingQueue;
 
+import com.alibaba.fastjson.JSON;
+
+import json.server.login.RegisiterResult;
 import json.util.JSONNameandString;
 
 public class DealWithReceQue implements Runnable{
@@ -22,7 +25,7 @@ public class DealWithReceQue implements Runnable{
 				case "json.server.login.WrongNameorPassword":
 					dealwithWrongNameorPassword(take.getJSONStr());
 					break;
-				case "json.server.lgoin.RegisiterResult":
+				case "json.server.login.RegisiterResult"://json.server.login.RegisiterResult
 					dealwithRegisterResult(take.getJSONStr());
 					break;
 				default:
@@ -36,8 +39,13 @@ public class DealWithReceQue implements Runnable{
 	}
 
 	private void dealwithRegisterResult(String jsonStr) {
-		System.out.println("user's name has been registered");
-		
+		RegisiterResult regisiterResult = JSON.parseObject(jsonStr, RegisiterResult.class);
+		if (regisiterResult.isSuccess()) {
+			System.out.println("Regisiter successfully");
+		}else{
+			System.out.println("Can't register : ");
+			System.out.println(regisiterResult.getReason());
+		}
 	}
 
 	private void dealwithWrongNameorPassword(String jsonStr) {

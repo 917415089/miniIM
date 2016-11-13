@@ -76,6 +76,7 @@ public class ServerSession {
 				String sql = "insert into user (username,userpassword,useremail) values (\""+username+"\",\""+userpassword+"\",\""+useremail+"\");";
 				RegisiterResult regisiterResult = new RegisiterResult();
 				SendBackJSON sendBackJSON = new SendBackJSON();
+				sendBackJSON.setChannelID(ch.id().asLongText());
 				sendBackJSON.setJSONName(RegisiterResult.class.getName());
 				try {
 					int updatelinenumber = statement.executeUpdate(sql);

@@ -2,9 +2,6 @@ package client;
 
 import java.util.concurrent.BlockingQueue;
 
-import util.EnDeCryProcess;
-import com.alibaba.fastjson.JSON;
-import json.client.login.ClientRegister;
 import json.util.JSONNameandString;
 import client.session.ClientSession;
 import client.session.DealwithJSON;
@@ -114,15 +111,6 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
             ch.close();
         }
     }
-
-/*    private String RegisterMessage() {
-    	ClientRegister clientRegister = new ClientRegister();
-    	clientRegister.setUserName(client.getRegisterName());
-    	clientRegister.setUserPassword(client.getRegisterPassword());
-    	clientRegister.setEmail(client.getRegisterEmail());
-    	String ret = JSON.toJSONString(clientRegister);
-		return EnDeCryProcess.SysKeyEncryWithBase64(ret, accessHandler.getSecretKey());
-	}*/
 
 	@Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
