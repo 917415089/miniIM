@@ -49,7 +49,8 @@ public class MyWebSocketFrameHandler extends
 			if(!accessHandler.getAccess()){
 				accessHandler.handle(request);
 				ctx.channel().writeAndFlush(new TextWebSocketFrame(accessHandler.getResult()));
-				ChannelManager.addKey(ctx.channel().id().asLongText(),accessHandler.getSecretKeySpec());
+				if(accessHandler.getSecretKeySpec()!=null)
+					ChannelManager.addId2Secrekey(ctx.channel().id().asLongText(),accessHandler.getSecretKeySpec());
 			}else{
 				if(!session.isHasinit()){
 					session.init(request);
@@ -57,7 +58,7 @@ public class MyWebSocketFrameHandler extends
 						dealexcutor.setUsername(session.getUsername());
 						dealexcutor.setUserpassword(session.getUserpassword());
 					}*/
-					ChannelManager.addName(ctx.channel().id().asLongText(), session.getUsername());
+					ChannelManager.addId2Username(ctx.channel().id().asLongText(), session.getUsername());
 				}else{
 					if(dealexcutor.getUsername() == null){
 						dealexcutor.setUsername(session.getUsername());
@@ -82,14 +83,16 @@ public class MyWebSocketFrameHandler extends
 		System.out.println("active");
 		session = new ServerSession(ctx.channel());
 		dealexcutor = new DealWithJSON();
-		ChannelManager.add(ctx.channel().id().asLongText(),ctx.channel());
+		ChannelManager.addId2Channel(ctx.channel().id().asLongText(),ctx.channel());
 	}
 
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		super.channelInactive(ctx);
-		ChannelManager.remove(ctx.channel().id().asLongText());
+		ChannelManager.rmId2Channel(ctx.channel().id().asLongText());
+		ChannelManager.rmId2Secrekey(ctx.channel().id().asLongText());
+		ChannelManager.rmId2Username(ctx.channel().id().asLongText());
 	}
 	
 

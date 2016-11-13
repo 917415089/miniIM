@@ -48,7 +48,7 @@ public class ServerSession {
 	}
 
 	public void init(String request){
-		secretKey = ChannelManager.getKey(ch.id().asLongText());
+		secretKey = ChannelManager.getSecreKeybyId(ch.id().asLongText());
 		String str = EnDeCryProcess.SysKeyDecryWithBase64(request, secretKey);
 		JSONNameandString json = JSON.parseObject(str, JSONNameandString.class);
 		

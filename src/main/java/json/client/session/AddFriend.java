@@ -1,18 +1,22 @@
 package json.client.session;
 
-import java.util.List;
 
 public class AddFriend {
 
-	List<String> friends;
-
-	public List<String> getFriends() {
-		return friends;
+	private String friendname;
+	private String group;
+	public String getFriendname() {
+		return friendname;
+	}
+	public void setFriendname(String friendname) {
+		this.friendname = friendname;
+	}
+	public String getGroup() {
+		return group;
+	}
+	public void setGroup(String group) {
+		this.group = group;
 	}
 
-	public void setFriends(List<String> friends) {
-		this.friends = friends;
-	}
-	
 	
 }

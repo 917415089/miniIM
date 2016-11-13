@@ -66,8 +66,8 @@ public class MessageFactory {
 		switch(key){
 		case "lf":
 			return getFriendList(list);
-		case "+f":
-			return getAddFriend(list);
+/*		case "+f":
+			return getAddFriend(list);*/
 		case "-f":
 			return getRemoveFriend(list);
 		default:
@@ -94,14 +94,14 @@ public class MessageFactory {
 		return jsonNameandString;
 	}
 
-	private JSONNameandString getAddFriend(List<String> list) {
+/*	private JSONNameandString getAddFriend(List<String> list) {
 		AddFriend addFriend = new AddFriend();
 		addFriend.setFriends(list);
 		JSONNameandString jsonNameandString = new JSONNameandString();
 		jsonNameandString.setJSONName(addFriend.getClass().getName());
 		jsonNameandString.setJSONStr(JSON.toJSONString(addFriend));
 		return jsonNameandString;
-	}
+	}*/
 
 	private JSONNameandString getFriendList(List<String> list) {
 		RequestFriendList fl = new RequestFriendList();
