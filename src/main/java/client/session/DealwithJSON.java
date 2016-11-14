@@ -9,6 +9,7 @@ import json.util.JSONNameandString;
 
 import com.alibaba.fastjson.JSON;
 
+@Deprecated
 public class DealwithJSON {
 	private SecretKey secretKey;
 	

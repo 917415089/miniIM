@@ -1,6 +1,8 @@
 package server.session;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -69,20 +71,30 @@ public class DealWithJSON {
 			
 			 StatementManager.getService().submit(new Callable<SendBackJSON>(){
 				@Override
-				public SendBackJSON call() throws Exception {
-					String sql = "Select * from friend where mastername = \""+username+"\";";
-					ResultSet set = StatementManager.getStatement().executeQuery(sql);
-					FriendList list = new FriendList();
-					List<String> friends = new ArrayList<String>();
-					while(set.next()){
-						String string = set.getString("friendname");
-						friends.add(string);
-					}
-					list.setFriends(friends);
+				public SendBackJSON call() {
 					SendBackJSON ret = new SendBackJSON();
-					ret.setJSONName(FriendList.class.getName());
-					ret.setJSONStr(JSON.toJSONString(list));
-					ret.setChannelID(channelid);
+					Statement sta = null;
+					try{
+						sta = StatementManager.getStatement();
+						String sql = "Select * from friend where mastername = \""+username+"\";";
+						ResultSet set = sta.executeQuery(sql);
+						FriendList list = new FriendList();
+						List<String> friends = new ArrayList<String>();
+						while(set.next()){
+							String string = set.getString("friendname");
+							friends.add(string);
+						}
+						list.setFriends(friends);
+						ret.setJSONName(FriendList.class.getName());
+						ret.setJSONStr(JSON.toJSONString(list));
+						ret.setChannelID(channelid);
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}finally{
+						if(sta!=null)
+							StatementManager.backStatement(sta);
+					}
 					return ret;
 				}
 			 });

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -18,13 +19,16 @@ import json.server.session.SendBackJSON;
 public class StatementManager {
 	
 
-	static private int MAX_STATEMTN_NUMBER = 100;
-	static private int THREAD_NUMBER_OF_DATABASE_ACCESS=4;
-	static private int THREAD_NUMER_OF_SENDBACK_JSON = 2;
-	static private int MAX_JSONque = 1000;
+	static final private int MAX_STATEMTN_NUMBER = 100;
+	static final private int THREAD_NUMBER_OF_DATABASE_ACCESS=4;
+	static final private int THREAD_NUMER_OF_SENDBACK_JSON = 2;
+	static final private int MAX_JSONque = 1000;
+	static final private int STATEMENT_NUMBER=10;
+	
 	static volatile private StatementManager UniqueInstance = new StatementManager();
 	static private ExecutorCompletionService<SendBackJSON> service;
 	static private BlockingQueue<Future<SendBackJSON>> JSONque;
+	static private BlockingQueue<Statement> statementque;
 	
 	private Statement statement;
 
@@ -37,6 +41,10 @@ public class StatementManager {
 		    String userpassword = "123456" ;   
 		    Connection conn = DriverManager.getConnection(url , username , userpassword);
 		    
+		    statementque = new ArrayBlockingQueue<Statement>(STATEMENT_NUMBER,false);
+		    for(int i = 0 ; i < STATEMENT_NUMBER ; i++){
+		    	statementque.add(conn.createStatement());
+		    }
 		    statement = conn.createStatement();
 		    
 		    JSONque = new LinkedBlockingQueue<Future<SendBackJSON>>(MAX_JSONque);
@@ -57,8 +65,21 @@ public class StatementManager {
 		}
 	}
 
-	static public Statement getStatement() {
+/*	static public Statement getStatement() {
 		return UniqueInstance.statement;
+	}*/
+	
+	static public Statement getStatement() {
+		try {
+			return UniqueInstance.statementque.take();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	static public void backStatement(Statement sta){
+//		UniqueInstance.statementque.add(sta);
 	}
 
 	@SuppressWarnings("static-access")

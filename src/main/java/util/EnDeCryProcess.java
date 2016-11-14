@@ -19,9 +19,7 @@ public class EnDeCryProcess {
 	private final static BASE64Encoder base64Encoder = new BASE64Encoder();
 	private final static BASE64Decoder base64decoder = new BASE64Decoder();
 	
-	static public String SysKeyEncryWithBase64(String input,SecretKey secretKey){
-
-
+	static synchronized public String SysKeyEncryWithBase64(String input,SecretKey secretKey){
 		try {
 			Cipher cipher = Cipher.getInstance(secretKey.getAlgorithm());
 			cipher.init(Cipher.ENCRYPT_MODE, secretKey);
@@ -39,7 +37,7 @@ public class EnDeCryProcess {
 		return null;
 	}
 	
-	static public String SysKeyDecryWithBase64(String input,SecretKey secretKey){
+	static synchronized public String SysKeyDecryWithBase64(String input,SecretKey secretKey){
 		try {
 			byte[] in = base64decoder.decodeBuffer(input);
 			Cipher cipher = Cipher.getInstance(secretKey.getAlgorithm());
@@ -61,7 +59,7 @@ public class EnDeCryProcess {
 		return null;		
 	}
 	
-	static public String pubKeyEncryWithBase64(String input,PublicKey publicKey){
+	static synchronized public String pubKeyEncryWithBase64(String input,PublicKey publicKey){
 		try {
 			Cipher cipher = Cipher.getInstance(publicKey.getAlgorithm());
 			cipher.init(Cipher.ENCRYPT_MODE, publicKey);
@@ -79,7 +77,7 @@ public class EnDeCryProcess {
 		return null;
 	}
 	
-	static public String priKeyDecryWithBase64(String input, PrivateKey privateKey){
+	static synchronized public String priKeyDecryWithBase64(String input, PrivateKey privateKey){
 		try{
 			byte[] in = base64decoder.decodeBuffer(input);
 			Cipher cipher = Cipher.getInstance(privateKey.getAlgorithm());

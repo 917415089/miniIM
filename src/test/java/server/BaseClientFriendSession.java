@@ -33,25 +33,21 @@ public class BaseClientFriendSession {
 		jsonNameandString.setJSONStr(JSON.toJSONString(requestFriendList));
 
 		BlockingQueue<JSONNameandString> send = baseclient.getSendque();
-		BlockingQueue<JSONNameandString> receive = baseclient.getReceque();
 		Thread.sleep(1000);//if I remove this sentence, send JSONNameandString may be send to early so that session's username haven't be set; 
 		send.add(jsonNameandString);
-		JSONNameandString take = receive.take();
-		String jsonString = JSON.toJSONString(take);
-		System.out.println("pass");
-		System.out.println(jsonString);
-
+		Thread.sleep(2000);
 	}
 	
 	@Test
 	public void TestAddFriend() throws InterruptedException{
-		BaseClient baseclient = new BaseClient("user1","123");
+		BaseClient baseclient1 = new BaseClient("user1","123");
+		BaseClient baseclient4 = new BaseClient("user4","123");
 		BaseServer baseserver = new BaseServer();
 		ExecutorService threadPool = Executors.newCachedThreadPool();
 		threadPool.submit(baseserver);
-		threadPool.submit(baseclient);
+		threadPool.submit(baseclient1);
+		threadPool.submit(baseclient4);
 		Thread.sleep(3000);
-		
 		AddFriend addFriend = new AddFriend();
 		addFriend.setFriendname("user4");
 		addFriend.setGroup("friends");
@@ -60,13 +56,10 @@ public class BaseClientFriendSession {
 		json.setJSONName(AddFriend.class.getName());
 		json.setJSONStr(JSON.toJSONString(addFriend));
 		
-		BlockingQueue<JSONNameandString> send = baseclient.getSendque();
-		BlockingQueue<JSONNameandString> receive = baseclient.getReceque();
+		BlockingQueue<JSONNameandString> send1 = baseclient1.getSendque();
+		BlockingQueue<JSONNameandString> receive1 = baseclient1.getReceque();
 		Thread.sleep(1000);//if I remove this sentence, send JSONNameandString may be send to early so that session's username haven't be set; 
-		send.add(json);
-		JSONNameandString take = receive.take();
-		String jsonString = JSON.toJSONString(take);
-		System.out.println(jsonString);
+		send1.add(json);
 
 	}
 }

@@ -2,28 +2,33 @@ package server;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import json.client.access.ClosingChannel;
 import json.client.login.ClientRegister;
 import json.util.JSONNameandString;
+
 import org.junit.Test;
+
 import server.db.StatementManager;
+
 import com.alibaba.fastjson.JSON;
+
 import client.BaseClient;
 
 public class BaseClientandServer {
 
 	@Test
 	public void TestBaseLogin() throws InterruptedException{
-		BaseClient baseclient = new BaseClient("user1","123");
+		BaseClient baseclient1 = new BaseClient("user1","123");
 		BaseServer baseserver = new BaseServer();
 		ExecutorService threadPool = Executors.newCachedThreadPool();
 		threadPool.submit(baseserver);
-		threadPool.submit(baseclient);
+		threadPool.submit(baseclient1);
 		Thread.sleep(3000);
-
 	}
 	
 	@Test
@@ -38,7 +43,7 @@ public class BaseClientandServer {
 	
 	@Test
 	public void TestBaseLoginWithWrongPassword() throws InterruptedException{
-		BaseClient baseclient = new BaseClient("1user1","123");
+		BaseClient baseclient = new BaseClient("user1","123456");
 		BaseServer baseserver = new BaseServer();
 		ExecutorService threadPool = Executors.newCachedThreadPool();
 		threadPool.submit(baseserver);
@@ -69,17 +74,21 @@ public class BaseClientandServer {
 		Thread.sleep(1000);
 		
 		String query = "select * from user where username =\'user10\';";
+		Statement sta = StatementManager.getStatement();
 		try {
-			ResultSet resultSet = StatementManager.getStatement().executeQuery(query);
+			ResultSet resultSet = sta.executeQuery(query);
 			if(resultSet.next()){
 				System.out.println("find "+resultSet.getString("username")+" in database");
 			}
 			String Sql = "delete from user where username=\'user10\';";
 			System.out.println(Sql);
-			StatementManager.getStatement().executeUpdate(Sql);
+			sta.executeUpdate(Sql);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}finally{
+			if(sta!=null)
+				StatementManager.backStatement(sta);
 		}
 		Thread.sleep(1000);
 	}

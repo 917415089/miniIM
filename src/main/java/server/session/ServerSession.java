@@ -72,14 +72,14 @@ public class ServerSession {
 
 			@Override
 			public SendBackJSON call(){
-				Statement statement = StatementManager.getStatement();
+				Statement sta = StatementManager.getStatement();
 				String sql = "insert into user (username,userpassword,useremail) values (\""+username+"\",\""+userpassword+"\",\""+useremail+"\");";
 				RegisiterResult regisiterResult = new RegisiterResult();
 				SendBackJSON sendBackJSON = new SendBackJSON();
 				sendBackJSON.setChannelID(ch.id().asLongText());
 				sendBackJSON.setJSONName(RegisiterResult.class.getName());
 				try {
-					int updatelinenumber = statement.executeUpdate(sql);
+					int updatelinenumber = sta.executeUpdate(sql);
 					if(updatelinenumber==1){
 						regisiterResult.setSuccess(true);
 					}
@@ -90,6 +90,9 @@ public class ServerSession {
 					}else{
 						regisiterResult.setReason("other");
 					}
+				}finally{
+					if(sta!=null)
+						StatementManager.backStatement(sta);
 				}
 				sendBackJSON.setJSONStr(JSON.toJSONString(regisiterResult));
 				return sendBackJSON;
@@ -107,11 +110,11 @@ public class ServerSession {
 
 			@Override
 			public SendBackJSON call() throws Exception {
-				Statement statement = StatementManager.getStatement();
+				Statement sta = StatementManager.getStatement();
 				String sql = "select * from user where username=\""+username+"\";";
 				String ret;
 				try {
-					ResultSet resultSet = statement.executeQuery(sql);
+					ResultSet resultSet = sta.executeQuery(sql);
 					SendBackJSON backJSON = new SendBackJSON();
 					backJSON.setChannelID(ch.id().asLongText());
 					if(resultSet.next() && username.equals(resultSet.getString("username"))&&userpassword.equals(resultSet.getString("userpassword"))){						
@@ -135,6 +138,9 @@ public class ServerSession {
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				}finally{
+					if(sta!=null)
+						StatementManager.backStatement(sta);
 				}
 				return null;
 			}

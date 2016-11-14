@@ -2,6 +2,10 @@ package client;
 
 import java.util.concurrent.BlockingQueue;
 
+import util.EnDeCryProcess;
+
+import com.alibaba.fastjson.JSON;
+
 import json.util.JSONNameandString;
 import client.session.ClientSession;
 import client.session.DealwithJSON;
@@ -99,8 +103,9 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         					receque.offer(backjson);
         				}
         			}else{
-        				
-        				receque.add(dealer.product(request));
+        				request = EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKey());
+        				JSONNameandString Json = JSON.parseObject(request, JSONNameandString.class);
+        				receque.add(Json);
 //        				System.out.println(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKey()));
         			}
         		}
