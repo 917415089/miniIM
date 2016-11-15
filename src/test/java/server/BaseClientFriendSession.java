@@ -60,6 +60,6 @@ public class BaseClientFriendSession {
 		BlockingQueue<JSONNameandString> receive1 = baseclient1.getReceque();
 		Thread.sleep(1000);//if I remove this sentence, send JSONNameandString may be send to early so that session's username haven't be set; 
 		send1.add(json);
-
+		while(true);
 	}
 }

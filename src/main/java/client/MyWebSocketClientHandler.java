@@ -6,6 +6,7 @@ import util.EnDeCryProcess;
 
 import com.alibaba.fastjson.JSON;
 
+import json.server.login.SuccessLogin;
 import json.util.JSONNameandString;
 import client.session.ClientSession;
 import client.session.DealwithJSON;
@@ -97,9 +98,14 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         		}else{
         			if(!session.isHasLogin()){
         				JSONNameandString backjson =  session.receiveACK(request);
-        				if(session.isHasLogin())
+        				if(session.isHasLogin()){
         					dealer.setSecretKey(accessHandler.getSecretKey());
-        				else{
+        					SuccessLogin login = new SuccessLogin();
+        					JSONNameandString jsonNameandString = new JSONNameandString();
+        					jsonNameandString.setJSONName(SuccessLogin.class.getName());
+        					jsonNameandString.setJSONStr(JSON.toJSONString(login));
+        					receque.add(jsonNameandString);
+        				}else{
         					receque.offer(backjson);
         				}
         			}else{

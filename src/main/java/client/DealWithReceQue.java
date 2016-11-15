@@ -2,6 +2,8 @@ package client;
 
 import java.util.concurrent.BlockingQueue;
 
+import javax.swing.JOptionPane;
+
 import com.alibaba.fastjson.JSON;
 
 import json.server.login.RegisiterResult;
@@ -35,6 +37,10 @@ public class DealWithReceQue implements Runnable{
 					break;
 				case "json.server.session.VerifyAddFriend":
 					dealwithVerifyAddFriend(take.getJSONStr());
+					break;
+				case "json.server.login.SuccessLogin":
+					dealwithSuccessLogin();
+					break;
 				default:
 					System.err.println("can't deal "+take.getJSONName());
 				}
@@ -45,11 +51,13 @@ public class DealWithReceQue implements Runnable{
 		}
 	}
 	
+	private void dealwithSuccessLogin() {
+		System.out.println("try to enable main windows");
+		//main
+	}
+
 	private void dealwithVerifyAddFriend(String jsonStr) {
-//		VerifyAddFriend verifyAddFriend = JSON.parseObject(jsonStr, VerifyAddFriend.class);
-		
 		System.out.println(jsonStr);
-		
 	}
 
 	private void DealWithFriendList(String jsonStr) {
@@ -65,16 +73,16 @@ public class DealWithReceQue implements Runnable{
 	private void dealwithRegisterResult(String jsonStr) {
 		RegisiterResult regisiterResult = JSON.parseObject(jsonStr, RegisiterResult.class);
 		if (regisiterResult.isSuccess()) {
-			System.out.println("Regisiter successfully");
+			JOptionPane.showMessageDialog(null, "register successfully");
 		}else{
-			System.out.println("Can't register : ");
-			System.out.println(regisiterResult.getReason());
+			JOptionPane.showMessageDialog(null, "Can't register : "+regisiterResult.getReason());
 		}
 	}
 
 	private void dealwithWrongNameorPassword(String jsonStr) {
 		System.out.println("send wrong name or password message to gui");
-		//this is not a good idea cause this method handle similar work as ClientSeesion, but I can't find a better idea;
+		JOptionPane.showMessageDialog(null, "Wrong name or password");
+		
 	}
 	
 }
