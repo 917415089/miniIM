@@ -18,43 +18,7 @@ import json.util.JSONNameandString;
 import client.BaseClient;
 
 
-public class LoginDialog implements Runnable{
-
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				Login login = new Login();
-				login.setTitle("Login");
-				login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				
-				login.setVisible(true);
-				
-			}
-		});
-	}
-
-	@Override
-	public void run() {
-		EventQueue.invokeLater(new Runnable() {
-			
-			@Override
-			public void run() {
-				Login login = new Login();
-				login.setTitle("Login");
-				login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				login.setVisible(true);
-				
-			}
-		});
-	}
-	
-	
-}
-
-class Login extends JFrame{
+public class LoginDialog extends JFrame implements Runnable{
 	JTextField textField;
 	JPasswordField password;
 	JButton login;
@@ -62,7 +26,7 @@ class Login extends JFrame{
 	
 	BlockingQueue<JSONNameandString> receque;
 	
-	public Login() {
+	public LoginDialog() {
 		Toolkit kit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = kit.getScreenSize();
 		int height = screenSize.height;
@@ -97,12 +61,20 @@ class Login extends JFrame{
 		register.addActionListener(registerAction);
 	}
 	
+	@Override
+	public void run() {
+		LoginDialog login = new LoginDialog();
+		GUIManage.getUniqueGUIManage().setLogindaialog(login);
+		login.setTitle("Login");
+		login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		login.setVisible(true);
+	}
+	
 	private class LoginAction implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			login.setEnabled(false);
-			register.setEnabled(false);
+			setEnabled(false);
 			
 			String name = textField.getText();
 			String pass = new String(password.getPassword());
@@ -110,7 +82,6 @@ class Login extends JFrame{
 			Thread thread = new Thread(baseClient);
 			receque = baseClient.getReceque();
 			thread.start();
-
 		}
 		
 	}
@@ -123,4 +94,10 @@ class Login extends JFrame{
 		}
 		
 	}
+
+	public void setEnabled(boolean flag){
+		login.setEnabled(flag);
+		register.setEnabled(flag);
+	}
+
 }
