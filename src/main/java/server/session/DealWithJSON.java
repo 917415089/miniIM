@@ -19,6 +19,7 @@ import io.netty.handler.codec.http2.Http2Stream.State;
 import json.client.session.AddFriend;
 import json.client.session.RequestFriendList;
 import json.server.session.CannotFindCommand;
+import json.server.session.FriendMeta;
 import json.server.session.SendBackJSON;
 import json.server.session.FriendList;
 import json.util.JSONNameandString;
@@ -79,10 +80,13 @@ public class DealWithJSON {
 						String sql = "Select * from friend where mastername = \""+username+"\";";
 						ResultSet set = sta.executeQuery(sql);
 						FriendList list = new FriendList();
-						List<String> friends = new ArrayList<String>();
+						List<FriendMeta> friends = new ArrayList<FriendMeta>();
 						while(set.next()){
 							String string = set.getString("friendname");
-							friends.add(string);
+							FriendMeta meta = new FriendMeta();
+							meta.setGroup("all");
+							meta.setName(string);
+							friends.add(meta);
 						}
 						list.setFriends(friends);
 						ret.setJSONName(FriendList.class.getName());

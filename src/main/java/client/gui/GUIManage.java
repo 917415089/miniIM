@@ -23,7 +23,7 @@ public class GUIManage {
 		return mainwindow;
 	}
 
-	void setMainwindow(MainWindow mainwindow) {
+	public void setMainwindow(MainWindow mainwindow) {
 		this.mainwindow = mainwindow;
 	}
 

@@ -4,13 +4,13 @@ import java.util.List;
 
 public class FriendList {
 
-	private List<String> friends;
+	private List<FriendMeta> friends;
 
-	public List<String> getFriends() {
+	public List<FriendMeta> getFriends() {
 		return friends;
 	}
 
-	public void setFriends(List<String> friends) {
+	public void setFriends(List<FriendMeta> friends) {
 		this.friends = friends;
 	}
 	

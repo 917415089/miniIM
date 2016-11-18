@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSON;
 
 import json.server.login.RegisiterResult;
 import json.server.session.FriendList;
+import json.server.session.FriendMeta;
 import json.server.session.VerifyAddFriend;
 import json.util.JSONNameandString;
 
@@ -71,8 +72,8 @@ public class DealWithReceQue implements Runnable{
 	private void DealWithFriendList(String jsonStr) {
 		FriendList friendList = JSON.parseObject(jsonStr, FriendList.class);
 		System.out.println("FriendList:");
-		for(String s : friendList.getFriends()){
-			System.out.println("      "+s);
+		for(FriendMeta s : friendList.getFriends()){
+			System.out.println("      "+s.getName());
 		}
 		System.out.println("end of Friendlists");
 		

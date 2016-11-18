@@ -5,6 +5,7 @@ import javax.crypto.SecretKey;
 import util.EnDeCryProcess;
 import json.server.session.CannotFindCommand;
 import json.server.session.FriendList;
+import json.server.session.FriendMeta;
 import json.util.JSONNameandString;
 
 import com.alibaba.fastjson.JSON;
@@ -32,9 +33,9 @@ public class DealwithJSON {
 	private void DealWithFriendList(String jsonStr) {
 		FriendList friendList = JSON.parseObject(jsonStr, FriendList.class);
 		System.out.println("FriendList:");
-		for(String s : friendList.getFriends()){
-			System.out.println("      "+s);
-		}
+		for(FriendMeta fm : friendList.getFriends()){
+			System.out.println("      "+fm.getName());
+			}
 		System.out.println("end of Friendlists");
 		
 	}
