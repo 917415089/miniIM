@@ -53,7 +53,10 @@ public class GUITest {
 		MainWindow mainwindow = GUIManage.getMainwindow();
 		mainwindow.setVisible(true);
 		mainwindow.addSession("user2");
+		mainwindow.addSession("user3");
+		mainwindow.addSession("user4");
 		Thread.sleep(2000);
+		while(true);
 	}
 	
 	@Test

@@ -25,5 +25,15 @@ public class GUIButtun extends JPanel {
 		setLayout(new FlowLayout());
 //		setBorder(BorderFactory.createTitledBorder("session"));
 	}
+
+	public JButton getSession() {
+		return session;
+	}
+
+	public JButton getClose() {
+		return close;
+	}
+	
+	
 	
 }

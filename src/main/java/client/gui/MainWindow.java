@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.BorderFactory;
@@ -133,14 +135,18 @@ public class MainWindow extends JFrame implements Runnable{
 
 	public void addSession(String friendname) {
 		GUISession guiSession = new GUISession(new GUIButtun(friendname),buildSessionwindow(friendname));
-		name2GUISession.put(friendname, guiSession);
+		guiSession.button.getClose().addActionListener(new CloseSession(friendname));
+		guiSession.button.getSession().addActionListener(new SessionSwitch(friendname));
+		center.removeAll();
 		right.add(guiSession.button);
 		center.add(guiSession.jpanel);
+		name2GUISession.put(friendname, guiSession);
 	}
 	
 	public void rmSession(String friendname){
 		right.remove(name2GUISession.get(friendname).button);
 		center.remove(name2GUISession.get(friendname).jpanel);
+		this.repaint();
 		name2GUISession.remove(friendname);
 	}
 	
@@ -193,6 +199,32 @@ public class MainWindow extends JFrame implements Runnable{
 		return container;
 	}
 	
+	private class CloseSession implements ActionListener{
+		private String name;
+		public CloseSession(String name) {
+			this.name = name;
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			rmSession(name);
+		}
+
+	}
+	
+	private class SessionSwitch implements ActionListener{
+		private String name;
+		public SessionSwitch(String name){
+			this.name =name;
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			center.removeAll();
+			center.add(name2GUISession.get(name).jpanel);
+			center.updateUI();
+		}
+		
+	}
+	
 	private class GUISession{
 		GUIButtun button;
 		JPanel jpanel;
@@ -203,4 +235,6 @@ public class MainWindow extends JFrame implements Runnable{
 		}
 		
 	}
+
+
 }
