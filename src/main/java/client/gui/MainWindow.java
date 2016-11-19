@@ -8,6 +8,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -57,6 +58,7 @@ public class MainWindow extends JFrame implements Runnable{
 		left.add(friendlist,BorderLayout.NORTH);
 		JButton AddFriend = new JButton("Add Friend");
 		left.add(AddFriend,BorderLayout.SOUTH);
+		AddFriend.addActionListener(new AddFriendAction());
 		
 		right = new JPanel();
 		add(right,BorderLayout.EAST);
@@ -236,5 +238,13 @@ public class MainWindow extends JFrame implements Runnable{
 		
 	}
 
+	private class AddFriendAction implements ActionListener{
 
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			GUIAddFriend guiAddFriend = new GUIAddFriend();
+			
+		}
+		
+	}
 }

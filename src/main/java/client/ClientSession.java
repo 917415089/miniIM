@@ -1,4 +1,4 @@
-package client.session;
+package client;
 
 import io.netty.channel.Channel;
 

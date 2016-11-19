@@ -1,10 +1,17 @@
 package client;
 
 import java.util.concurrent.BlockingQueue;
+
 import javax.swing.JOptionPane;
+
+import org.junit.runner.Request;
+
 import client.gui.LoginDialog;
 import client.gui.MainWindow;
+
 import com.alibaba.fastjson.JSON;
+
+import json.client.session.RequestFriendList;
 import json.server.login.RegisiterResult;
 import json.server.session.FriendList;
 import json.server.session.FriendMeta;
@@ -56,6 +63,12 @@ public class DealWithReceQue implements Runnable{
 		logindaialog.setVisible(false);
 		MainWindow mainwindow = ClientManage.getMainwindow();
 		mainwindow.setVisible(true);
+		RequestFriendList requestFriendList = new RequestFriendList();
+		requestFriendList.setGroup("all");
+		JSONNameandString json = new JSONNameandString();
+		json.setJSONName(RequestFriendList.class.getName());
+		json.setJSONStr(JSON.toJSONString(requestFriendList));
+		ClientManage.getSendque().offer(json);
 	}
 
 	private void dealwithVerifyAddFriend(String jsonStr) {
@@ -64,12 +77,9 @@ public class DealWithReceQue implements Runnable{
 
 	private void DealWithFriendList(String jsonStr) {
 		FriendList friendList = JSON.parseObject(jsonStr, FriendList.class);
-		System.out.println("FriendList:");
-		for(FriendMeta s : friendList.getFriends()){
-			System.out.println("      "+s.getName());
+		for( FriendMeta fm : friendList.getFriends()){
+			ClientManage.getMainwindow().addPathNode(fm.getGroup()+"."+fm.getName());
 		}
-		System.out.println("end of Friendlists");
-		
 	}
 
 	private void dealwithRegisterResult(String jsonStr) {

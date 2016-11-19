@@ -6,12 +6,14 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.BlockingQueue;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+
 import json.util.JSONNameandString;
 import client.BaseClient;
 import client.ClientManage;
@@ -24,8 +26,6 @@ public class LoginDialog extends JFrame{
 	JPasswordField password;
 	JButton login;
 	JButton register;
-	
-	BlockingQueue<JSONNameandString> receque;
 	
 	public LoginDialog() {
 		Toolkit kit = Toolkit.getDefaultToolkit();
@@ -46,10 +46,10 @@ public class LoginDialog extends JFrame{
 		panel.setBounds(getWidth()/4, getHeight()/4, getWidth()/2, getHeight()/2);
 		
 		panel.add(new JLabel("User Name",JLabel.CENTER));
-		textField = new JTextField("",30);
+		textField = new JTextField("user1",30);
 		panel.add(textField);
 		panel.add(new JLabel("User Password",JLabel.CENTER));
-		password = new JPasswordField("",30);
+		password = new JPasswordField("123",30);
 		panel.add(password);
 		login = new JButton("login");
 		panel.add(login);
@@ -74,7 +74,6 @@ public class LoginDialog extends JFrame{
 			String pass = new String(password.getPassword());
 			BaseClient baseClient = new BaseClient(name,pass);
 			Thread thread = new Thread(baseClient);
-			receque = ClientManage.getReceque();
 			thread.start();
 		}
 		
@@ -84,7 +83,11 @@ public class LoginDialog extends JFrame{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("registering...");
+
+			BaseClient baseClient = new BaseClient();
+			Thread thread = new Thread(baseClient);
+			thread.start();
+			GUIRegister guiRegister = new GUIRegister();
 		}
 		
 	}
