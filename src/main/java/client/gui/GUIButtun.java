@@ -1,15 +1,13 @@
 package client.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
 public class GUIButtun extends JPanel {
 
+	private static final long serialVersionUID = 1L;
 	private JButton session;
 	private JButton close;
 	

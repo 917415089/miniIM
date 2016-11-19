@@ -3,21 +3,11 @@ package util;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.Callable;
-
-import com.alibaba.fastjson.JSON;
-
-import json.server.login.SuccessLogin;
-import json.server.session.SendBackJSON;
 import server.db.StatementManager;
 
 public class VerifyLogin {
 
 	public static boolean verifyNameandPassword(final String name, final String password){
-		
-		
-		
-		
 		
 		Statement statement = StatementManager.getStatement();
 		String sql = "select * from USER where username=\""+name+"\";";

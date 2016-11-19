@@ -1,7 +1,6 @@
 package client.gui;
 
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -13,12 +12,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
 import json.util.JSONNameandString;
 import client.BaseClient;
+import client.ClientManage;
 
 
-public class LoginDialog extends JFrame implements Runnable{
+public class LoginDialog extends JFrame{
+
+	private static final long serialVersionUID = 1L;
 	JTextField textField;
 	JPasswordField password;
 	JButton login;
@@ -59,15 +60,8 @@ public class LoginDialog extends JFrame implements Runnable{
 		login.addActionListener(loginAction);
 		RegisterAction registerAction = new RegisterAction();
 		register.addActionListener(registerAction);
-	}
-	
-	@Override
-	public void run() {
-		LoginDialog login = new LoginDialog();
-		GUIManage.getUniqueGUIManage().setLogindaialog(login);
-		login.setTitle("Login");
-		login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		login.setVisible(true);
+		setTitle("Login");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 	private class LoginAction implements ActionListener{
@@ -80,7 +74,7 @@ public class LoginDialog extends JFrame implements Runnable{
 			String pass = new String(password.getPassword());
 			BaseClient baseClient = new BaseClient(name,pass);
 			Thread thread = new Thread(baseClient);
-			receque = baseClient.getReceque();
+			receque = ClientManage.getReceque();
 			thread.start();
 		}
 		

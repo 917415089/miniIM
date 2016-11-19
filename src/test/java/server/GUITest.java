@@ -5,7 +5,7 @@ import java.util.concurrent.Executors;
 
 import org.junit.Test;
 
-import client.gui.GUIManage;
+import client.ClientManage;
 import client.gui.LoginDialog;
 import client.gui.MainWindow;
 
@@ -15,16 +15,17 @@ public class GUITest {
 	@Test
 	public void GUILogin() throws InterruptedException{
 		BaseServer baseServer = new BaseServer();
-		LoginDialog loginDialog = new LoginDialog();
+		LoginDialog loginDialog = ClientManage.getLogindaialog();
+		loginDialog.setVisible(true);
 		ExecutorService pool = Executors.newCachedThreadPool();
 		pool.submit(baseServer);
-		pool.submit(loginDialog);
 		Thread.sleep(2000);
+		while(true);
 	}
 	
 	@Test
 	public void GUIFriendListAdd() throws InterruptedException{
-		MainWindow mainwindow = GUIManage.getMainwindow();
+		MainWindow mainwindow = ClientManage.getMainwindow();
 		mainwindow.setVisible(true);
 		mainwindow.addPathNode("group1.friend1");
 		mainwindow.addPathNode("group1.friend2");
@@ -35,7 +36,7 @@ public class GUITest {
 	
 	@Test
 	public void GUIFriendListRm() throws InterruptedException{
-		MainWindow mainwindow = GUIManage.getMainwindow();
+		MainWindow mainwindow = ClientManage.getMainwindow();
 		mainwindow.setVisible(true);
 		mainwindow.addPathNode("group1.friend1");
 		mainwindow.addPathNode("group1.friend2");
@@ -50,7 +51,7 @@ public class GUITest {
 	
 	@Test
 	public void GUISessionAdd() throws InterruptedException{
-		MainWindow mainwindow = GUIManage.getMainwindow();
+		MainWindow mainwindow = ClientManage.getMainwindow();
 		mainwindow.setVisible(true);
 		mainwindow.addSession("user2");
 		mainwindow.addSession("user3");
@@ -61,7 +62,7 @@ public class GUITest {
 	
 	@Test
 	public void GUISessionRm() throws InterruptedException{
-		MainWindow mainwindow = GUIManage.getMainwindow();
+		MainWindow mainwindow = ClientManage.getMainwindow();
 		mainwindow.setVisible(true);
 		mainwindow.addSession("user2");
 		mainwindow.rmSession("user2");

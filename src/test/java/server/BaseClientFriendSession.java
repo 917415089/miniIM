@@ -13,6 +13,7 @@ import org.junit.Test;
 import com.alibaba.fastjson.JSON;
 
 import client.BaseClient;
+import client.ClientManage;
 
 public class BaseClientFriendSession {
 
@@ -32,7 +33,7 @@ public class BaseClientFriendSession {
 		jsonNameandString.setJSONName(requestFriendList.getClass().getName());
 		jsonNameandString.setJSONStr(JSON.toJSONString(requestFriendList));
 
-		BlockingQueue<JSONNameandString> send = baseclient.getSendque();
+		BlockingQueue<JSONNameandString> send = ClientManage.getSendque();
 		Thread.sleep(1000);//if I remove this sentence, send JSONNameandString may be send to early so that session's username haven't be set; 
 		send.add(jsonNameandString);
 		Thread.sleep(2000);
@@ -56,8 +57,8 @@ public class BaseClientFriendSession {
 		json.setJSONName(AddFriend.class.getName());
 		json.setJSONStr(JSON.toJSONString(addFriend));
 		
-		BlockingQueue<JSONNameandString> send1 = baseclient1.getSendque();
-		BlockingQueue<JSONNameandString> receive1 = baseclient1.getReceque();
+		BlockingQueue<JSONNameandString> send1 = ClientManage.getSendque();
+//		BlockingQueue<JSONNameandString> receive1 = ClientManage.getReceque();
 		Thread.sleep(1000);//if I remove this sentence, send JSONNameandString may be send to early so that session's username haven't be set; 
 		send1.add(json);
 		while(true);

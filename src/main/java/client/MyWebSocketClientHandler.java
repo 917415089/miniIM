@@ -1,15 +1,11 @@
 package client;
 
 import java.util.concurrent.BlockingQueue;
-
 import util.EnDeCryProcess;
-
 import com.alibaba.fastjson.JSON;
-
 import json.server.login.SuccessLogin;
 import json.util.JSONNameandString;
 import client.session.ClientSession;
-import client.session.DealwithJSON;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -30,7 +26,6 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
     private ChannelPromise handshakeFuture;
     private ClientAccessHandler accessHandler = null;
     private ClientSession session;
-    private DealwithJSON dealer;
     private BlockingQueue<JSONNameandString> receque;
     private BaseClient client;
 
@@ -52,7 +47,6 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
     public void channelActive(ChannelHandlerContext ctx) {
         session = new ClientSession(ctx.channel());
         handshaker.handshake(ctx.channel());
-        dealer = new DealwithJSON(); 
     }
 
     @Override
@@ -99,7 +93,6 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         			if(!session.isHasLogin()){
         				JSONNameandString backjson =  session.receiveACK(request);
         				if(session.isHasLogin()){
-        					dealer.setSecretKey(accessHandler.getSecretKey());
         					SuccessLogin login = new SuccessLogin();
         					JSONNameandString jsonNameandString = new JSONNameandString();
         					jsonNameandString.setJSONName(SuccessLogin.class.getName());

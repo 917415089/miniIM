@@ -1,19 +1,13 @@
 package client;
 
 import java.util.concurrent.BlockingQueue;
-
 import javax.swing.JOptionPane;
-
-import client.gui.GUIManage;
 import client.gui.LoginDialog;
 import client.gui.MainWindow;
-
 import com.alibaba.fastjson.JSON;
-
 import json.server.login.RegisiterResult;
 import json.server.session.FriendList;
 import json.server.session.FriendMeta;
-import json.server.session.VerifyAddFriend;
 import json.util.JSONNameandString;
 
 public class DealWithReceQue implements Runnable{
@@ -58,11 +52,10 @@ public class DealWithReceQue implements Runnable{
 	
 	private void dealwithSuccessLogin() {
 		System.out.println("try to enable main windows");
-		LoginDialog logindaialog = GUIManage.getUniqueGUIManage().getLogindaialog();
+		LoginDialog logindaialog = ClientManage.getLogindaialog();
 		logindaialog.setVisible(false);
-		Thread thread = new Thread(new MainWindow());
-		thread.start();
-		//main
+		MainWindow mainwindow = ClientManage.getMainwindow();
+		mainwindow.setVisible(true);
 	}
 
 	private void dealwithVerifyAddFriend(String jsonStr) {
@@ -91,7 +84,7 @@ public class DealWithReceQue implements Runnable{
 	private void dealwithWrongNameorPassword(String jsonStr) {
 		System.out.println("send wrong name or password message to gui");
 		JOptionPane.showMessageDialog(null, "Wrong name or password");
-		GUIManage.getUniqueGUIManage().getLogindaialog().setEnabled(true);
+		ClientManage.getLogindaialog().setEnabled(true);
 	}
 	
 }

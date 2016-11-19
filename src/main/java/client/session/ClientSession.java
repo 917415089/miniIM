@@ -1,18 +1,22 @@
 package client.session;
 
 import io.netty.channel.Channel;
+
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+
 import json.client.login.ClientLogin;
 import json.server.login.RegisiterResult;
 import json.server.login.SuccessLogin;
 import json.util.JSONNameandString;
 import util.EnDeCryProcess;
+
 import com.alibaba.fastjson.JSON;
 
 public class ClientSession {
@@ -53,6 +57,7 @@ public class ClientSession {
 	
 	
 	private void dealwithRegisterResult(String str) {
+		@SuppressWarnings("unused")
 		RegisiterResult regisiterResult = JSON.parseObject(str, RegisiterResult.class);
 		//unfinished
 		System.out.println("user's name has been registered");

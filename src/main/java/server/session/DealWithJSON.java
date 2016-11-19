@@ -6,16 +6,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-
 import server.db.StatementManager;
 import server.session.callablejson.RunAddFriend;
 import util.EnDeCryProcess;
-
 import com.alibaba.fastjson.JSON;
-
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.netty.handler.codec.http2.Http2Stream.State;
 import json.client.session.AddFriend;
 import json.client.session.RequestFriendList;
 import json.server.session.CannotFindCommand;

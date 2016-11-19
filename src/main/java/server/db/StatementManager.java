@@ -69,6 +69,7 @@ public class StatementManager {
 		return UniqueInstance.statement;
 	}*/
 	
+	@SuppressWarnings("static-access")
 	static public Statement getStatement() {
 		try {
 			return UniqueInstance.statementque.take();

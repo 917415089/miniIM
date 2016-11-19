@@ -18,6 +18,7 @@ import server.db.StatementManager;
 import com.alibaba.fastjson.JSON;
 
 import client.BaseClient;
+import client.ClientManage;
 
 public class BaseClientandServer {
 
@@ -65,7 +66,7 @@ public class BaseClientandServer {
 		json.setJSONStr(JSON.toJSONString(clientRegister));
 		
 		BaseClient baseclient = new BaseClient();
-		BlockingQueue<JSONNameandString> send = baseclient.getSendque();
+		BlockingQueue<JSONNameandString> send = ClientManage.getSendque();
 		ExecutorService threadPool = Executors.newCachedThreadPool();
 		threadPool.submit(baseserver);
 		threadPool.submit(baseclient);
@@ -106,7 +107,7 @@ public class BaseClientandServer {
 		json.setJSONStr(JSON.toJSONString(clientRegister));
 		
 		BaseClient baseclient = new BaseClient();
-		BlockingQueue<JSONNameandString> send = baseclient.getSendque();
+		BlockingQueue<JSONNameandString> send = ClientManage.getSendque();
 		ExecutorService threadPool = Executors.newCachedThreadPool();
 		threadPool.submit(baseserver);
 		threadPool.submit(baseclient);
@@ -129,7 +130,7 @@ public class BaseClientandServer {
 		json.setJSONName(ClosingChannel.class.getName());
 		json.setJSONStr(JSON.toJSONString(closingChannel));
 		
-		BlockingQueue<JSONNameandString> que = baseclient.getSendque();
+		BlockingQueue<JSONNameandString> que = ClientManage.getSendque();
 		que.add(json);
 		Thread.sleep(1000);
 	}

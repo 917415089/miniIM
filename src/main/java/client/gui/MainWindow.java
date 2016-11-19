@@ -8,7 +8,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -24,6 +23,7 @@ import javax.swing.tree.TreePath;
 
 public class MainWindow extends JFrame implements Runnable{
 
+	private static final long serialVersionUID = 1L;
 	public final static int BUTTUN_HEIGHT=27;
 	private JTree friendTree;
 	private DefaultMutableTreeNode root;
