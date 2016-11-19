@@ -8,12 +8,12 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-public class GUISession extends JPanel {
+public class GUIButtun extends JPanel {
 
 	private JButton session;
 	private JButton close;
 	
-	public GUISession(String name){
+	public GUIButtun(String name){
 		session = new JButton(name);
 		close = new JButton("X");
 		session.setPreferredSize(new Dimension(100,27));

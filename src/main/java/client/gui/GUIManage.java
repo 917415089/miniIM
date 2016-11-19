@@ -4,32 +4,27 @@ public class GUIManage {
 
 	public static volatile GUIManage UniqueGUIManage = new GUIManage();
 	
-	private LoginDialog logindaialog;
-	private MainWindow mainwindow;
+	private static LoginDialog logindaialog;
+	private static MainWindow mainwindow = new MainWindow();
 	
 	private  GUIManage(){
 		
 	}
 
-	public LoginDialog getLogindaialog() {
+	static public LoginDialog getLogindaialog() {
 		return logindaialog;
 	}
 
-	void setLogindaialog(LoginDialog logindaialog) {
-		this.logindaialog = logindaialog;
+	static void setLogindaialog(LoginDialog daialog) {
+		logindaialog = daialog;
 	}
 
-	public MainWindow getMainwindow() {
+	static public MainWindow getMainwindow() {
 		return mainwindow;
-	}
-
-	public void setMainwindow(MainWindow mainwindow) {
-		this.mainwindow = mainwindow;
 	}
 
 	public static GUIManage getUniqueGUIManage() {
 		return UniqueGUIManage;
 	}
-	
-	
+		
 }
