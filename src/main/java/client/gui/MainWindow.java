@@ -7,6 +7,8 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.BorderFactory;
@@ -71,7 +73,7 @@ public class MainWindow extends JFrame implements Runnable{
 		center.setBorder(BorderFactory.createTitledBorder("   Working space   "));
 		center.setLayout(new GridBagLayout());
 		add(center,BorderLayout.CENTER);
-		
+		AddDoubleClickTreeAction();
 	}
 	
 	public DefaultMutableTreeNode addPathNode(String pathnode) {
@@ -143,6 +145,8 @@ public class MainWindow extends JFrame implements Runnable{
 		right.add(guiSession.button);
 		center.add(guiSession.jpanel);
 		name2GUISession.put(friendname, guiSession);
+		center.updateUI();
+		right.updateUI();
 	}
 	
 	public void rmSession(String friendname){
@@ -198,7 +202,22 @@ public class MainWindow extends JFrame implements Runnable{
 		enc.gridheight=1;
 		enc.gridwidth=1;
 		container.add(Enter,enc);
+		Enter.addActionListener(new SendMessageButtonAction(friendname,talkwindow));
 		return container;
+	}
+	
+	private void AddDoubleClickTreeAction(){
+		friendTree.addMouseListener(new MouseAdapter(){
+			public void mousePressed(MouseEvent e) {
+				int selRow = friendTree.getRowForLocation(e.getX(), e.getY());
+				TreePath selPath = friendTree.getPathForLocation(e.getX(), e.getY());
+				if(selRow != -1) {
+					if(e.getClickCount() == 2) {
+						addSession(selPath.getLastPathComponent().toString());
+					}
+				}
+			}
+		});
 	}
 	
 	private class CloseSession implements ActionListener{
@@ -210,7 +229,6 @@ public class MainWindow extends JFrame implements Runnable{
 		public void actionPerformed(ActionEvent e) {
 			rmSession(name);
 		}
-
 	}
 	
 	private class SessionSwitch implements ActionListener{

@@ -1,19 +1,24 @@
 package server.session;
 
+import java.awt.Checkbox;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+
 import server.db.StatementManager;
 import server.session.callablejson.RunAddFriend;
 import util.EnDeCryProcess;
+
 import com.alibaba.fastjson.JSON;
+
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import json.client.session.AddFriend;
 import json.client.session.RequestFriendList;
+import json.client.session.SendMessage;
 import json.server.session.CannotFindCommand;
 import json.server.session.FriendMeta;
 import json.server.session.SendBackJSON;
@@ -38,19 +43,33 @@ public class DealWithJSON {
 				dealwithAddFriend(json,channel.id().asLongText());
 				break;
 			}
+			case "json.client.session.SendMessage":
+			{
+				dealwithSendMessage(json,channel.id().asLongText());
+			}
 			default:
-					System.out.println("can't find command"+name+" from"+ChannelManager.getUsernamebyId(channel.id().asLongText()));
-					CannotFindCommand cannotFindCommand = new CannotFindCommand();
-					cannotFindCommand.setWrongCommand(name);
-					String Jsonstr = JSON.toJSONString(cannotFindCommand);
-					JSONNameandString sendjson = new JSONNameandString();
-					sendjson.setJSONName(CannotFindCommand.class.getName());
-					sendjson.setJSONStr(Jsonstr);
-					String send = JSON.toJSONString(sendjson);
-					send = EnDeCryProcess.SysKeyEncryWithBase64(send, ChannelManager.getSecreKeybyId(channel.id().asLongText()));
-					channel.writeAndFlush(new TextWebSocketFrame(send));
+				System.out.println("can't deal with"+name);
+				/*System.out.println("can't find command"+name+" from"+ChannelManager.getUsernamebyId(channel.id().asLongText()));
+				CannotFindCommand cannotFindCommand = new CannotFindCommand();
+				cannotFindCommand.setWrongCommand(name);
+				String Jsonstr = JSON.toJSONString(cannotFindCommand);
+				JSONNameandString sendjson = new JSONNameandString();
+				sendjson.setJSONName(CannotFindCommand.class.getName());
+				sendjson.setJSONStr(Jsonstr);
+				String send = JSON.toJSONString(sendjson);
+				send = EnDeCryProcess.SysKeyEncryWithBase64(send, ChannelManager.getSecreKeybyId(channel.id().asLongText()));
+				channel.writeAndFlush(new TextWebSocketFrame(send));*/
 			}
 		
+	}
+
+	private void dealwithSendMessage(JSONNameandString json, String asLongText) {
+		SendMessage sendmessage = JSON.parseObject(json.getJSONStr(), SendMessage.class);
+		SendBackJSON back = new SendBackJSON();
+		back.setJSONName(SendMessage.class.getName());
+		back.setJSONStr(JSON.toJSONString(sendmessage));
+		back.setChannelID(ChannelManager.getIdbyName(sendmessage.getFriend()));
+		ChannelManager.sendback(back);
 	}
 
 	private void dealwithAddFriend(JSONNameandString json, String channelid) {

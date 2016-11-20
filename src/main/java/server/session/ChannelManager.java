@@ -1,11 +1,22 @@
 package server.session;
 
 import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
+import util.EnDeCryProcess;
+
+import com.alibaba.fastjson.JSON;
+
+import json.server.session.SendBackJSON;
+import json.util.JSONNameandString;
 
 public class ChannelManager {
 
@@ -19,9 +30,33 @@ public class ChannelManager {
 	//key is Channelid ,value is username;
 	volatile private ConcurrentHashMap<String, String>uername2channel = new ConcurrentHashMap<String, String>(); 
 	//key is username ,value is Channelid;
+	private static BlockingQueue<SendBackJSON> sendback = new ArrayBlockingQueue<SendBackJSON>(100);
 	
 	private ChannelManager(){
 		super();
+		Thread thread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while(true){
+					try {
+						SendBackJSON DBResult =sendback.take();
+						JSONNameandString SendBack = new JSONNameandString();
+						SendBack.setJSONName(DBResult.getJSONName());
+						SendBack.setJSONStr(DBResult.getJSONStr());
+						String ret = JSON.toJSONString(SendBack);
+						ret = EnDeCryProcess.SysKeyEncryWithBase64(ret, ChannelManager.getSecreKeybyId(DBResult.getChannelID()));
+						Channel channel = ChannelManager.getChannelbyId(DBResult.getChannelID());
+						channel.writeAndFlush(new TextWebSocketFrame(ret));
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			}
+		});
+		thread.start();
 	}
 
 	public static  void addId2Channel(String asLongText, Channel channel) {
@@ -66,6 +101,8 @@ public class ChannelManager {
 		return channelmanager.uername2channel.get(name);
 	}
 
-
+	public static boolean sendback(SendBackJSON back){
+		return sendback.offer(back);
+	}
 	
 }

@@ -12,6 +12,7 @@ public class ClientManage {
 	static public final int RECEQUE_LENGTH = 100; 
 	private static LoginDialog logindaialog = new LoginDialog();
 	private static MainWindow mainwindow = new MainWindow();
+	private static String name;
 	private static BlockingQueue<JSONNameandString> sendque = new ArrayBlockingQueue<JSONNameandString>(QUEUE_LENGTH);
 	private static BlockingQueue<JSONNameandString> receque = new ArrayBlockingQueue<JSONNameandString>(RECEQUE_LENGTH);
 	
@@ -42,5 +43,12 @@ public class ClientManage {
 	public static BlockingQueue<JSONNameandString> getReceque() {
 		return receque;
 	}
-	
+
+	public static String getName() {
+		return name;
+	}
+
+	public static void setName(String name) {
+		ClientManage.name = name;
+	}
 }

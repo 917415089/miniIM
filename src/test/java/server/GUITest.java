@@ -1,8 +1,5 @@
 package server;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.junit.Test;
 
 import client.ClientManage;
@@ -13,12 +10,19 @@ import client.gui.MainWindow;
 public class GUITest {
 
 	@Test
+	public void starBaseServer() throws InterruptedException{
+		Thread thread = new Thread(new BaseServer());
+		thread.start();
+		while(true) Thread.sleep(10000);
+	}
+	
+	@Test
 	public void GUILogin() throws InterruptedException{
-		BaseServer baseServer = new BaseServer();
+//		BaseServer baseServer = new BaseServer();
 		LoginDialog loginDialog = ClientManage.getLogindaialog();
 		loginDialog.setVisible(true);
-		ExecutorService pool = Executors.newCachedThreadPool();
-		pool.submit(baseServer);
+//		ExecutorService pool = Executors.newCachedThreadPool();
+//		pool.submit(baseServer);
 		Thread.sleep(2000);
 		while(true);
 	}

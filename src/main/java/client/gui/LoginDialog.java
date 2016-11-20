@@ -71,6 +71,7 @@ public class LoginDialog extends JFrame{
 			setEnabled(false);
 			
 			String name = textField.getText();
+			ClientManage.setName(name);
 			String pass = new String(password.getPassword());
 			BaseClient baseClient = new BaseClient(name,pass);
 			Thread thread = new Thread(baseClient);
