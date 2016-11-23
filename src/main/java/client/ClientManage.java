@@ -3,6 +3,7 @@ package client;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import json.client.session.SendMessage;
 import json.util.JSONNameandString;
 import client.gui.LoginDialog;
 import client.gui.MainWindow;
@@ -27,6 +28,14 @@ public class ClientManage {
 	static public MainWindow getMainwindow() {
 		return mainwindow;
 	}
+	
+	static public void setMainWindowVisible(boolean flag){
+		mainwindow.setVisible(flag);
+	}
+	
+	static public void addPathNode(String s){
+		mainwindow.addPathNode(s);
+	}
 
 	public static int getQueueLength() {
 		return QUEUE_LENGTH;
@@ -50,5 +59,9 @@ public class ClientManage {
 
 	public static void setName(String name) {
 		ClientManage.name = name;
+	}
+
+	public static void displayMessage(SendMessage sendmessage) {
+		mainwindow.displayMessage(sendmessage);
 	}
 }

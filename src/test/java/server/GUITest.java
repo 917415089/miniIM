@@ -18,17 +18,14 @@ public class GUITest {
 	
 	@Test
 	public void GUILogin() throws InterruptedException{
-//		BaseServer baseServer = new BaseServer();
 		LoginDialog loginDialog = ClientManage.getLogindaialog();
 		loginDialog.setVisible(true);
-//		ExecutorService pool = Executors.newCachedThreadPool();
-//		pool.submit(baseServer);
 		Thread.sleep(2000);
-		while(true);
+		while(true) Thread.sleep(10000);
 	}
 	
 	@Test
-	public void GUIFriendListAdd() throws InterruptedException{
+	public synchronized void GUIFriendListAdd() throws InterruptedException{
 		MainWindow mainwindow = ClientManage.getMainwindow();
 		mainwindow.setVisible(true);
 		mainwindow.addPathNode("group1.friend1");

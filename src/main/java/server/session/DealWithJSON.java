@@ -46,9 +46,10 @@ public class DealWithJSON {
 			case "json.client.session.SendMessage":
 			{
 				dealwithSendMessage(json,channel.id().asLongText());
+				break;
 			}
 			default:
-				System.out.println("can't deal with"+name);
+				System.out.println("can't deal with "+name);
 				/*System.out.println("can't find command"+name+" from"+ChannelManager.getUsernamebyId(channel.id().asLongText()));
 				CannotFindCommand cannotFindCommand = new CannotFindCommand();
 				cannotFindCommand.setWrongCommand(name);

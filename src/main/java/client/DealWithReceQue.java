@@ -12,6 +12,7 @@ import client.gui.MainWindow;
 import com.alibaba.fastjson.JSON;
 
 import json.client.session.RequestFriendList;
+import json.client.session.SendMessage;
 import json.server.login.RegisiterResult;
 import json.server.session.FriendList;
 import json.server.session.FriendMeta;
@@ -47,6 +48,9 @@ public class DealWithReceQue implements Runnable{
 				case "json.server.login.SuccessLogin":
 					dealwithSuccessLogin();
 					break;
+				case "json.client.session.SendMessage":
+					dealwithSendMessage(take.getJSONStr());
+					break;
 				default:
 					System.err.println("can't deal "+take.getJSONName());
 				}
@@ -56,13 +60,16 @@ public class DealWithReceQue implements Runnable{
 			}
 		}
 	}
-	
+	private void dealwithSendMessage(String jsonStr) {
+		SendMessage sendmessage = JSON.parseObject(jsonStr, SendMessage.class);
+		ClientManage.displayMessage(sendmessage);
+	}
+
 	private void dealwithSuccessLogin() {
 		System.out.println("try to enable main windows");
 		LoginDialog logindaialog = ClientManage.getLogindaialog();
 		logindaialog.setVisible(false);
-		MainWindow mainwindow = ClientManage.getMainwindow();
-		mainwindow.setVisible(true);
+		ClientManage.setMainWindowVisible(true);
 		RequestFriendList requestFriendList = new RequestFriendList();
 		requestFriendList.setGroup("all");
 		JSONNameandString json = new JSONNameandString();
@@ -78,7 +85,7 @@ public class DealWithReceQue implements Runnable{
 	private void DealWithFriendList(String jsonStr) {
 		FriendList friendList = JSON.parseObject(jsonStr, FriendList.class);
 		for( FriendMeta fm : friendList.getFriends()){
-			ClientManage.getMainwindow().addPathNode(fm.getGroup()+"."+fm.getName());
+			ClientManage.addPathNode(fm.getGroup()+"."+fm.getName());
 		}
 	}
 

@@ -24,6 +24,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import json.client.session.SendMessage;
+
 public class MainWindow extends JFrame implements Runnable{
 
 	private static final long serialVersionUID = 1L;
@@ -265,4 +267,13 @@ public class MainWindow extends JFrame implements Runnable{
 		}
 		
 	}
+
+	public  void displayMessage(SendMessage sendmessage) {
+		GUISession guiSession = name2GUISession.get(sendmessage.getName());
+		JTextArea display = (JTextArea)guiSession.jpanel.getComponent(1);
+		display.insert("\n"+sendmessage.getName()+":\n"+sendmessage.getMessage(), display.getText().length());
+//		display.insert("\n"+sendmessage.getMessage(),display.getText().length());//if I insert message by two step,GUI willdump
+		guiSession.jpanel.updateUI();
+	}
 }
+
