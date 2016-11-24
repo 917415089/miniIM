@@ -6,9 +6,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+
+import server.db.DBCallable;
 import server.db.StatementManager;
 import server.session.callablejson.RunAddFriend;
+
 import com.alibaba.fastjson.JSON;
+
 import io.netty.channel.Channel;
 import json.client.session.AddFriend;
 import json.client.session.RequestFriendList;
@@ -79,15 +83,15 @@ public class DealWithJSON {
 		RequestFriendList friendList = JSON.parseObject(json.getJSONStr(),RequestFriendList.class);
 		if(friendList.getGroup().equalsIgnoreCase("all")){
 			
-			 StatementManager.getService().submit(new Callable<SendBackJSON>(){
+			 StatementManager.getService().submit(new DBCallable(){
 				@Override
-				public SendBackJSON call() {
+				public SendBackJSON run() {
 					SendBackJSON ret = new SendBackJSON();
-					Statement sta = null;
+//					Statement sta = null;
 					try{
-						sta = StatementManager.getStatement();
+//						sta = StatementManager.getStatement();
 						String sql = "Select * from friend where mastername = \""+username+"\";";
-						ResultSet set = sta.executeQuery(sql);
+						ResultSet set = protectsta.executeQuery(sql);
 						FriendList list = new FriendList();
 						List<FriendMeta> friends = new ArrayList<FriendMeta>();
 						while(set.next()){
@@ -105,8 +109,8 @@ public class DealWithJSON {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}finally{
-						if(sta!=null)
-							StatementManager.backStatement(sta);
+//						if(sta!=null)
+//							StatementManager.backStatement(sta);
 					}
 					return ret;
 				}

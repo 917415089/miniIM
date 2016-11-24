@@ -78,13 +78,18 @@ public class ChannelManager {
 	}
 	
 	public static synchronized void addId2Username(String asLongText, String Name){
+		synchronized (channelmanager.id2username) {
 		channelmanager.id2username.put(asLongText, Name);
 		channelmanager.uername2channel.put(Name,asLongText);
+		}
 	}
 	
-	public static synchronized void rmId2Username(String asLongText) {
-		channelmanager.id2username.remove(asLongText);
-		channelmanager.uername2channel.remove(asLongText);
+	public static  void rmId2Username(String asLongText) {
+		synchronized (channelmanager.id2username) {
+			channelmanager.id2username.remove(asLongText);
+			channelmanager.uername2channel.remove(asLongText);	
+		}
+
 	}
 
 	public static  String getUsernamebyId(String asLongText){

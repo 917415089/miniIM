@@ -30,9 +30,6 @@ public class StatementManager {
 	static private BlockingQueue<Future<SendBackJSON>> JSONque;
 	static private BlockingQueue<Statement> statementque;
 	
-	private Statement statement;
-
-	
 	private StatementManager(){
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -40,12 +37,10 @@ public class StatementManager {
 		    String username = "root" ;   
 		    String userpassword = "123456" ;   
 		    Connection conn = DriverManager.getConnection(url , username , userpassword);
-		    
 		    statementque = new ArrayBlockingQueue<Statement>(STATEMENT_NUMBER,false);
 		    for(int i = 0 ; i < STATEMENT_NUMBER ; i++){
 		    	statementque.add(conn.createStatement());
 		    }
-		    statement = conn.createStatement();
 		    
 		    JSONque = new LinkedBlockingQueue<Future<SendBackJSON>>(MAX_JSONque);
 		    ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_NUMBER_OF_DATABASE_ACCESS);
@@ -65,10 +60,6 @@ public class StatementManager {
 		}
 	}
 
-/*	static public Statement getStatement() {
-		return UniqueInstance.statement;
-	}*/
-	
 	@SuppressWarnings("static-access")
 	static public Statement getStatement() {
 		try {
@@ -79,8 +70,9 @@ public class StatementManager {
 		return null;
 	}
 	
+	@SuppressWarnings("static-access")
 	static public void backStatement(Statement sta){
-//		UniqueInstance.statementque.add(sta);
+		UniqueInstance.statementque.add(sta);
 	}
 
 	@SuppressWarnings("static-access")
@@ -92,4 +84,6 @@ public class StatementManager {
 	public static BlockingQueue<Future<SendBackJSON>> getJSONque() {
 		return UniqueInstance.JSONque;
 	}
+
+
 }

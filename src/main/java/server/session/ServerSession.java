@@ -1,11 +1,14 @@
 package server.session;
 
 import io.netty.channel.Channel;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.Callable;
+
 import javax.crypto.SecretKey;
+
 import json.client.login.ClientLogin;
 import json.client.login.ClientRegister;
 import json.server.login.RegisiterResult;
@@ -16,6 +19,7 @@ import json.util.JSONNameandString;
 
 import com.alibaba.fastjson.JSON;
 
+import server.db.DBCallable;
 import server.db.StatementManager;
 import util.EnDeCryProcess;
 import util.SessionTool;
@@ -68,18 +72,18 @@ public class ServerSession {
 		userpassword = clientRegister.getUserPassword();
 		useremail = clientRegister.getEmail();
 		
-		StatementManager.getService().submit(new Callable<SendBackJSON>(){
+		StatementManager.getService().submit(new DBCallable(){
 
 			@Override
-			public SendBackJSON call(){
-				Statement sta = StatementManager.getStatement();
+			public SendBackJSON run(){
+//				Statement sta = StatementManager.getStatement();
 				String sql = "insert into user (username,userpassword,useremail) values (\""+username+"\",\""+userpassword+"\",\""+useremail+"\");";
 				RegisiterResult regisiterResult = new RegisiterResult();
 				SendBackJSON sendBackJSON = new SendBackJSON();
 				sendBackJSON.setChannelID(ch.id().asLongText());
 				sendBackJSON.setJSONName(RegisiterResult.class.getName());
 				try {
-					int updatelinenumber = sta.executeUpdate(sql);
+					int updatelinenumber = protectsta.executeUpdate(sql);
 					if(updatelinenumber==1){
 						regisiterResult.setSuccess(true);
 					}
@@ -91,8 +95,8 @@ public class ServerSession {
 						regisiterResult.setReason("other");
 					}
 				}finally{
-					if(sta!=null)
-						StatementManager.backStatement(sta);
+/*					if(sta!=null)
+						StatementManager.backStatement(sta);*/
 				}
 				sendBackJSON.setJSONStr(JSON.toJSONString(regisiterResult));
 				return sendBackJSON;
@@ -106,15 +110,15 @@ public class ServerSession {
 		username = clientLogin.getName();
 		userpassword = clientLogin.getPassword();
 		
-		StatementManager.getService().submit(new Callable<SendBackJSON>(){
+		StatementManager.getService().submit(new DBCallable(){
 
 			@Override
-			public SendBackJSON call() throws Exception {
-				Statement sta = StatementManager.getStatement();
+			public SendBackJSON run() throws Exception {
+//				Statement sta = StatementManager.getStatement();
 				String sql = "select * from user where username=\""+username+"\";";
 				String ret;
 				try {
-					ResultSet resultSet = sta.executeQuery(sql);
+					ResultSet resultSet = protectsta.executeQuery(sql);
 					SendBackJSON backJSON = new SendBackJSON();
 					backJSON.setChannelID(ch.id().asLongText());
 					if(resultSet.next() && username.equals(resultSet.getString("username"))&&userpassword.equals(resultSet.getString("userpassword"))){						
@@ -139,8 +143,8 @@ public class ServerSession {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}finally{
-					if(sta!=null)
-						StatementManager.backStatement(sta);
+//					if(sta!=null)
+//						StatementManager.backStatement(sta);
 				}
 				return null;
 			}
