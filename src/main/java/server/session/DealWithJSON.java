@@ -1,25 +1,18 @@
 package server.session;
 
-import java.awt.Checkbox;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-
 import server.db.StatementManager;
 import server.session.callablejson.RunAddFriend;
-import util.EnDeCryProcess;
-
 import com.alibaba.fastjson.JSON;
-
 import io.netty.channel.Channel;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import json.client.session.AddFriend;
 import json.client.session.RequestFriendList;
 import json.client.session.SendMessage;
-import json.server.session.CannotFindCommand;
 import json.server.session.FriendMeta;
 import json.server.session.SendBackJSON;
 import json.server.session.FriendList;

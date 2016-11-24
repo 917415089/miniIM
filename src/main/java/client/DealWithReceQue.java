@@ -3,14 +3,8 @@ package client;
 import java.util.concurrent.BlockingQueue;
 
 import javax.swing.JOptionPane;
-
-import org.junit.runner.Request;
-
 import client.gui.LoginDialog;
-import client.gui.MainWindow;
-
 import com.alibaba.fastjson.JSON;
-
 import json.client.session.RequestFriendList;
 import json.client.session.SendMessage;
 import json.server.login.RegisiterResult;
@@ -75,7 +69,7 @@ public class DealWithReceQue implements Runnable{
 		JSONNameandString json = new JSONNameandString();
 		json.setJSONName(RequestFriendList.class.getName());
 		json.setJSONStr(JSON.toJSONString(requestFriendList));
-		ClientManage.getSendque().offer(json);
+		ClientManage.sendJSONNameandString(json);
 	}
 
 	private void dealwithVerifyAddFriend(String jsonStr) {

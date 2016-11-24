@@ -1,17 +1,12 @@
 package server;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import json.client.session.AddFriend;
 import json.client.session.RequestFriendList;
 import json.util.JSONNameandString;
-
 import org.junit.Test;
-
 import com.alibaba.fastjson.JSON;
-
 import client.BaseClient;
 import client.ClientManage;
 
@@ -33,9 +28,8 @@ public class BaseClientFriendSession {
 		jsonNameandString.setJSONName(requestFriendList.getClass().getName());
 		jsonNameandString.setJSONStr(JSON.toJSONString(requestFriendList));
 
-		BlockingQueue<JSONNameandString> send = ClientManage.getSendque();
 		Thread.sleep(1000);//if I remove this sentence, send JSONNameandString may be send to early so that session's username haven't be set; 
-		send.add(jsonNameandString);
+		ClientManage.sendJSONNameandString(jsonNameandString);
 		Thread.sleep(2000);
 	}
 	
@@ -57,10 +51,10 @@ public class BaseClientFriendSession {
 		json.setJSONName(AddFriend.class.getName());
 		json.setJSONStr(JSON.toJSONString(addFriend));
 		
-		BlockingQueue<JSONNameandString> send1 = ClientManage.getSendque();
+
 //		BlockingQueue<JSONNameandString> receive1 = ClientManage.getReceque();
 		Thread.sleep(1000);//if I remove this sentence, send JSONNameandString may be send to early so that session's username haven't be set; 
-		send1.add(json);
+		ClientManage.sendJSONNameandString(json);
 		while(true);
 	}
 }

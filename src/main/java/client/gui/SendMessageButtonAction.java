@@ -33,7 +33,8 @@ public class SendMessageButtonAction implements ActionListener {
 		json.setJSONName(SendMessage.class.getName());
 		json.setJSONStr(JSON.toJSONString(message));
 		
-		ClientManage.getSendque().offer(json);
+		ClientManage.sendJSONNameandString(json);
+		talkwindow.setText("");
 	}
 
 }

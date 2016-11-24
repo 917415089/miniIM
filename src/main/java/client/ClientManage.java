@@ -2,7 +2,6 @@ package client;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-
 import json.client.session.SendMessage;
 import json.util.JSONNameandString;
 import client.gui.LoginDialog;
@@ -37,20 +36,8 @@ public class ClientManage {
 		mainwindow.addPathNode(s);
 	}
 
-	public static int getQueueLength() {
-		return QUEUE_LENGTH;
-	}
-
-	public static int getRecequeLength() {
-		return RECEQUE_LENGTH;
-	}
-
-	public static BlockingQueue<JSONNameandString> getSendque() {
-		return sendque;
-	}
-
-	public static BlockingQueue<JSONNameandString> getReceque() {
-		return receque;
+	public static boolean sendJSONNameandString( JSONNameandString json) {
+		return sendque.offer(json);
 	}
 
 	public static String getName() {
@@ -63,5 +50,14 @@ public class ClientManage {
 
 	public static void displayMessage(SendMessage sendmessage) {
 		mainwindow.displayMessage(sendmessage);
+	}
+	//Only be used by BaseClient
+	static BlockingQueue<JSONNameandString> getSendque() {
+		return sendque;
+	}
+	
+	//Only be used by BaseClient
+	public static BlockingQueue<JSONNameandString> getReceque() {
+		return receque;
 	}
 }

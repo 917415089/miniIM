@@ -3,20 +3,14 @@ package server;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import json.client.access.ClosingChannel;
 import json.client.login.ClientRegister;
 import json.util.JSONNameandString;
-
 import org.junit.Test;
-
 import server.db.StatementManager;
-
 import com.alibaba.fastjson.JSON;
-
 import client.BaseClient;
 import client.ClientManage;
 
@@ -66,12 +60,12 @@ public class BaseClientandServer {
 		json.setJSONStr(JSON.toJSONString(clientRegister));
 		
 		BaseClient baseclient = new BaseClient();
-		BlockingQueue<JSONNameandString> send = ClientManage.getSendque();
+
 		ExecutorService threadPool = Executors.newCachedThreadPool();
 		threadPool.submit(baseserver);
 		threadPool.submit(baseclient);
 		Thread.sleep(3000);
-		send.offer(json);
+		ClientManage.sendJSONNameandString(json);
 		Thread.sleep(1000);
 		
 		String query = "select * from user where username =\'user10\';";
@@ -107,12 +101,11 @@ public class BaseClientandServer {
 		json.setJSONStr(JSON.toJSONString(clientRegister));
 		
 		BaseClient baseclient = new BaseClient();
-		BlockingQueue<JSONNameandString> send = ClientManage.getSendque();
 		ExecutorService threadPool = Executors.newCachedThreadPool();
 		threadPool.submit(baseserver);
 		threadPool.submit(baseclient);
 		Thread.sleep(3000);
-		send.offer(json);
+		ClientManage.sendJSONNameandString(json);
 		Thread.sleep(1000);
 	}
 	
@@ -130,8 +123,7 @@ public class BaseClientandServer {
 		json.setJSONName(ClosingChannel.class.getName());
 		json.setJSONStr(JSON.toJSONString(closingChannel));
 		
-		BlockingQueue<JSONNameandString> que = ClientManage.getSendque();
-		que.add(json);
+		ClientManage.sendJSONNameandString(json);
 		Thread.sleep(1000);
 	}
 }

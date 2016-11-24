@@ -41,6 +41,7 @@ public class BaseClient extends Thread {
 	private String userEmail;
 	private SecretKey secretKey;
 
+
 	public BaseClient(){
 		
 	}

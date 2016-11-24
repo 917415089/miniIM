@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -23,7 +22,6 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-
 import json.client.session.SendMessage;
 
 public class MainWindow extends JFrame implements Runnable{
@@ -59,7 +57,7 @@ public class MainWindow extends JFrame implements Runnable{
 		friendlist.setPreferredSize(new Dimension(200,getHeight()-BUTTUN_HEIGHT));
 		friendlist.setBounds(0, 0, 500, 500);
 		friendlist.setBorder(BorderFactory.createTitledBorder("   Friend List   "));
-		left.add(friendlist,BorderLayout.NORTH);
+		left.add(friendlist,BorderLayout.CENTER);
 		JButton AddFriend = new JButton("Add Friend");
 		left.add(AddFriend,BorderLayout.SOUTH);
 		AddFriend.addActionListener(new AddFriendAction());
@@ -139,7 +137,8 @@ public class MainWindow extends JFrame implements Runnable{
 	public void run() {
 	}
 
-	public void addSession(String friendname) {
+	public synchronized void addSession(String friendname) {
+		if(name2GUISession.containsKey(friendname))	return;
 		GUISession guiSession = new GUISession(new GUIButtun(friendname),buildSessionwindow(friendname));
 		guiSession.button.getClose().addActionListener(new CloseSession(friendname));
 		guiSession.button.getSession().addActionListener(new SessionSwitch(friendname));
@@ -230,6 +229,7 @@ public class MainWindow extends JFrame implements Runnable{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			rmSession(name);
+			right.updateUI();
 		}
 	}
 	
@@ -263,16 +263,22 @@ public class MainWindow extends JFrame implements Runnable{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			GUIAddFriend guiAddFriend = new GUIAddFriend();
-			
 		}
 		
 	}
 
 	public  void displayMessage(SendMessage sendmessage) {
 		GUISession guiSession = name2GUISession.get(sendmessage.getName());
+		if(guiSession==null){
+			addSession(sendmessage.getName());
+			guiSession = name2GUISession.get(sendmessage.getName());
+		}
 		JTextArea display = (JTextArea)guiSession.jpanel.getComponent(1);
 		display.insert("\n"+sendmessage.getName()+":\n"+sendmessage.getMessage(), display.getText().length());
-//		display.insert("\n"+sendmessage.getMessage(),display.getText().length());//if I insert message by two step,GUI willdump
+//		display.insert("\n"+sendmessage.getMessage(),display.getText().length());//if I insert message by two step,GUI will dump
+		center.removeAll();
+		center.add(guiSession.jpanel);
+		center.updateUI();
 		guiSession.jpanel.updateUI();
 	}
 }

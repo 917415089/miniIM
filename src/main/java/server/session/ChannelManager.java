@@ -2,19 +2,13 @@ package server.session;
 
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-
 import util.EnDeCryProcess;
-
 import com.alibaba.fastjson.JSON;
-
 import json.server.session.SendBackJSON;
 import json.util.JSONNameandString;
 
@@ -23,9 +17,9 @@ public class ChannelManager {
 	private static ChannelManager channelmanager = new ChannelManager();
 	
 	volatile private ConcurrentHashMap<String,Channel> id2channel = new ConcurrentHashMap<String,Channel> ();
-	//key is Channelid ,value is ChannelObject;
+	//key is Channel id ,value is ChannelObject;
 	volatile private ConcurrentHashMap<String,SecretKey> id2secrekey = new ConcurrentHashMap<String,SecretKey>();
-	//key is Channelid ,value is Secrekey;
+	//key is Channel id ,value is Secrekey;
 	volatile private ConcurrentHashMap<String,String> id2username = new ConcurrentHashMap<String,String>();
 	//key is Channelid ,value is username;
 	volatile private ConcurrentHashMap<String, String>uername2channel = new ConcurrentHashMap<String, String>(); 

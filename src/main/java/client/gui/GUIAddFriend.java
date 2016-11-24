@@ -4,15 +4,21 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import json.client.session.AddFriend;
 
 public class GUIAddFriend extends JFrame{
 
+	private static final long serialVersionUID = 1L;
+	private JTextField inputgroup;
+	private JTextField inputname;
+	
 	public GUIAddFriend() {
 		Toolkit kit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = kit.getScreenSize();
@@ -30,16 +36,31 @@ public class GUIAddFriend extends JFrame{
 		center.setLayout(new GridLayout(2,2));
 		JLabel group = new JLabel("group",JLabel.CENTER);
 		center.add(group);
-		JTextField inputgroup = new JTextField();
+		inputgroup = new JTextField();
 		center.add(inputgroup);
 		JLabel name = new JLabel("name",JLabel.CENTER);
 		center.add(name);
-		JTextField inputname = new JTextField();
+		inputname = new JTextField();
 		center.add(inputname);
 		
 		JButton enter = new JButton("Enter");
 		add(enter,BorderLayout.SOUTH);
 		
+		enter.addActionListener( new AddFriendListener());
 		setVisible(true);
+	}
+	
+	private class AddFriendListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			AddFriend friend = new AddFriend();
+			friend.setFriendname(inputname.getText());
+			friend.setGroup(inputgroup.getText());
+			
+			//unfinished
+			
+		}
+		
 	}
 }
