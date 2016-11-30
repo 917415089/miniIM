@@ -3,13 +3,18 @@ package client;
 import java.util.concurrent.BlockingQueue;
 
 import javax.swing.JOptionPane;
+
+import client.gui.GUIVerifyAddFriend;
 import client.gui.LoginDialog;
+
 import com.alibaba.fastjson.JSON;
+
 import json.client.session.RequestFriendList;
 import json.client.session.SendMessage;
 import json.server.login.RegisiterResult;
 import json.server.session.FriendList;
 import json.server.session.FriendMeta;
+import json.server.session.VerifyAddFriend;
 import json.util.JSONNameandString;
 
 public class DealWithReceQue implements Runnable{
@@ -65,7 +70,7 @@ public class DealWithReceQue implements Runnable{
 		logindaialog.setVisible(false);
 		ClientManage.setMainWindowVisible(true);
 		RequestFriendList requestFriendList = new RequestFriendList();
-		requestFriendList.setGroup("all");
+		requestFriendList.setGroup("friends");
 		JSONNameandString json = new JSONNameandString();
 		json.setJSONName(RequestFriendList.class.getName());
 		json.setJSONStr(JSON.toJSONString(requestFriendList));
@@ -73,7 +78,8 @@ public class DealWithReceQue implements Runnable{
 	}
 
 	private void dealwithVerifyAddFriend(String jsonStr) {
-		System.out.println(jsonStr);
+		VerifyAddFriend verifyjson = JSON.parseObject(jsonStr, VerifyAddFriend.class);
+		GUIVerifyAddFriend verifyAddFriend = new GUIVerifyAddFriend(verifyjson.getRequestname());
 	}
 
 	private void DealWithFriendList(String jsonStr) {

@@ -81,7 +81,7 @@ public class DealWithJSON {
 
 	private void dealwithFriendList(JSONNameandString json, final String channelid) {
 		RequestFriendList friendList = JSON.parseObject(json.getJSONStr(),RequestFriendList.class);
-		if(friendList.getGroup().equalsIgnoreCase("all")){
+		if(friendList.getGroup().equalsIgnoreCase("friends")){
 			
 			 StatementManager.getService().submit(new DBCallable(){
 				@Override
@@ -97,7 +97,7 @@ public class DealWithJSON {
 						while(set.next()){
 							String string = set.getString("friendname");
 							FriendMeta meta = new FriendMeta();
-							meta.setGroup("all");
+							meta.setGroup(set.getString("group"));
 							meta.setName(string);
 							friends.add(meta);
 						}

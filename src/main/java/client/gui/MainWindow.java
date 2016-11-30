@@ -9,7 +9,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -22,6 +25,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+
 import json.client.session.SendMessage;
 
 public class MainWindow extends JFrame implements Runnable{
@@ -280,6 +284,16 @@ public class MainWindow extends JFrame implements Runnable{
 		center.add(guiSession.jpanel);
 		center.updateUI();
 		guiSession.jpanel.updateUI();
+	}
+	
+	public List<String> getGroup(){
+		int count = root.getChildCount();
+		List<String> ret = new ArrayList<String>();
+		for(int i = 0 ; i< count;i++){
+			DefaultMutableTreeNode tmp = (DefaultMutableTreeNode) root.getChildAt(i);
+			ret.add((String)tmp.getUserObject());
+		}
+		return ret;		
 	}
 }
 

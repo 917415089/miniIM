@@ -24,7 +24,7 @@ public class RunAddFriend implements Callable<SendBackJSON> {
 		back.setChannelID(ChannelManager.getIdbyName(friendname));
 		back.setJSONName(VerifyAddFriend.class.getName());
 		back.setJSONStr(JSON.toJSONString(verifyAddFriend));
-		
+//		System.out.println(JSON.toJSONString(back));
 		return back;
 	}
 
