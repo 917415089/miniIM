@@ -1,6 +1,8 @@
 package json.client.session;
 
-public class SendMessage {
+import json.client.ClientJSON;
+
+public class SendMessage implements ClientJSON {
 
 	private String name;
 	private String friend;

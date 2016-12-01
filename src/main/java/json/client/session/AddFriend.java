@@ -1,10 +1,13 @@
 package json.client.session;
 
+import json.client.ClientJSON;
 
-public class AddFriend {
+public class AddFriend implements ClientJSON {
 
+	private String name;
 	private String friendname;
 	private String group;
+	
 	public String getFriendname() {
 		return friendname;
 	}
@@ -17,6 +20,13 @@ public class AddFriend {
 	public void setGroup(String group) {
 		this.group = group;
 	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 
 	
 }

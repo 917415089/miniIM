@@ -1,6 +1,8 @@
 package json.client.session;
 
-public class RequestFriendList {
+import json.client.ClientJSON;
+
+public class RequestFriendList implements ClientJSON {
 
 	private String group;
 

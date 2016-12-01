@@ -1,6 +1,8 @@
 package json.server.session;
 
-public class CannotFindCommand {
+import json.server.ServerJSON;
+
+public class CannotFindCommand implements ServerJSON{
 
 	private String WrongCommand;
 

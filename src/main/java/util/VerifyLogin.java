@@ -7,10 +7,10 @@ import server.db.StatementManager;
 
 public class VerifyLogin {
 
-	public static boolean verifyNameandPassword(final String name, final String password){
+	public static synchronized boolean verifyNameandPassword(final String name, final String password){
 		
 		Statement statement = StatementManager.getStatement();
-		String sql = "select * from USER where username=\""+name+"\";";
+		String sql = "select * from user where username=\""+name+"\";";
 		try {
 			ResultSet resultSet = statement.executeQuery(sql);
 			while(resultSet.next()){
@@ -28,10 +28,10 @@ public class VerifyLogin {
 		return false;
 	}
 
-	public static boolean verifyPassword(String name, String password) {
+	public static synchronized boolean verifyPassword(String name, String password) {
 		//test
 		Statement statement = StatementManager.getStatement();
-		String sql = "select * from USER where username=\""+name+"\";";
+		String sql = "select * from user where username=\""+name+"\";";
 		try {
 			ResultSet resultSet = statement.executeQuery(sql);
 			while(resultSet.next()){
@@ -49,9 +49,9 @@ public class VerifyLogin {
 		return false;
 	}
 
-	public static boolean verifyName(String name) {
+	public static synchronized boolean verifyName(String name) {
 		Statement statement = StatementManager.getStatement();
-		String sql = "select * from USER where username=\""+name+"\";";
+		String sql = "select * from user where username=\""+name+"\";";
 		try {
 			ResultSet resultSet = statement.executeQuery(sql);
 			while(resultSet.next()){

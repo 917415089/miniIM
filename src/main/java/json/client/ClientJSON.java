@@ -1,5 +1,7 @@
 package json.client;
 
-public interface ClientJSON {
+import json.JSON;
+
+public interface ClientJSON extends JSON {
 
 }

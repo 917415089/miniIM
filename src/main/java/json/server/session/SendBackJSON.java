@@ -1,6 +1,8 @@
 package json.server.session;
 
-public class SendBackJSON {
+import json.server.ServerJSON;
+
+public class SendBackJSON implements ServerJSON{
 
 	private String JSONName;
 	private String JSONStr;

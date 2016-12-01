@@ -1,6 +1,8 @@
 package json.server.login;
 
-public class WrongNameorPassword {
+import json.server.ServerJSON;
+
+public class WrongNameorPassword implements ServerJSON{
 
 	private boolean verifyName;
 	private boolean verfyPassword;

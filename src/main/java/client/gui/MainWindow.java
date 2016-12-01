@@ -266,6 +266,7 @@ public class MainWindow extends JFrame implements Runnable{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			@SuppressWarnings("unused")
 			GUIAddFriend guiAddFriend = new GUIAddFriend();
 		}
 		

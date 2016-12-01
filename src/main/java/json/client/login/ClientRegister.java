@@ -1,6 +1,8 @@
 package json.client.login;
 
-public class ClientRegister {
+import json.client.ClientJSON;
+
+public class ClientRegister implements ClientJSON {
 
 	private String userName;
 	private String userPassword;

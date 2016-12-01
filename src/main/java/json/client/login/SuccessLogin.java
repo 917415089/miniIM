@@ -1,6 +1,8 @@
 package json.client.login;
 
-public class SuccessLogin {
+import json.client.ClientJSON;
+
+public class SuccessLogin implements ClientJSON {
 
 	private String state;
 

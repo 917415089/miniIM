@@ -63,6 +63,7 @@ public class GUIAddFriend extends JFrame{
 			AddFriend friend = new AddFriend();
 			friend.setFriendname(inputname.getText());
 			friend.setGroup(inputgroup.getText());
+			friend.setName(ClientManage.getName());
 			
 			JSONNameandString json = new JSONNameandString();
 			json.setJSONName(AddFriend.class.getName());

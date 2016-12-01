@@ -1,6 +1,8 @@
 package json.server.session;
 
-public class FriendMeta {
+import json.server.ServerJSON;
+
+public class FriendMeta implements ServerJSON{
 
 	private String name;
 	private String group;

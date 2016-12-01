@@ -83,6 +83,7 @@ public class LoginDialog extends JFrame{
 			BaseClient baseClient = new BaseClient();
 			Thread thread = new Thread(baseClient);
 			thread.start();
+			@SuppressWarnings("unused")
 			GUIRegister guiRegister = new GUIRegister();
 		}
 		

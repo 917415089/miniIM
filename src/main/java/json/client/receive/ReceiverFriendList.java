@@ -1,6 +1,8 @@
 package json.client.receive;
 
-public class ReceiverFriendList {
+import json.client.ClientJSON;
+
+public class ReceiverFriendList implements ClientJSON {
 
 	private String FName;
 

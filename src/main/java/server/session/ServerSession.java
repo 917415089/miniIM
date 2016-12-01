@@ -4,11 +4,7 @@ import io.netty.channel.Channel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.concurrent.Callable;
-
 import javax.crypto.SecretKey;
-
 import json.client.login.ClientLogin;
 import json.client.login.ClientRegister;
 import json.server.login.RegisiterResult;
@@ -16,9 +12,7 @@ import json.server.login.SuccessLogin;
 import json.server.login.WrongNameorPassword;
 import json.server.session.SendBackJSON;
 import json.util.JSONNameandString;
-
 import com.alibaba.fastjson.JSON;
-
 import server.db.DBCallable;
 import server.db.StatementManager;
 import util.EnDeCryProcess;

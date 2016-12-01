@@ -2,7 +2,9 @@ package json.server.session;
 
 import java.util.List;
 
-public class FriendList {
+import json.server.ServerJSON;
+
+public class FriendList implements ServerJSON{
 
 	private List<FriendMeta> friends;
 

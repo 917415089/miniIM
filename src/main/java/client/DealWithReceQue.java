@@ -1,20 +1,16 @@
 package client;
 
 import java.util.concurrent.BlockingQueue;
-
 import javax.swing.JOptionPane;
-
 import client.gui.GUIVerifyAddFriend;
 import client.gui.LoginDialog;
-
 import com.alibaba.fastjson.JSON;
-
+import json.client.session.AddFriend;
 import json.client.session.RequestFriendList;
 import json.client.session.SendMessage;
 import json.server.login.RegisiterResult;
 import json.server.session.FriendList;
 import json.server.session.FriendMeta;
-import json.server.session.VerifyAddFriend;
 import json.util.JSONNameandString;
 
 public class DealWithReceQue implements Runnable{
@@ -41,8 +37,8 @@ public class DealWithReceQue implements Runnable{
 				case "json.server.login.RegisiterResult"://json.server.login.RegisiterResult
 					dealwithRegisterResult(take.getJSONStr());
 					break;
-				case "json.server.session.VerifyAddFriend":
-					dealwithVerifyAddFriend(take.getJSONStr());
+				case "json.client.session.AddFriend":
+					dealwithAddFriend(take.getJSONStr());
 					break;
 				case "json.server.login.SuccessLogin":
 					dealwithSuccessLogin();
@@ -51,7 +47,7 @@ public class DealWithReceQue implements Runnable{
 					dealwithSendMessage(take.getJSONStr());
 					break;
 				default:
-					System.err.println("can't deal "+take.getJSONName());
+					System.err.println("Client : can't deal "+take.getJSONName());
 				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -77,9 +73,10 @@ public class DealWithReceQue implements Runnable{
 		ClientManage.sendJSONNameandString(json);
 	}
 
-	private void dealwithVerifyAddFriend(String jsonStr) {
-		VerifyAddFriend verifyjson = JSON.parseObject(jsonStr, VerifyAddFriend.class);
-		GUIVerifyAddFriend verifyAddFriend = new GUIVerifyAddFriend(verifyjson.getRequestname());
+	private void dealwithAddFriend(String jsonStr) {
+		AddFriend addfriend = JSON.parseObject(jsonStr, AddFriend.class);
+		@SuppressWarnings("unused")
+		GUIVerifyAddFriend verifyAddFriend = new GUIVerifyAddFriend(addfriend);
 	}
 
 	private void DealWithFriendList(String jsonStr) {

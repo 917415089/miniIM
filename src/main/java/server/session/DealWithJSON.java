@@ -2,17 +2,12 @@ package server.session;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-
 import server.db.DBCallable;
 import server.db.StatementManager;
-import server.session.callablejson.RunAddFriend;
-
+import util.VerifyLogin;
 import com.alibaba.fastjson.JSON;
-
 import io.netty.channel.Channel;
 import json.client.session.AddFriend;
 import json.client.session.RequestFriendList;
@@ -31,22 +26,19 @@ public class DealWithJSON {
 			String name = json.getJSONName();
 			switch(name){
 			case "json.client.session.RequestFriendList":
-			{
 				dealwithFriendList(json,channel.id().asLongText());
 				break;
-			}
 			case "json.client.session.AddFriend":
-			{
 				dealwithAddFriend(json,channel.id().asLongText());
 				break;
-			}
 			case "json.client.session.SendMessage":
-			{
 				dealwithSendMessage(json,channel.id().asLongText());
 				break;
-			}
+			case "json.client.session.AddFriendResult":
+				dealwithAddFriendResult(json,channel.id().asLongText());
+				break;
 			default:
-				System.out.println("can't deal with "+name);
+				System.out.println("Server: can't deal with "+name);
 				/*System.out.println("can't find command"+name+" from"+ChannelManager.getUsernamebyId(channel.id().asLongText()));
 				CannotFindCommand cannotFindCommand = new CannotFindCommand();
 				cannotFindCommand.setWrongCommand(name);
@@ -61,6 +53,11 @@ public class DealWithJSON {
 		
 	}
 
+	private void dealwithAddFriendResult(JSONNameandString json, String asLongText) {
+		System.out.println(json.getJSONStr());
+		
+	}
+
 	private void dealwithSendMessage(JSONNameandString json, String asLongText) {
 		SendMessage sendmessage = JSON.parseObject(json.getJSONStr(), SendMessage.class);
 		SendBackJSON back = new SendBackJSON();
@@ -72,11 +69,15 @@ public class DealWithJSON {
 
 	private void dealwithAddFriend(JSONNameandString json, String channelid) {
 		AddFriend addFriend = JSON.parseObject(json.getJSONStr(), AddFriend.class);
-		RunAddFriend runAddFriend = new RunAddFriend();
-		runAddFriend.setFriendname(addFriend.getFriendname());
-		runAddFriend.setGroup(addFriend.getGroup());
-		runAddFriend.setUsername(username);
-		StatementManager.getService().submit(runAddFriend);
+		if(VerifyLogin.verifyName(addFriend.getFriendname())){
+			SendBackJSON back = new SendBackJSON();
+			back.setChannelID(ChannelManager.getIdbyName(addFriend.getFriendname()));
+			back.setJSONName(AddFriend.class.getName());
+			back.setJSONStr(JSON.toJSONString(addFriend));
+			ChannelManager.sendback(back);
+		}else{
+			System.out.println("unfinished");
+		}
 	}
 
 	private void dealwithFriendList(JSONNameandString json, final String channelid) {

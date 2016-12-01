@@ -1,6 +1,8 @@
 package json.server.login;
 
-public class RegisiterResult {
+import json.server.ServerJSON;
+
+public class RegisiterResult implements ServerJSON{
 
 	private boolean success;
 	private String reason;

@@ -4,22 +4,27 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-
+import com.alibaba.fastjson.JSON;
 import client.ClientManage;
+import json.client.session.AddFriend;
+import json.client.session.AddFriendResult;
+import json.util.JSONNameandString;
 
 public class GUIVerifyAddFriend extends JFrame {
 
-	private String name;
+	private static final long serialVersionUID = -3747369813497310375L;
+	private AddFriend requestjson;
+	private final JComboBox<String> selectgroup = new JComboBox<String>();
 	
-	public GUIVerifyAddFriend(String name){
-		this.name  = name;
+	public GUIVerifyAddFriend(AddFriend addfriend){
+		this.requestjson  = addfriend;
 		
 		Toolkit kit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = kit.getScreenSize();
@@ -36,17 +41,33 @@ public class GUIVerifyAddFriend extends JFrame {
 		center.setLayout(new GridLayout(2,2));
 		JLabel username = new JLabel("name",JLabel.CENTER);
 		center.add(username);
-		JLabel friendname = new JLabel(name,JLabel.CENTER);
+		JLabel friendname = new JLabel(requestjson.getName(),JLabel.CENTER);
 		center.add(friendname);
 		JLabel group = new JLabel("group",JLabel.CENTER);
 		center.add(group);
-		JComboBox selectgroup = new JComboBox();
 		for(String s : ClientManage.getMainwindow().getGroup())
 			selectgroup.addItem(s);
 		center.add(selectgroup);
 		
 		JPanel bottom = new JPanel();
 		JButton yes = new JButton("yes");
+		yes.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AddFriendResult addFriendResult = new AddFriendResult();
+				addFriendResult.setReceiverestate(true);
+				addFriendResult.setRequestorname(requestjson.getName());
+				addFriendResult.setRequestorgroup(requestjson.getGroup());
+				addFriendResult.setReceivername(requestjson.getFriendname());
+				addFriendResult.setReceivergroup((String)(selectgroup.getSelectedItem()));
+				JSONNameandString json = new JSONNameandString();
+				json.setJSONName(AddFriendResult.class.getName());
+				json.setJSONStr(JSON.toJSONString(addFriendResult));
+				ClientManage.sendJSONNameandString(json);
+				dispose();
+			}
+		});
 		bottom.add(yes);
 		JButton no = new JButton("no");
 		bottom.add(no);

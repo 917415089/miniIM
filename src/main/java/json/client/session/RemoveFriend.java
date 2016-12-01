@@ -2,7 +2,9 @@ package json.client.session;
 
 import java.util.List;
 
-public class RemoveFriend {
+import json.client.ClientJSON;
+
+public class RemoveFriend implements ClientJSON {
 
 	private List<String> friends;
 

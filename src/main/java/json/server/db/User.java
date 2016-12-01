@@ -1,6 +1,8 @@
 package json.server.db;
 
-public class User {
+import json.server.ServerJSON;
+
+public class User implements ServerJSON{
 
 	private String username;
 	private String userpassword;

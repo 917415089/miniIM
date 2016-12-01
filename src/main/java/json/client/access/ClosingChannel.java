@@ -1,6 +1,8 @@
 package json.client.access;
 
-public class ClosingChannel {
+import json.client.ClientJSON;
+
+public class ClosingChannel implements ClientJSON{
 
 	private String reaseon;
 

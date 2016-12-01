@@ -1,6 +1,8 @@
 package json.server.login;
 
-public class SuccessLogin {
+import json.server.ServerJSON;
+
+public class SuccessLogin implements ServerJSON{
 	private String token;
 
 	public String getToken() {
