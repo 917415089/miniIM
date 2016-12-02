@@ -6,6 +6,7 @@ import client.gui.GUIVerifyAddFriend;
 import client.gui.LoginDialog;
 import com.alibaba.fastjson.JSON;
 import json.client.session.AddFriend;
+import json.client.session.AddFriendResult;
 import json.client.session.RequestFriendList;
 import json.client.session.SendMessage;
 import json.server.login.RegisiterResult;
@@ -46,6 +47,9 @@ public class DealWithReceQue implements Runnable{
 				case "json.client.session.SendMessage":
 					dealwithSendMessage(take.getJSONStr());
 					break;
+				case "json.client.session.AddFriendResult":
+					dealwithAddFriendResult(take.getJSONStr());
+					break;
 				default:
 					System.err.println("Client : can't deal "+take.getJSONName());
 				}
@@ -55,6 +59,17 @@ public class DealWithReceQue implements Runnable{
 			}
 		}
 	}
+	private void dealwithAddFriendResult(String jsonStr) {
+		AddFriendResult friendResult = JSON.parseObject(jsonStr, AddFriendResult.class);
+		if(friendResult.isReceiverestate()){
+			ClientManage.addPathNode(friendResult.getRequestorgroup()+"."+friendResult.getReceivername());
+			JOptionPane.showMessageDialog(null, "new friend:"+friendResult.getReceivername()+"\ngroup:"+friendResult.getRequestorgroup());			
+		}else{
+			JOptionPane.showMessageDialog(null, "Adding Friend request was rejected by "+friendResult.getReceivername());
+		}
+		
+	}
+
 	private void dealwithSendMessage(String jsonStr) {
 		SendMessage sendmessage = JSON.parseObject(jsonStr, SendMessage.class);
 		ClientManage.displayMessage(sendmessage);

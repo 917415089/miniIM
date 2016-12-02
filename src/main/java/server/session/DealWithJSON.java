@@ -10,6 +10,7 @@ import util.VerifyLogin;
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.Channel;
 import json.client.session.AddFriend;
+import json.client.session.AddFriendResult;
 import json.client.session.RequestFriendList;
 import json.client.session.SendMessage;
 import json.server.session.FriendMeta;
@@ -54,8 +55,13 @@ public class DealWithJSON {
 	}
 
 	private void dealwithAddFriendResult(JSONNameandString json, String asLongText) {
-		System.out.println(json.getJSONStr());
-		
+		AddFriendResult friendResult = JSON.parseObject(json.getJSONStr(), AddFriendResult.class);
+		SendBackJSON back = new SendBackJSON();
+		back.setJSONName(json.getJSONName());
+		back.setJSONStr(json.getJSONStr());
+		back.setChannelID(ChannelManager.getIdbyName(friendResult.getRequestorname()));
+		ChannelManager.sendback(back);
+//		StatementManager.getService().submit(new Cal);
 	}
 
 	private void dealwithSendMessage(JSONNameandString json, String asLongText) {

@@ -85,5 +85,9 @@ public class StatementManager {
 		return UniqueInstance.JSONque;
 	}
 
-
+	public static void sendDBCallable(DBCallable task){
+		Statement statement = StatementManager.getStatement();
+		UniqueInstance.service.submit(task);
+		
+	}
 }

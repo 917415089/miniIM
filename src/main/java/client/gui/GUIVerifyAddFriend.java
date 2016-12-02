@@ -64,12 +64,30 @@ public class GUIVerifyAddFriend extends JFrame {
 				JSONNameandString json = new JSONNameandString();
 				json.setJSONName(AddFriendResult.class.getName());
 				json.setJSONStr(JSON.toJSONString(addFriendResult));
+				ClientManage.addPathNode(addFriendResult.getReceivergroup()+"."+addFriendResult.getRequestorname());
 				ClientManage.sendJSONNameandString(json);
 				dispose();
 			}
 		});
 		bottom.add(yes);
 		JButton no = new JButton("no");
+		no.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AddFriendResult addFriendResult = new AddFriendResult();
+				addFriendResult.setReceiverestate(false);
+				addFriendResult.setRequestorname(requestjson.getName());
+				addFriendResult.setRequestorgroup(requestjson.getGroup());
+				addFriendResult.setReceivername(requestjson.getFriendname());
+				JSONNameandString json = new JSONNameandString();
+				json.setJSONName(AddFriendResult.class.getName());
+				json.setJSONStr(JSON.toJSONString(addFriendResult));
+				ClientManage.addPathNode(addFriendResult.getReceivergroup()+"."+addFriendResult.getRequestorname());
+				ClientManage.sendJSONNameandString(json);
+				dispose();
+			}
+		});
 		bottom.add(no);
 		add(bottom,BorderLayout.SOUTH);
 		setVisible(true);
