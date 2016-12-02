@@ -66,7 +66,7 @@ public class ServerSession {
 		userpassword = clientRegister.getUserPassword();
 		useremail = clientRegister.getEmail();
 		
-		StatementManager.getService().submit(new DBCallable(){
+		StatementManager.sendDBCallable(new DBCallable(){
 
 			@Override
 			public SendBackJSON run(){
@@ -104,10 +104,10 @@ public class ServerSession {
 		username = clientLogin.getName();
 		userpassword = clientLogin.getPassword();
 		
-		StatementManager.getService().submit(new DBCallable(){
+		StatementManager.sendDBCallable(new DBCallable(){
 
 			@Override
-			public SendBackJSON run() throws Exception {
+			public SendBackJSON run() {
 //				Statement sta = StatementManager.getStatement();
 				String sql = "select * from user where username=\""+username+"\";";
 				String ret;

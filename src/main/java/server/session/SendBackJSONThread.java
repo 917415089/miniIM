@@ -27,6 +27,7 @@ public class SendBackJSONThread implements Callable<Future<SendBackJSON>> {
 	public Future<SendBackJSON> call() throws Exception {
 		while(true){
 			SendBackJSON DBResult = que.take().get();
+			if(DBResult==null) continue;
 			JSONNameandString SendBack = new JSONNameandString();
 			SendBack.setJSONName(DBResult.getJSONName());
 			SendBack.setJSONStr(DBResult.getJSONStr());

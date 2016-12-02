@@ -55,12 +55,31 @@ public class DealWithJSON {
 	}
 
 	private void dealwithAddFriendResult(JSONNameandString json, String asLongText) {
-		AddFriendResult friendResult = JSON.parseObject(json.getJSONStr(), AddFriendResult.class);
+		final AddFriendResult friendResult = JSON.parseObject(json.getJSONStr(), AddFriendResult.class);
 		SendBackJSON back = new SendBackJSON();
 		back.setJSONName(json.getJSONName());
 		back.setJSONStr(json.getJSONStr());
 		back.setChannelID(ChannelManager.getIdbyName(friendResult.getRequestorname()));
 		ChannelManager.sendback(back);
+		if(friendResult.isReceiverestate()){
+			StatementManager.sendDBCallable(new DBCallable(){
+
+				@Override
+				protected SendBackJSON run() {
+					String  sql = "INSERT INTO friend VALUES (\'"+friendResult.getRequestorname()+"\',\'"+friendResult.getReceivername()+"\',\'"+friendResult.getRequestorgroup()+"\'),(\'"+friendResult.getReceivername()+"\',\'"+friendResult.getRequestorname()+"\',\'"+friendResult.getReceivergroup()+"\');";
+					try {
+						protectsta.executeUpdate(sql);
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return null;
+				}
+
+				
+			});
+		}
+		
 //		StatementManager.getService().submit(new Cal);
 	}
 
@@ -89,8 +108,7 @@ public class DealWithJSON {
 	private void dealwithFriendList(JSONNameandString json, final String channelid) {
 		RequestFriendList friendList = JSON.parseObject(json.getJSONStr(),RequestFriendList.class);
 		if(friendList.getGroup().equalsIgnoreCase("friends")){
-			
-			 StatementManager.getService().submit(new DBCallable(){
+			 StatementManager.sendDBCallable(new DBCallable(){
 				@Override
 				public SendBackJSON run() {
 					SendBackJSON ret = new SendBackJSON();
@@ -122,7 +140,6 @@ public class DealWithJSON {
 					return ret;
 				}
 			 });
-			 
 		}
 	}
 
@@ -141,7 +158,4 @@ public class DealWithJSON {
 	public void setUserpassword(String userpassword) {
 		this.userpassword = userpassword;
 	}
-	
-	
-
 }

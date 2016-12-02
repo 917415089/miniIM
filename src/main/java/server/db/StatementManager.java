@@ -61,7 +61,7 @@ public class StatementManager {
 	}
 
 	@SuppressWarnings("static-access")
-	static public Statement getStatement() {
+	static  Statement getStatement() {
 		try {
 			return UniqueInstance.statementque.take();
 		} catch (InterruptedException e) {
@@ -71,23 +71,11 @@ public class StatementManager {
 	}
 	
 	@SuppressWarnings("static-access")
-	static public void backStatement(Statement sta){
+	static  void backStatement(Statement sta){
 		UniqueInstance.statementque.add(sta);
 	}
 
-	@SuppressWarnings("static-access")
-	public static ExecutorCompletionService<SendBackJSON> getService() {
-		return UniqueInstance.service;
-	}
-
-	@SuppressWarnings("static-access")
-	public static BlockingQueue<Future<SendBackJSON>> getJSONque() {
-		return UniqueInstance.JSONque;
-	}
-
 	public static void sendDBCallable(DBCallable task){
-		Statement statement = StatementManager.getStatement();
 		UniqueInstance.service.submit(task);
-		
 	}
 }

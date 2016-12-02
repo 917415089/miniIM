@@ -12,7 +12,6 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -62,9 +61,15 @@ public class MainWindow extends JFrame implements Runnable{
 		friendlist.setBounds(0, 0, 500, 500);
 		friendlist.setBorder(BorderFactory.createTitledBorder("   Friend List   "));
 		left.add(friendlist,BorderLayout.CENTER);
+		JPanel buttonJpanel = new JPanel();
+		buttonJpanel.setLayout(new BoxLayout(buttonJpanel, BoxLayout.Y_AXIS));
+		left.add(buttonJpanel, BorderLayout.SOUTH);
 		JButton AddFriend = new JButton("Add Friend");
-		left.add(AddFriend,BorderLayout.SOUTH);
+
+		buttonJpanel.add(AddFriend);
 		AddFriend.addActionListener(new AddFriendAction());
+		JButton removeFriend = new JButton("RemoveFriend");
+		buttonJpanel.add(removeFriend);
 		
 		right = new JPanel();
 		add(right,BorderLayout.EAST);

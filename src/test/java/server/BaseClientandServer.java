@@ -46,7 +46,7 @@ public class BaseClientandServer {
 		Thread.sleep(3000);
 	}
 	
-	
+	@Deprecated
 	@Test
 	public void TestBaseRegister() throws InterruptedException{
 		BaseServer baseserver = new BaseServer();
@@ -68,7 +68,7 @@ public class BaseClientandServer {
 		ClientManage.sendJSONNameandString(json);
 		Thread.sleep(1000);
 		
-		String query = "select * from user where username =\'user10\';";
+/*		String query = "select * from user where username =\'user10\';";
 		Statement sta = StatementManager.getStatement();
 		try {
 			ResultSet resultSet = sta.executeQuery(query);
@@ -84,7 +84,7 @@ public class BaseClientandServer {
 		}finally{
 			if(sta!=null)
 				StatementManager.backStatement(sta);
-		}
+		}*/
 		Thread.sleep(1000);
 	}
 	

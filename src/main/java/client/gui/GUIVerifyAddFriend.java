@@ -83,7 +83,6 @@ public class GUIVerifyAddFriend extends JFrame {
 				JSONNameandString json = new JSONNameandString();
 				json.setJSONName(AddFriendResult.class.getName());
 				json.setJSONStr(JSON.toJSONString(addFriendResult));
-				ClientManage.addPathNode(addFriendResult.getReceivergroup()+"."+addFriendResult.getRequestorname());
 				ClientManage.sendJSONNameandString(json);
 				dispose();
 			}
