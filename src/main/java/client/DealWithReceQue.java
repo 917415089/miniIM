@@ -12,6 +12,7 @@ import json.client.session.SendMessage;
 import json.server.login.RegisiterResult;
 import json.server.session.FriendList;
 import json.server.session.FriendMeta;
+import json.server.session.RemoveFriendResult;
 import json.util.JSONNameandString;
 
 public class DealWithReceQue implements Runnable{
@@ -50,6 +51,9 @@ public class DealWithReceQue implements Runnable{
 				case "json.client.session.AddFriendResult":
 					dealwithAddFriendResult(take.getJSONStr());
 					break;
+				case "json.server.session.RemoveFriendResult":
+					dealwithRemoveFriendResult(take.getJSONStr());
+					break;
 				default:
 					System.err.println("Client : can't deal "+take.getJSONName());
 				}
@@ -59,6 +63,12 @@ public class DealWithReceQue implements Runnable{
 			}
 		}
 	}
+	private void dealwithRemoveFriendResult(String jsonStr) {
+		RemoveFriendResult result = JSON.parseObject(jsonStr, RemoveFriendResult.class);
+		ClientManage.rmPathNode(result.getName());
+		
+	}
+
 	private void dealwithAddFriendResult(String jsonStr) {
 		AddFriendResult friendResult = JSON.parseObject(jsonStr, AddFriendResult.class);
 		if(friendResult.isReceiverestate()){

@@ -60,4 +60,9 @@ public class ClientManage {
 	public static BlockingQueue<JSONNameandString> getReceque() {
 		return receque;
 	}
+
+	public static void rmPathNode(String name2) {
+		mainwindow.rmPathNode(name2);
+		
+	}
 }

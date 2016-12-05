@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,14 +63,28 @@ public class MainWindow extends JFrame implements Runnable{
 		friendlist.setBorder(BorderFactory.createTitledBorder("   Friend List   "));
 		left.add(friendlist,BorderLayout.CENTER);
 		JPanel buttonJpanel = new JPanel();
-		buttonJpanel.setLayout(new BoxLayout(buttonJpanel, BoxLayout.Y_AXIS));
+		buttonJpanel.setLayout(new GridLayout(2, 1));
 		left.add(buttonJpanel, BorderLayout.SOUTH);
 		JButton AddFriend = new JButton("Add Friend");
-
 		buttonJpanel.add(AddFriend);
-		AddFriend.addActionListener(new AddFriendAction());
+		AddFriend.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new GUIAddFriend();
+				
+			}
+		});
 		JButton removeFriend = new JButton("RemoveFriend");
 		buttonJpanel.add(removeFriend);
+		removeFriend.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new GUIRmFriend(root);
+				
+			}
+		});
 		
 		right = new JPanel();
 		add(right,BorderLayout.EAST);
@@ -253,7 +268,6 @@ public class MainWindow extends JFrame implements Runnable{
 			center.add(name2GUISession.get(name).jpanel);
 			center.updateUI();
 		}
-		
 	}
 	
 	private class GUISession{
@@ -264,17 +278,6 @@ public class MainWindow extends JFrame implements Runnable{
 			this.button = button;
 			this.jpanel = jpanel;
 		}
-		
-	}
-
-	private class AddFriendAction implements ActionListener{
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			@SuppressWarnings("unused")
-			GUIAddFriend guiAddFriend = new GUIAddFriend();
-		}
-		
 	}
 
 	public  void displayMessage(SendMessage sendmessage) {
@@ -300,6 +303,31 @@ public class MainWindow extends JFrame implements Runnable{
 			ret.add((String)tmp.getUserObject());
 		}
 		return ret;		
+	}
+
+	public void rmPathNode(String name2) {
+        
+        DefaultMutableTreeNode node = root;
+        int len = node.getChildCount();
+        for(int i = 0 ; i < len ;i++){
+        	DefaultMutableTreeNode child = (DefaultMutableTreeNode)node.getChildAt(i);
+        	int m = child.getChildCount();
+        	for(int j = 0 ; j < m ;j++){
+            	DefaultMutableTreeNode name = (DefaultMutableTreeNode)child.getChildAt(i);
+            	if(name.getUserObject().equals(name2)){
+            		child.remove(j);
+            		if(child.getChildCount()==0){
+            			node.remove(i);
+            		}
+                    friendTree.expandPath(new TreePath(root));
+                    friendTree.updateUI();
+            		return;
+            	}
+        	}
+        }
+        friendTree.expandPath(new TreePath(root));
+        friendTree.updateUI();
+		
 	}
 }
 

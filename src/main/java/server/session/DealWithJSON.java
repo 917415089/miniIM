@@ -11,9 +11,11 @@ import com.alibaba.fastjson.JSON;
 import io.netty.channel.Channel;
 import json.client.session.AddFriend;
 import json.client.session.AddFriendResult;
+import json.client.session.RemoveFriend;
 import json.client.session.RequestFriendList;
 import json.client.session.SendMessage;
 import json.server.session.FriendMeta;
+import json.server.session.RemoveFriendResult;
 import json.server.session.SendBackJSON;
 import json.server.session.FriendList;
 import json.util.JSONNameandString;
@@ -38,6 +40,9 @@ public class DealWithJSON {
 			case "json.client.session.AddFriendResult":
 				dealwithAddFriendResult(json,channel.id().asLongText());
 				break;
+			case "json.client.session.RemoveFriend":
+				dealwithRemoveFriend(json,channel.id().asLongText());
+				break;
 			default:
 				System.out.println("Server: can't deal with "+name);
 				/*System.out.println("can't find command"+name+" from"+ChannelManager.getUsernamebyId(channel.id().asLongText()));
@@ -51,6 +56,34 @@ public class DealWithJSON {
 				send = EnDeCryProcess.SysKeyEncryWithBase64(send, ChannelManager.getSecreKeybyId(channel.id().asLongText()));
 				channel.writeAndFlush(new TextWebSocketFrame(send));*/
 			}
+		
+	}
+
+	private void dealwithRemoveFriend(JSONNameandString json, final String asLongText) {
+		final RemoveFriend removeFriend = JSON.parseObject(json.getJSONStr(), RemoveFriend.class);
+		StatementManager.sendDBCallable(new DBCallable() {
+			
+			@Override
+			protected SendBackJSON run() {
+				String sql = "DELETE FROM friend WHERE (mastername='"+username+"' and friendname='"+removeFriend.getName()+"') OR (mastername='"+removeFriend.getName()+"' and friendname='"+username+"');";
+				try {
+					protectsta.executeUpdate(sql);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				RemoveFriendResult removeFriendResult = new RemoveFriendResult();
+				removeFriendResult.setName(removeFriend.getName());
+				removeFriendResult.setSuccess(true);
+				
+				SendBackJSON back = new SendBackJSON();
+				back.setChannelID(asLongText);
+				back.setJSONName(RemoveFriendResult.class.getName());
+				back.setJSONStr(JSON.toJSONString(removeFriendResult));
+				return back;
+			}
+		});
+		
 		
 	}
 

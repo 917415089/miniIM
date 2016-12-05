@@ -1,20 +1,16 @@
 package json.client.session;
 
-import java.util.List;
-
 import json.client.ClientJSON;
 
 public class RemoveFriend implements ClientJSON {
 
-	private List<String> friends;
+	private String name ;
 
-	public List<String> getFriends() {
-		return friends;
+	public String getName() {
+		return name;
 	}
 
-	public void setFriends(List<String> friends) {
-		this.friends = friends;
+	public void setName(String name) {
+		this.name = name;
 	}
-	
-	
 }
