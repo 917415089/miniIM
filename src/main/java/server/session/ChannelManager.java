@@ -2,15 +2,22 @@ package server.session;
 
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+
+import java.sql.SQLException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import util.EnDeCryProcess;
 import com.alibaba.fastjson.JSON;
 import json.server.session.SendBackJSON;
 import json.util.JSONNameandString;
+import server.db.DBCallable;
+import server.db.StatementManager;
 
 public class ChannelManager {
 
@@ -28,7 +35,8 @@ public class ChannelManager {
 	
 	private ChannelManager(){
 		super();
-		Thread thread = new Thread(new Runnable() {
+		ExecutorService sendBackThreadPool = Executors.newFixedThreadPool(2);
+		sendBackThreadPool.submit(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -50,7 +58,6 @@ public class ChannelManager {
 				
 			}
 		});
-		thread.start();
 	}
 
 	public static  void addId2Channel(String asLongText, Channel channel) {
@@ -96,11 +103,31 @@ public class ChannelManager {
 		return channelmanager.id2username.get(asLongText);
 	}
 
-	public static String getIdbyName(String name) {
+	private static String getIdbyName(String name) {
 		return channelmanager.uername2channel.get(name);
 	}
 
-	public static boolean sendback(SendBackJSON back){
+	public static boolean sendback(final SendBackJSON back,final String name){
+		String longid = getIdbyName(name);
+		if(longid==null){
+			StatementManager.sendDBCallable(new DBCallable() {
+				
+				@Override
+				protected SendBackJSON run() {
+					String sql = "INSERT INTO offline (username,json) VALUES('"+name+"','"+JSON.toJSONString(back)+"');";
+					System.out.println(sql);
+					try {
+						protectsta.executeUpdate(sql);
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return null;
+				}
+			});
+			return false;
+		}
+		back.setChannelID(longid);
 		return sendback.offer(back);
 	}
 	

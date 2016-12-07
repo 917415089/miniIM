@@ -3,6 +3,8 @@ package client;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.crypto.SecretKey;
 import util.EnDeCryProcess;
 import com.alibaba.fastjson.JSON;
@@ -62,8 +64,9 @@ public class BaseClient extends Thread {
 		EventLoopGroup group = new NioEventLoopGroup();
 		
 		try{
-			Thread thread = new Thread(new DealWithReceQue(receque));
-			thread.start();
+			ExecutorService DealWithReceQueThreadPool = Executors.newFixedThreadPool(2);
+			DealWithReceQueThreadPool.submit(new DealWithReceQue(receque));
+			DealWithReceQueThreadPool.submit(new DealWithReceQue(receque));
 			URI uri = new URI(URL);
 			String scheme = uri.getScheme() ==null?"ws":uri.getScheme();
 	//		final String host = uri.getHost() == null ?"127.0.0.1":uri.getHost();

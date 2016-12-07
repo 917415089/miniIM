@@ -5,6 +5,8 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -69,8 +71,8 @@ public class LoginDialog extends JFrame{
 			ClientManage.setName(name);
 			String pass = new String(password.getPassword());
 			BaseClient baseClient = new BaseClient(name,pass);
-			Thread thread = new Thread(baseClient);
-			thread.start();
+			ExecutorService singleBaseClient = Executors.newSingleThreadExecutor();
+			singleBaseClient.submit(baseClient);
 		}
 		
 	}
@@ -80,9 +82,9 @@ public class LoginDialog extends JFrame{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 
-			BaseClient baseClient = new BaseClient();
-			Thread thread = new Thread(baseClient);
-			thread.start();
+			BaseClient registerclient = new BaseClient();
+			ExecutorService singleBaseClient = Executors.newSingleThreadExecutor();
+			singleBaseClient.submit(registerclient);
 			@SuppressWarnings("unused")
 			GUIRegister guiRegister = new GUIRegister();
 		}

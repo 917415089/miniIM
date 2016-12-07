@@ -7,6 +7,7 @@ import client.gui.LoginDialog;
 import com.alibaba.fastjson.JSON;
 import json.client.session.AddFriend;
 import json.client.session.AddFriendResult;
+import json.client.session.OfflineRequest;
 import json.client.session.RequestFriendList;
 import json.client.session.SendMessage;
 import json.server.login.RegisiterResult;
@@ -120,6 +121,10 @@ public class DealWithReceQue implements Runnable{
 		for( FriendMeta fm : friendList.getFriends()){
 			ClientManage.addPathNode(fm.getGroup()+"."+fm.getName());
 		}
+		//unfinished;
+		JSONNameandString json = new JSONNameandString();
+		json.setJSONName(OfflineRequest.class.getName());
+		ClientManage.sendJSONNameandString(json);
 	}
 
 	private void dealwithRegisterResult(String jsonStr) {

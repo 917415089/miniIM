@@ -8,6 +8,8 @@ import server.db.DBCallable;
 import server.db.StatementManager;
 import util.VerifyLogin;
 import com.alibaba.fastjson.JSON;
+
+import client.ClientManage;
 import io.netty.channel.Channel;
 import json.client.session.AddFriend;
 import json.client.session.AddFriendResult;
@@ -45,6 +47,9 @@ public class DealWithJSON {
 			case "json.client.session.RemoveFriend":
 				dealwithRemoveFriend(json,channel.id().asLongText());
 				break;
+			case "json.client.session.OfflineRequest":
+				dealwithOfflineRequest(channel.id().asLongText());
+				break;
 			default:
 				System.out.println("Server: can't deal with "+name);
 				/*System.out.println("can't find command"+name+" from"+ChannelManager.getUsernamebyId(channel.id().asLongText()));
@@ -58,6 +63,33 @@ public class DealWithJSON {
 				send = EnDeCryProcess.SysKeyEncryWithBase64(send, ChannelManager.getSecreKeybyId(channel.id().asLongText()));
 				channel.writeAndFlush(new TextWebSocketFrame(send));*/
 			}
+		
+	}
+
+	private void dealwithOfflineRequest(final String asLongText) {
+		final String name = username;
+		StatementManager.sendDBCallable(new DBCallable() {
+			
+			@Override
+			protected SendBackJSON run() {
+				String sql = "SELECT * FROM offline WHERE username='"+name+"';";
+				try {
+					ResultSet executeQuery = protectsta.executeQuery(sql);
+					while(executeQuery.next()){
+						String json = executeQuery.getString("json");
+						SendBackJSON backJSON = JSON.parseObject(json, SendBackJSON.class);
+//unfinished
+						System.out.println(backJSON);
+						ChannelManager.sendback(backJSON, name);
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				//unfinish remove
+				return null;
+			}
+		});
 		
 	}
 
@@ -89,8 +121,7 @@ public class DealWithJSON {
 				SendBackJSON sidejson = new SendBackJSON();
 				sidejson.setJSONName(RmFriendSlid.class.getName());
 				sidejson.setJSONStr(JSON.toJSONString(side));
-				sidejson.setChannelID(ChannelManager.getIdbyName(removeFriend.getName()));
-				ChannelManager.sendback(sidejson);
+				ChannelManager.sendback(sidejson,removeFriend.getName());
 				
 				return back;
 			}
@@ -104,8 +135,7 @@ public class DealWithJSON {
 		SendBackJSON back = new SendBackJSON();
 		back.setJSONName(json.getJSONName());
 		back.setJSONStr(json.getJSONStr());
-		back.setChannelID(ChannelManager.getIdbyName(friendResult.getRequestorname()));
-		ChannelManager.sendback(back);
+		ChannelManager.sendback(back,friendResult.getRequestorname());
 		if(friendResult.isReceiverestate()){
 			StatementManager.sendDBCallable(new DBCallable(){
 
@@ -133,18 +163,17 @@ public class DealWithJSON {
 		SendBackJSON back = new SendBackJSON();
 		back.setJSONName(SendMessage.class.getName());
 		back.setJSONStr(JSON.toJSONString(sendmessage));
-		back.setChannelID(ChannelManager.getIdbyName(sendmessage.getFriend()));
-		ChannelManager.sendback(back);
+		ChannelManager.sendback(back,sendmessage.getFriend());
 	}
 
 	private void dealwithAddFriend(JSONNameandString json, String channelid) {
 		AddFriend addFriend = JSON.parseObject(json.getJSONStr(), AddFriend.class);
 		if(VerifyLogin.verifyName(addFriend.getFriendname())){
 			SendBackJSON back = new SendBackJSON();
-			back.setChannelID(ChannelManager.getIdbyName(addFriend.getFriendname()));
+
 			back.setJSONName(AddFriend.class.getName());
 			back.setJSONStr(JSON.toJSONString(addFriend));
-			ChannelManager.sendback(back);
+			ChannelManager.sendback(back,addFriend.getFriendname());
 		}else{
 			System.out.println("unfinished");
 		}
@@ -186,6 +215,7 @@ public class DealWithJSON {
 				}
 			 });
 		}
+		
 	}
 
 	public String getUsername() {

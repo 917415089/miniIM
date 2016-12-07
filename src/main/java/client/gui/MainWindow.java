@@ -25,8 +25,6 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-
-import client.ClientManage;
 import json.client.session.SendMessage;
 
 public class MainWindow extends JFrame implements Runnable{
