@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import com.alibaba.fastjson.JSON;
 import client.ClientManage;
@@ -47,6 +48,7 @@ public class GUIVerifyAddFriend extends JFrame {
 		center.add(group);
 		for(String s : ClientManage.getMainwindow().getGroup())
 			selectgroup.addItem(s);
+		selectgroup.addItem("new Group");
 		center.add(selectgroup);
 		
 		JPanel bottom = new JPanel();
@@ -60,7 +62,11 @@ public class GUIVerifyAddFriend extends JFrame {
 				addFriendResult.setRequestorname(requestjson.getName());
 				addFriendResult.setRequestorgroup(requestjson.getGroup());
 				addFriendResult.setReceivername(requestjson.getFriendname());
-				addFriendResult.setReceivergroup((String)(selectgroup.getSelectedItem()));
+				if(selectgroup.getSelectedItem().equals("new Group")){
+					addFriendResult.setReceivergroup(JOptionPane.showInputDialog("input group name:"));
+				}else{
+					addFriendResult.setReceivergroup((String)(selectgroup.getSelectedItem()));
+				}
 				JSONNameandString json = new JSONNameandString();
 				json.setJSONName(AddFriendResult.class.getName());
 				json.setJSONStr(JSON.toJSONString(addFriendResult));

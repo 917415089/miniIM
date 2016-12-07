@@ -13,6 +13,7 @@ import json.server.login.RegisiterResult;
 import json.server.session.FriendList;
 import json.server.session.FriendMeta;
 import json.server.session.RemoveFriendResult;
+import json.server.session.RmFriendSlid;
 import json.util.JSONNameandString;
 
 public class DealWithReceQue implements Runnable{
@@ -29,6 +30,7 @@ public class DealWithReceQue implements Runnable{
 		while(true){
 			try {
 				JSONNameandString take = receque.take();
+				System.out.println("receive json"+take.getJSONStr()+"(in DealWithReceQue 32 line)");
 				switch(take.getJSONName()){
 				case "json.server.login.WrongNameorPassword":
 					dealwithWrongNameorPassword(take.getJSONStr());
@@ -54,6 +56,9 @@ public class DealWithReceQue implements Runnable{
 				case "json.server.session.RemoveFriendResult":
 					dealwithRemoveFriendResult(take.getJSONStr());
 					break;
+				case "json.server.session.RmFriendSlid":
+					dealwithRmFriendSlid(take.getJSONStr());
+					break;
 				default:
 					System.err.println("Client : can't deal "+take.getJSONName());
 				}
@@ -63,6 +68,12 @@ public class DealWithReceQue implements Runnable{
 			}
 		}
 	}
+	private void dealwithRmFriendSlid(String jsonStr) {
+		RmFriendSlid slid = JSON.parseObject(jsonStr, RmFriendSlid.class);
+		ClientManage.rmPathNode(slid.getName());
+		
+	}
+
 	private void dealwithRemoveFriendResult(String jsonStr) {
 		RemoveFriendResult result = JSON.parseObject(jsonStr, RemoveFriendResult.class);
 		ClientManage.rmPathNode(result.getName());
@@ -91,7 +102,7 @@ public class DealWithReceQue implements Runnable{
 		logindaialog.setVisible(false);
 		ClientManage.setMainWindowVisible(true);
 		RequestFriendList requestFriendList = new RequestFriendList();
-		requestFriendList.setGroup("friends");
+		requestFriendList.setGroup("Friends");
 		JSONNameandString json = new JSONNameandString();
 		json.setJSONName(RequestFriendList.class.getName());
 		json.setJSONStr(JSON.toJSONString(requestFriendList));

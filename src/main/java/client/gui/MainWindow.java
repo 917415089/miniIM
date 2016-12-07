@@ -26,6 +26,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import client.ClientManage;
 import json.client.session.SendMessage;
 
 public class MainWindow extends JFrame implements Runnable{
@@ -313,7 +314,7 @@ public class MainWindow extends JFrame implements Runnable{
         	DefaultMutableTreeNode child = (DefaultMutableTreeNode)node.getChildAt(i);
         	int m = child.getChildCount();
         	for(int j = 0 ; j < m ;j++){
-            	DefaultMutableTreeNode name = (DefaultMutableTreeNode)child.getChildAt(i);
+            	DefaultMutableTreeNode name = (DefaultMutableTreeNode)child.getChildAt(j);
             	if(name.getUserObject().equals(name2)){
             		child.remove(j);
             		if(child.getChildCount()==0){

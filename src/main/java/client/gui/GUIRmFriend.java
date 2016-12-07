@@ -106,6 +106,7 @@ public class GUIRmFriend extends JFrame {
 				json.setJSONName(RemoveFriend.class.getName());
 				json.setJSONStr(JSON.toJSONString(mf));
 				ClientManage.sendJSONNameandString(json);
+				dispose();
 			}
 		});
 		

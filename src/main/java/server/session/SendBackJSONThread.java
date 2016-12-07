@@ -32,7 +32,7 @@ public class SendBackJSONThread implements Callable<Future<SendBackJSON>> {
 			SendBack.setJSONName(DBResult.getJSONName());
 			SendBack.setJSONStr(DBResult.getJSONStr());
 			String ret = JSON.toJSONString(SendBack);
-			System.out.println("sendback :——channal:"+ChannelManager.getUsernamebyId(DBResult.getChannelID())+"——json:"+ret);
+			System.out.println("sendback :——channal:"+ChannelManager.getUsernamebyId(DBResult.getChannelID())+"——json:"+ret+"\n(in SendBackJSONThread 35 line)");
 			ret = EnDeCryProcess.SysKeyEncryWithBase64(ret, ChannelManager.getSecreKeybyId(DBResult.getChannelID()));
 			Channel channel = ChannelManager.getChannelbyId(DBResult.getChannelID());
 			channel.writeAndFlush(new TextWebSocketFrame(ret));

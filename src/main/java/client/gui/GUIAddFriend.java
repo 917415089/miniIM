@@ -8,8 +8,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -22,7 +24,8 @@ import json.util.JSONNameandString;
 public class GUIAddFriend extends JFrame{
 
 	private static final long serialVersionUID = 1L;
-	private JTextField inputgroup;
+	
+	private JComboBox<String> box = new JComboBox<String>();
 	private JTextField inputname;
 	
 	public GUIAddFriend() {
@@ -42,8 +45,10 @@ public class GUIAddFriend extends JFrame{
 		center.setLayout(new GridLayout(2,2));
 		JLabel group = new JLabel("group",JLabel.CENTER);
 		center.add(group);
-		inputgroup = new JTextField();
-		center.add(inputgroup);
+		for(String s : ClientManage.getMainwindow().getGroup())
+			box.addItem(s);
+		box.addItem("new Group");
+		center.add(box);
 		JLabel name = new JLabel("name",JLabel.CENTER);
 		center.add(name);
 		inputname = new JTextField();
@@ -62,12 +67,25 @@ public class GUIAddFriend extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			AddFriend friend = new AddFriend();
 			friend.setFriendname(inputname.getText());
-			friend.setGroup(inputgroup.getText());
+			if(box.getSelectedItem().equals("new Group")){
+				friend.setGroup(JOptionPane.showInputDialog("input group name:"));
+			}else{
+				friend.setGroup((String)(box.getSelectedItem()));
+			}
 			friend.setName(ClientManage.getName());
+			if(friend.getFriendname().equals(ClientManage.getName())){
+				JOptionPane.showMessageDialog(null, "invalid username");
+				dispose();
+				return;
+			}
+/*			if(friend.getGroup()==null){
+				JOptionPane.showInputDialog("musthave group");
+			}*/
 			
 			JSONNameandString json = new JSONNameandString();
 			json.setJSONName(AddFriend.class.getName());
 			json.setJSONStr(JSON.toJSONString(friend));
+			
 			ClientManage.sendJSONNameandString(json);
 			dispose();
 			//unfinished

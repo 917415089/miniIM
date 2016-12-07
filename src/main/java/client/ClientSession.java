@@ -72,7 +72,7 @@ public class ClientSession {
 		SuccessLogin successLogin = JSON.parseObject(str, SuccessLogin.class);
 		token = successLogin.getToken();
 		setHasLogin(true);
-		System.out.println("Login successfully");
+		System.out.println("Login successfully name:"+ClientManage.getName()+"(in ClientSeesion 75 line)");
 	}
 
 	public String login(){

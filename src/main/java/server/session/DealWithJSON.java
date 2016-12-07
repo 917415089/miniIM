@@ -16,6 +16,7 @@ import json.client.session.RequestFriendList;
 import json.client.session.SendMessage;
 import json.server.session.FriendMeta;
 import json.server.session.RemoveFriendResult;
+import json.server.session.RmFriendSlid;
 import json.server.session.SendBackJSON;
 import json.server.session.FriendList;
 import json.util.JSONNameandString;
@@ -27,6 +28,7 @@ public class DealWithJSON {
 	public void dealwith(JSONNameandString json, Channel channel) {
 
 			String name = json.getJSONName();
+			System.out.println("receive :"+json.getJSONStr()+"(in DealWithJSON 30 line)");
 			switch(name){
 			case "json.client.session.RequestFriendList":
 				dealwithFriendList(json,channel.id().asLongText());
@@ -80,6 +82,16 @@ public class DealWithJSON {
 				back.setChannelID(asLongText);
 				back.setJSONName(RemoveFriendResult.class.getName());
 				back.setJSONStr(JSON.toJSONString(removeFriendResult));
+				
+				RmFriendSlid side = new RmFriendSlid();
+				side.setName(username);
+				
+				SendBackJSON sidejson = new SendBackJSON();
+				sidejson.setJSONName(RmFriendSlid.class.getName());
+				sidejson.setJSONStr(JSON.toJSONString(side));
+				sidejson.setChannelID(ChannelManager.getIdbyName(removeFriend.getName()));
+				ChannelManager.sendback(sidejson);
+				
 				return back;
 			}
 		});
@@ -140,7 +152,7 @@ public class DealWithJSON {
 
 	private void dealwithFriendList(JSONNameandString json, final String channelid) {
 		RequestFriendList friendList = JSON.parseObject(json.getJSONStr(),RequestFriendList.class);
-		if(friendList.getGroup().equalsIgnoreCase("friends")){
+		if(friendList.getGroup().equalsIgnoreCase("Friends")){
 			 StatementManager.sendDBCallable(new DBCallable(){
 				@Override
 				public SendBackJSON run() {
