@@ -76,11 +76,11 @@ public class DealWithJSON {
 				try {
 					ResultSet executeQuery = protectsta.executeQuery(sql);
 					while(executeQuery.next()){
-						String json = executeQuery.getString("json");
-						SendBackJSON backJSON = JSON.parseObject(json, SendBackJSON.class);
-//unfinished
-						System.out.println(backJSON);
-						ChannelManager.sendback(backJSON, name);
+						SendBackJSON back = new SendBackJSON();
+						back.setJSONName(executeQuery.getString("jsonclass"));
+						back.setJSONStr(executeQuery.getString("jsonstring"));
+
+						ChannelManager.sendback(back, name);
 					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block

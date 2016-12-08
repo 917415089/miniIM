@@ -114,8 +114,9 @@ public class ChannelManager {
 				
 				@Override
 				protected SendBackJSON run() {
-					String sql = "INSERT INTO offline (username,json) VALUES('"+name+"','"+JSON.toJSONString(back)+"');";
-					System.out.println(sql);
+//					back.setChannelID("defalut");
+					String sql = "INSERT INTO offline (username,jsonclass,jsonstring) VALUES('"+name+"','"+back.getJSONName()+"','"+back.getJSONStr()+"');";
+					System.out.println(JSON.toJSONString(sql));
 					try {
 						protectsta.executeUpdate(sql);
 					} catch (SQLException e) {
