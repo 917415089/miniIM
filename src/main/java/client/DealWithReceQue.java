@@ -3,7 +3,7 @@ package client;
 import java.util.concurrent.BlockingQueue;
 import javax.swing.JOptionPane;
 import client.gui.GUIVerifyAddFriend;
-import client.gui.LoginDialog;
+import client.gui.GUILoginDialog;
 import com.alibaba.fastjson.JSON;
 import json.client.session.AddFriend;
 import json.client.session.AddFriendResult;
@@ -99,7 +99,7 @@ public class DealWithReceQue implements Runnable{
 
 	private void dealwithSuccessLogin() {
 		System.out.println("try to enable main windows");
-		LoginDialog logindaialog = ClientManage.getLogindaialog();
+		GUILoginDialog logindaialog = ClientManage.getLogindaialog();
 		logindaialog.setVisible(false);
 		ClientManage.setMainWindowVisible(true);
 		RequestFriendList requestFriendList = new RequestFriendList();

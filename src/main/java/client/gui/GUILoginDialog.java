@@ -16,7 +16,7 @@ import javax.swing.JTextField;
 import client.BaseClient;
 import client.ClientManage;
 
-public class LoginDialog extends JFrame{
+public class GUILoginDialog extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 	JTextField textField;
@@ -24,7 +24,7 @@ public class LoginDialog extends JFrame{
 	JButton login;
 	JButton register;
 	
-	public LoginDialog() {
+	public GUILoginDialog() {
 		Toolkit kit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = kit.getScreenSize();
 		int height = screenSize.height;

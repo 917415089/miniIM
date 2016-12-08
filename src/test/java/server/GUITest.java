@@ -3,8 +3,8 @@ package server;
 import org.junit.Test;
 
 import client.ClientManage;
-import client.gui.LoginDialog;
-import client.gui.MainWindow;
+import client.gui.GUILoginDialog;
+import client.gui.GUIMainWindow;
 
 
 public class GUITest {
@@ -18,7 +18,7 @@ public class GUITest {
 	
 	@Test
 	public void GUILogin() throws InterruptedException{
-		LoginDialog loginDialog = ClientManage.getLogindaialog();
+		GUILoginDialog loginDialog = ClientManage.getLogindaialog();
 		loginDialog.setVisible(true);
 		Thread.sleep(2000);
 		while(true) Thread.sleep(10000);
@@ -26,7 +26,7 @@ public class GUITest {
 	
 	@Test
 	public synchronized void GUIFriendListAdd() throws InterruptedException{
-		MainWindow mainwindow = ClientManage.getMainwindow();
+		GUIMainWindow mainwindow = ClientManage.getMainwindow();
 		mainwindow.setVisible(true);
 		mainwindow.addPathNode("group1.friend1");
 		mainwindow.addPathNode("group1.friend2");
@@ -37,7 +37,7 @@ public class GUITest {
 	
 	@Test
 	public void GUIFriendListRm() throws InterruptedException{
-		MainWindow mainwindow = ClientManage.getMainwindow();
+		GUIMainWindow mainwindow = ClientManage.getMainwindow();
 		mainwindow.setVisible(true);
 		mainwindow.addPathNode("group1.friend1");
 		mainwindow.addPathNode("group1.friend2");
@@ -52,7 +52,7 @@ public class GUITest {
 	
 	@Test
 	public void GUISessionAdd() throws InterruptedException{
-		MainWindow mainwindow = ClientManage.getMainwindow();
+		GUIMainWindow mainwindow = ClientManage.getMainwindow();
 		mainwindow.setVisible(true);
 		mainwindow.addSession("user2");
 		mainwindow.addSession("user3");
@@ -63,7 +63,7 @@ public class GUITest {
 	
 	@Test
 	public void GUISessionRm() throws InterruptedException{
-		MainWindow mainwindow = ClientManage.getMainwindow();
+		GUIMainWindow mainwindow = ClientManage.getMainwindow();
 		mainwindow.setVisible(true);
 		mainwindow.addSession("user2");
 		mainwindow.rmSession("user2");

@@ -79,9 +79,10 @@ public class DealWithJSON {
 						SendBackJSON back = new SendBackJSON();
 						back.setJSONName(executeQuery.getString("jsonclass"));
 						back.setJSONStr(executeQuery.getString("jsonstring"));
-
 						ChannelManager.sendback(back, name);
 					}
+					String deletesql = "DELETE FROM offline WHERE username='"+name+"';";
+					protectsta.executeUpdate(deletesql);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
