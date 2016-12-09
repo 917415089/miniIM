@@ -1,5 +1,6 @@
 package client.gui;
 
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -15,6 +16,8 @@ import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -43,6 +46,7 @@ public class GUIMainWindow extends JFrame{
 	private JPanel right;
 	private JPanel center;
 	private ConcurrentHashMap<String, GUISession> name2GUISession = new ConcurrentHashMap<String, GUISession>();
+	private AtomicBoolean isClosing = new AtomicBoolean(false);
 
 	public GUIMainWindow(){
 		Toolkit kit = Toolkit.getDefaultToolkit();
@@ -54,7 +58,9 @@ public class GUIMainWindow extends JFrame{
 		setResizable(false);
 		setLayout(new BorderLayout());
 		setTitle("main");
-//		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
+		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 		
 		JPanel left = new JPanel();
 		left.setLayout(new BorderLayout());
@@ -230,16 +236,25 @@ public class GUIMainWindow extends JFrame{
 			return ret;			
 		}		
 	}
-	@Override
-	public void dispose(){
-		System.out.println("pass");
-		ClosingChannel close = new ClosingChannel();
-		close.setReaseon("user clsoe mainwindow");
-		JSONNameandString json = new JSONNameandString();
-		json.setJSONName(ClosingChannel.class.getName());
-		json.setJSONStr(JSON.toJSONString(close));
-		ClientManage.sendJSONNameandString(json);
-		super.dispose();
+	/*
+	 * protected
+	 */
+	protected void processWindowEvent(final WindowEvent pEvent) {
+		if(pEvent.getID()==WindowEvent.WINDOW_CLOSING){
+			if(!isClosing.get()) isClosing.set(true);
+			else return ;
+			ClosingChannel close = new ClosingChannel();
+			close.setReaseon("user clsoe mainwindow");
+			JSONNameandString json = new JSONNameandString();
+			json.setJSONName(ClosingChannel.class.getName());
+			json.setJSONStr(JSON.toJSONString(close));
+			ClientManage.sendJSONNameandString(json);
+			ClientManage.waiteforclose();
+			dispose();
+			System.exit(0);
+		}else {
+			super.processWindowEvent(pEvent);
+		}
 	}
 	/*
 	 * private method

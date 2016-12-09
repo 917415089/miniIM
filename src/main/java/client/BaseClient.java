@@ -126,7 +126,7 @@ public class BaseClient extends Thread {
                     break;
                 } else {
                 	String send = JSON.toJSONString(msg);
-                	System.out.println("Send:"+send+"in BaseClient 126 line");
+                	System.out.println("Send:"+send+"in BaseClient 129 line");
             		send = EnDeCryProcess.SysKeyEncryWithBase64(send, secretKey);
                     WebSocketFrame frame = new TextWebSocketFrame(send);
                     ch.writeAndFlush(frame);
