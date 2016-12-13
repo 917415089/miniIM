@@ -71,6 +71,7 @@ public class ClientManage {
 	public static boolean waiteforclose(){
 		try {
 			close.await();
+			System.exit(0);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

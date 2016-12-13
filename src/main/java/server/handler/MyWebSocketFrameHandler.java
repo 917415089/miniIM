@@ -76,7 +76,6 @@ public class MyWebSocketFrameHandler extends
 		
 	}
 
-
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		super.channelActive(ctx);
@@ -86,13 +85,14 @@ public class MyWebSocketFrameHandler extends
 		ChannelManager.addId2Channel(ctx.channel().id().asLongText(),ctx.channel());
 	}
 
-
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		super.channelInactive(ctx);
+		System.out.println("user : "+ChannelManager.getUsernamebyId(ctx.channel().id().asLongText())+"close connection, (in MyWebSocketFrameHandler 91 line)");
 		ChannelManager.rmId2Channel(ctx.channel().id().asLongText());
 		ChannelManager.rmId2Secrekey(ctx.channel().id().asLongText());
 		ChannelManager.rmId2Username(ctx.channel().id().asLongText());
+
 	}
 	
 

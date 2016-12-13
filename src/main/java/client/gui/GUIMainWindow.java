@@ -12,12 +12,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -59,13 +57,11 @@ public class GUIMainWindow extends JFrame{
 		setLayout(new BorderLayout());
 		setTitle("main");
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		
 		enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 		
 		JPanel left = new JPanel();
 		left.setLayout(new BorderLayout());
 		add(left,BorderLayout.WEST);
-		
 		root = new DefaultMutableTreeNode("Friends");
 		friendTree = new JTree(root);
 		friendTree.setVisible(true);
@@ -74,8 +70,9 @@ public class GUIMainWindow extends JFrame{
 		friendlist.setBounds(0, 0, 500, 500);
 		friendlist.setBorder(BorderFactory.createTitledBorder("   Friend List   "));
 		left.add(friendlist,BorderLayout.CENTER);
+		//buttonJpanel button area
 		JPanel buttonJpanel = new JPanel();
-		buttonJpanel.setLayout(new GridLayout(2, 1));
+		buttonJpanel.setLayout(new GridLayout(3, 1));
 		left.add(buttonJpanel, BorderLayout.SOUTH);
 		JButton AddFriend = new JButton("Add Friend");
 		buttonJpanel.add(AddFriend);
@@ -83,6 +80,9 @@ public class GUIMainWindow extends JFrame{
 		JButton removeFriend = new JButton("RemoveFriend");
 		buttonJpanel.add(removeFriend);
 		removeFriend.addActionListener(new RemoveFriendButtun());
+		JButton grouptalking = new JButton("grouptalking");
+		buttonJpanel.add(grouptalking);
+		grouptalking.addActionListener(new GroupTalkingButton());
 		
 		right = new JPanel();
 		add(right,BorderLayout.EAST);
@@ -97,7 +97,7 @@ public class GUIMainWindow extends JFrame{
 		add(center,BorderLayout.CENTER);
 		friendTree.addMouseListener(new DoubleClickonFriendTree());
 	}
-	
+
 	/*
 	 * public method 
 	 */
@@ -317,7 +317,6 @@ public class GUIMainWindow extends JFrame{
         		root.remove(i);
         }
 	}
-
 	
 	/*
 	 * private GUI component
@@ -331,8 +330,6 @@ public class GUIMainWindow extends JFrame{
 			this.jpanel = jpanel;
 		}
 	}
-	
-	
 
 	/*
 	 * private ActionListener
@@ -359,6 +356,15 @@ public class GUIMainWindow extends JFrame{
 			rmSession(name);
 			right.updateUI();
 		}
+	}
+	private class GroupTalkingButton implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			new GUIGrouptalking(root);
+			
+		}
+		
 	}
 	/**
 	 * this method is used to choose which session display in GUIMainwindow;
@@ -410,7 +416,6 @@ public class GUIMainWindow extends JFrame{
 
 	}
 
-	
 	/*
 	 * private ActionAdapter
 	 */	

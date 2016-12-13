@@ -86,8 +86,14 @@ public class ChannelManager {
 	
 	public static synchronized void addId2Username(String asLongText, String Name){
 		synchronized (channelmanager.id2username) {
-		channelmanager.id2username.put(asLongText, Name);
-		channelmanager.uername2channel.put(Name,asLongText);
+			if(!channelmanager.uername2channel.containsKey(Name)){
+				channelmanager.id2username.put(asLongText, Name);
+				channelmanager.uername2channel.put(Name,asLongText);
+			}else{
+				channelmanager.id2channel.get(channelmanager.uername2channel.get(Name)).close();
+				channelmanager.id2username.put(asLongText, Name);
+				channelmanager.uername2channel.put(Name,asLongText);
+			}
 		}
 	}
 	
