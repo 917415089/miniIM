@@ -101,7 +101,7 @@ public class DealWithReceQue implements Runnable{
 		System.out.println("try to enable main windows");
 		GUILoginDialog logindaialog = ClientManage.getLogindaialog();
 		logindaialog.setVisible(false);
-		ClientManage.setMainWindowVisible(true);
+		
 		RequestFriendList requestFriendList = new RequestFriendList();
 		requestFriendList.setGroup("Friends");
 		JSONNameandString json = new JSONNameandString();
@@ -121,10 +121,12 @@ public class DealWithReceQue implements Runnable{
 		for( FriendMeta fm : friendList.getFriends()){
 			ClientManage.addPathNode(fm.getGroup()+"."+fm.getName());
 		}
+		ClientManage.setMainWindowVisible(true);
+		ClientManage.hasInit();
 		//unfinished;
-		JSONNameandString json = new JSONNameandString();
+/*		JSONNameandString json = new JSONNameandString();
 		json.setJSONName(OfflineRequest.class.getName());
-		ClientManage.sendJSONNameandString(json);
+		ClientManage.sendJSONNameandString(json);*/
 	}
 
 	private void dealwithRegisterResult(String jsonStr) {

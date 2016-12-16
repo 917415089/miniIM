@@ -6,8 +6,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.crypto.SecretKey;
+import javax.swing.TransferHandler;
+
 import util.EnDeCryProcess;
 import com.alibaba.fastjson.JSON;
+
+import json.client.session.OfflineRequest;
 import json.util.JSONNameandString;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -115,7 +119,18 @@ public class BaseClient extends Thread {
 
 			while(handler.getAccessHandler()==null || handler.getAccessHandler().getSecretKey()==null) Thread.sleep(1);//while bug
 			secretKey = handler.getAccessHandler().getSecretKey();
+			
+			Thread thread = new Thread(new Runnable() {
+				public void run() {
+					ClientManage.waitforinit();
+					JSONNameandString json = new JSONNameandString();
+					json.setJSONName(OfflineRequest.class.getName());
+					ClientManage.sendJSONNameandString(json);
+				}
+			},"requestforofflinedata");
+			thread.start();
 
+			
 			while(true){
 				JSONNameandString msg = sendque.take();
 				if(msg == null){

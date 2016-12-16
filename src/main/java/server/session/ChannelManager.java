@@ -1,12 +1,14 @@
 package server.session;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 import java.sql.SQLException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -64,8 +66,8 @@ public class ChannelManager {
 		channelmanager.id2channel.put(asLongText, channel);
 	}
 
-	public static  void rmId2Channel(String asLongText) {
-		channelmanager.id2channel.remove(asLongText);
+	public static  Channel rmId2Channel(String asLongText) {
+		return channelmanager.id2channel.remove(asLongText);
 	}
 
 	public static  Channel getChannelbyId(String asLongText){
@@ -76,8 +78,8 @@ public class ChannelManager {
 		channelmanager.id2secrekey.put(asLongText, secretKeySpec);	
 	}
 
-	public static void rmId2Secrekey(String asLongText){
-		channelmanager.id2secrekey.remove(asLongText);
+	public static SecretKey rmId2Secrekey(String asLongText){
+		return channelmanager.id2secrekey.remove(asLongText);
 	}
 
 	public static  SecretKey getSecreKeybyId(String channelID) {
@@ -85,23 +87,20 @@ public class ChannelManager {
 	}
 	
 	public static synchronized void addId2Username(String asLongText, String Name){
-		synchronized (channelmanager.id2username) {
+
 			if(!channelmanager.uername2channel.containsKey(Name)){
 				channelmanager.id2username.put(asLongText, Name);
 				channelmanager.uername2channel.put(Name,asLongText);
 			}else{
-				channelmanager.id2channel.get(channelmanager.uername2channel.get(Name)).close();
+//				ChannelFuture close = channelmanager.id2channel.get(channelmanager.uername2channel.get(Name)).close();//
 				channelmanager.id2username.put(asLongText, Name);
 				channelmanager.uername2channel.put(Name,asLongText);
 			}
-		}
 	}
 	
-	public static  void rmId2Username(String asLongText) {
-		synchronized (channelmanager.id2username) {
-			channelmanager.id2username.remove(asLongText);
-			channelmanager.uername2channel.remove(asLongText);	
-		}
+	public static synchronized  void rmId2Username(String asLongText) {
+//			channelmanager.id2username.remove(asLongText);
+			channelmanager.uername2channel.remove(channelmanager.id2username.remove(asLongText));	
 
 	}
 

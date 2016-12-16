@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -45,6 +47,7 @@ public class GUIMainWindow extends JFrame{
 	private JPanel center;
 	private ConcurrentHashMap<String, GUISession> name2GUISession = new ConcurrentHashMap<String, GUISession>();
 	private AtomicBoolean isClosing = new AtomicBoolean(false);
+	private Lock displaymessage = new ReentrantLock();
 
 	public GUIMainWindow(){
 		Toolkit kit = Toolkit.getDefaultToolkit();
@@ -108,27 +111,27 @@ public class GUIMainWindow extends JFrame{
 	 */
 	@Guaranty("root")
 	public DefaultMutableTreeNode addPathNode(String group_username) {
-        String[] ns = group_username.split("\\.");
-        synchronized (root) {
-        	DefaultMutableTreeNode node = root;
-            for (String n : ns) {
-                int i = node.getChildCount() - 1;
-                for (; i >= 0; i--) {
-                	DefaultMutableTreeNode tmp = (DefaultMutableTreeNode) node.getChildAt(i);
-                    if (tmp.getUserObject().equals(n)) {
-                        node = tmp;
-                        break;
-                    }
-                }
-                if (i < 0) {
-                	DefaultMutableTreeNode tmp = new DefaultMutableTreeNode(n);
-                    node.add(tmp);
-                    node = tmp;
-                }
-            }
-            friendTree.expandPath(new TreePath(root));
-            friendTree.updateUI();
-            return node;
+		synchronized (root) {
+			String[] ns = group_username.split("\\.");
+	    	DefaultMutableTreeNode node = root;
+	        for (String n : ns) {
+	            int i = node.getChildCount() - 1;
+	            for (; i >= 0; i--) {
+	            	DefaultMutableTreeNode tmp = (DefaultMutableTreeNode) node.getChildAt(i);
+	                if (tmp.getUserObject().equals(n)) {
+	                    node = tmp;
+	                    break;
+	                }
+	            }
+	            if (i < 0) {
+	            	DefaultMutableTreeNode tmp = new DefaultMutableTreeNode(n);
+	                node.add(tmp);
+	                node = tmp;
+	            }
+	        }
+	        friendTree.expandPath(new TreePath(root));
+	        friendTree.updateUI();
+	        return node;	
 		}
     }
 	/**
@@ -190,18 +193,25 @@ public class GUIMainWindow extends JFrame{
 			friendTree.updateUI();
 		}
 	}
-	@Guaranty("this")
-	public synchronized void addSession(String friendname) {
-		if(name2GUISession.containsKey(friendname))	return;
-		GUISession guiSession = new GUISession(new GUIButtun(friendname),buildSessionwindow(friendname));
-		guiSession.button.getClose().addActionListener(new CloseSession(friendname));
-		guiSession.button.getSession().addActionListener(new SessionSwitch(friendname));
-		center.removeAll();
-		right.add(guiSession.button);
-		center.add(guiSession.jpanel);
-		name2GUISession.put(friendname, guiSession);
-		center.updateUI();
-		right.updateUI();
+	@Guaranty("displaymessage")
+	public  void addSession(String friendname) {
+		displaymessage.lock();
+		try{
+			if(name2GUISession.containsKey(friendname))	return;
+			GUIButtun guiButtun = new GUIButtun(friendname);
+			JPanel buildSessionwindow = buildSessionwindow(friendname);
+			GUISession guiSession = new GUISession(guiButtun,buildSessionwindow);
+			guiSession.button.getClose().addActionListener(new CloseSession(friendname));
+			guiSession.button.getSession().addActionListener(new SessionSwitch(friendname));
+			center.removeAll();
+			right.add(guiSession.button);
+			center.add(guiSession.jpanel);
+			name2GUISession.put(friendname, guiSession);
+			center.updateUI();
+			right.updateUI();
+		}finally{
+			displaymessage.unlock();
+		}
 	}
 	@Guaranty("this")
 	public synchronized void rmSession(String friendname){
@@ -210,19 +220,24 @@ public class GUIMainWindow extends JFrame{
 		this.repaint();
 		name2GUISession.remove(friendname);
 	}
-	@Guaranty("this")
-	public synchronized void displayMessage(SendMessage sendmessage) {
-		GUISession guiSession = name2GUISession.get(sendmessage.getName());
-		if(guiSession==null){
-			addSession(sendmessage.getName());
-			guiSession = name2GUISession.get(sendmessage.getName());
+	@Guaranty("displaymessage")
+	public  void displayMessage(SendMessage sendmessage) {
+		displaymessage.lock();
+		try {
+			GUISession guiSession = name2GUISession.get(sendmessage.getName());
+			if(guiSession==null){
+				addSession(sendmessage.getName());
+				guiSession = name2GUISession.get(sendmessage.getName());
+			}
+			JTextArea display = (JTextArea)guiSession.jpanel.getComponent(1);
+			display.insert("\n"+sendmessage.getName()+":\n"+sendmessage.getMessage(), display.getText().length());
+			center.removeAll();
+			center.add(guiSession.jpanel);
+			center.updateUI();
+			guiSession.jpanel.updateUI();		
+		}finally{
+			displaymessage.unlock();
 		}
-		JTextArea display = (JTextArea)guiSession.jpanel.getComponent(1);
-		display.insert("\n"+sendmessage.getName()+":\n"+sendmessage.getMessage(), display.getText().length());
-		center.removeAll();
-		center.add(guiSession.jpanel);
-		center.updateUI();
-		guiSession.jpanel.updateUI();
 	}
 	@Guaranty("root")
 	public List<String> getGroup(){
@@ -258,55 +273,58 @@ public class GUIMainWindow extends JFrame{
 	}
 	/*
 	 * private method
-	 */	
-	private JPanel buildSessionwindow(String friendname){
-		JPanel container = new JPanel();
-		container.setLayout(new GridBagLayout());
-		JLabel sessionLabel = new JLabel("talk with "+friendname);
-		GridBagConstraints slc = new GridBagConstraints();
-		slc.weightx=100;
-		slc.weighty=100;
-		slc.gridx=0;
-		slc.gridy=0;
-		slc.gridheight=1;
-		slc.gridwidth=1;
-		container.add(sessionLabel,slc);
-		
-		JTextArea sessionwindow = new JTextArea(100,100);
-		sessionwindow.setBorder(BorderFactory.createTitledBorder("   Session window   "));
-		sessionwindow.setMinimumSize(new Dimension(getWidth()-400,getHeight()/4*3-50));
-		GridBagConstraints swc = new GridBagConstraints();
-		swc.weightx=100;
-		swc.weighty=100;
-		swc.gridx=0;
-		swc.gridy=1;
-		swc.gridheight=1;
-		swc.gridwidth=1;
-		container.add(sessionwindow,swc);
-				
-		JTextArea talkwindow = new JTextArea(200,300);
-		talkwindow.setBorder(BorderFactory.createTitledBorder("   talk window   "));
-		talkwindow.setMinimumSize(new Dimension(getWidth()-400,getHeight()/4-50));
-		GridBagConstraints twc = new GridBagConstraints();
-		twc.weightx=100;
-		twc.weighty=100;
-		twc.gridx=0;
-		twc.gridy=2;
-		twc.gridheight=1;
-		twc.gridwidth=1;
-		container.add(talkwindow,twc);	
-		
-		JButton Enter = new JButton("Enter");
-		GridBagConstraints enc = new GridBagConstraints();
-		enc.weightx=100;
-		enc.weighty=100;
-		enc.gridx=0;
-		enc.gridy=3;
-		enc.gridheight=1;
-		enc.gridwidth=1;
-		container.add(Enter,enc);
-		Enter.addActionListener(new SendMessageButtonAction(friendname,talkwindow));
-		return container;
+	 */
+	@Guaranty("displaymessage")
+	private  JPanel buildSessionwindow(String friendname){
+		displaymessage.lock();
+		try{
+			JPanel container = new JPanel();
+			container.setLayout(new GridBagLayout());
+			JLabel sessionLabel = new JLabel("talk with "+friendname);
+			GridBagConstraints slc = new GridBagConstraints();
+			slc.weightx=100;
+			slc.weighty=100;
+			slc.gridx=0;
+			slc.gridy=0;
+			slc.gridheight=1;
+			slc.gridwidth=1;
+			container.add(sessionLabel,slc);
+			JTextArea sessionwindow = new JTextArea(100,100);
+			sessionwindow.setBorder(BorderFactory.createTitledBorder("   Session window   "));
+			sessionwindow.setMinimumSize(new Dimension(getWidth()-400,getHeight()/4*3-50));
+			GridBagConstraints swc = new GridBagConstraints();
+			swc.weightx=100;
+			swc.weighty=100;
+			swc.gridx=0;
+			swc.gridy=1;
+			swc.gridheight=1;
+			swc.gridwidth=1;
+			container.add(sessionwindow,swc);
+			JTextArea talkwindow = new JTextArea(200,300);
+			talkwindow.setBorder(BorderFactory.createTitledBorder("   talk window   "));
+			talkwindow.setMinimumSize(new Dimension(getWidth()-400,getHeight()/4-50));
+			GridBagConstraints twc = new GridBagConstraints();
+			twc.weightx=100;
+			twc.weighty=100;
+			twc.gridx=0;
+			twc.gridy=2;
+			twc.gridheight=1;
+			twc.gridwidth=1;
+			container.add(talkwindow,twc);
+			JButton Enter = new JButton("Enter");
+			GridBagConstraints enc = new GridBagConstraints();
+			enc.weightx=100;
+			enc.weighty=100;
+			enc.gridx=0;
+			enc.gridy=3;
+			enc.gridheight=1;
+			enc.gridwidth=1;
+			container.add(Enter,enc);
+			Enter.addActionListener(new SendMessageButtonAction(friendname,talkwindow));
+			return container;
+		}finally{
+			displaymessage.unlock();
+		}
 	}
 	private void clearNode() {
         DefaultMutableTreeNode node = root;
@@ -409,7 +427,7 @@ public class GUIMainWindow extends JFrame{
 			
 			GUISession guiSession = name2GUISession.get(friendname);
 			JTextArea display = (JTextArea)guiSession.jpanel.getComponent(1);
-			display.insert("\n"+friendname+":\n"+sendstr, display.getText().length());
+			display.insert("\n"+ClientManage.getName()+":\n"+sendstr, display.getText().length());
 			guiSession.jpanel.updateUI();
 			talkwindow.setText("");
 		}

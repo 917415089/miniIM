@@ -75,7 +75,7 @@ public class StatementManager {
 		UniqueInstance.statementque.add(sta);
 	}
 
-	public static void sendDBCallable(DBCallable task){
-		UniqueInstance.service.submit(task);
+	public static Future<SendBackJSON> sendDBCallable(DBCallable task){
+		return UniqueInstance.service.submit(task);
 	}
 }

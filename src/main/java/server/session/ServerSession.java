@@ -4,6 +4,9 @@ import io.netty.channel.Channel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 import javax.crypto.SecretKey;
 import json.client.login.ClientLogin;
 import json.client.login.ClientRegister;
@@ -104,7 +107,7 @@ public class ServerSession {
 		username = clientLogin.getName();
 		userpassword = clientLogin.getPassword();
 		
-		StatementManager.sendDBCallable(new DBCallable(){
+		Future<SendBackJSON> sendDBCallable = StatementManager.sendDBCallable(new DBCallable(){
 
 			@Override
 			public SendBackJSON run() {
@@ -143,7 +146,6 @@ public class ServerSession {
 				return null;
 			}
 		});
-		
 	}
 
 	public String getUsername() {
