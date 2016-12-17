@@ -7,8 +7,8 @@ import client.gui.GUILoginDialog;
 import com.alibaba.fastjson.JSON;
 import json.client.session.AddFriend;
 import json.client.session.AddFriendResult;
-import json.client.session.OfflineRequest;
 import json.client.session.RequestFriendList;
+import json.client.session.SendGroupMessage;
 import json.client.session.SendMessage;
 import json.server.login.RegisiterResult;
 import json.server.session.FriendList;
@@ -60,6 +60,9 @@ public class DealWithReceQue implements Runnable{
 				case "json.server.session.RmFriendSlid":
 					dealwithRmFriendSlid(take.getJSONStr());
 					break;
+				case "json.client.session.SendGroupMessage":
+					dealwithSendGroupMessage(take.getJSONStr());
+					break;
 				default:
 					System.err.println("Client : can't deal "+take.getJSONName());
 				}
@@ -69,6 +72,17 @@ public class DealWithReceQue implements Runnable{
 			}
 		}
 	}
+	private void dealwithSendGroupMessage(String jsonStr) {
+		SendGroupMessage groupMessage = JSON.parseObject(jsonStr,SendGroupMessage.class);
+		for(int i = 0 ;i< groupMessage.getFriendlist().size();i++){
+			if(groupMessage.getFriendlist().get(i).equals(ClientManage.getName())){
+				groupMessage.getFriendlist().remove(i);
+				break;
+			}
+		}
+		ClientManage.displayMessage(groupMessage);
+	}
+
 	private void dealwithRmFriendSlid(String jsonStr) {
 		RmFriendSlid slid = JSON.parseObject(jsonStr, RmFriendSlid.class);
 		ClientManage.rmPathNode(slid.getName());

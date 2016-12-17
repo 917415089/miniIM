@@ -75,6 +75,7 @@ public class StatementManager {
 		UniqueInstance.statementque.add(sta);
 	}
 
+	@SuppressWarnings("static-access")
 	public static Future<SendBackJSON> sendDBCallable(DBCallable task){
 		return UniqueInstance.service.submit(task);
 	}

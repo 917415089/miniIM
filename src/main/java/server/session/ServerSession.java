@@ -4,9 +4,7 @@ import io.netty.channel.Channel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import javax.crypto.SecretKey;
 import json.client.login.ClientLogin;
 import json.client.login.ClientRegister;

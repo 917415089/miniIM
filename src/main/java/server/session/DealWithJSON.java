@@ -3,18 +3,18 @@ package server.session;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import server.db.DBCallable;
 import server.db.StatementManager;
 import util.VerifyLogin;
 import com.alibaba.fastjson.JSON;
-
-import client.ClientManage;
 import io.netty.channel.Channel;
 import json.client.session.AddFriend;
 import json.client.session.AddFriendResult;
 import json.client.session.RemoveFriend;
 import json.client.session.RequestFriendList;
+import json.client.session.SendGroupMessage;
 import json.client.session.SendMessage;
 import json.server.session.FriendMeta;
 import json.server.session.RemoveFriendResult;
@@ -50,6 +50,9 @@ public class DealWithJSON {
 			case "json.client.session.OfflineRequest":
 				dealwithOfflineRequest(channel.id().asLongText());
 				break;
+			case "json.client.session.SendGroupMessage":
+				dealwithSendGroupMessage(json,channel.id().asLongText());
+				break;
 			default:
 				System.out.println("Server: can't deal with "+name);
 				/*System.out.println("can't find command"+name+" from"+ChannelManager.getUsernamebyId(channel.id().asLongText()));
@@ -63,6 +66,22 @@ public class DealWithJSON {
 				send = EnDeCryProcess.SysKeyEncryWithBase64(send, ChannelManager.getSecreKeybyId(channel.id().asLongText()));
 				channel.writeAndFlush(new TextWebSocketFrame(send));*/
 			}
+		
+	}
+
+	private void dealwithSendGroupMessage(JSONNameandString json, String asLongText) {
+		SendGroupMessage groupMessage = JSON.parseObject(json.getJSONStr(), SendGroupMessage.class);
+		groupMessage.getFriendlist().add(groupMessage.getName());
+		Collections.sort(groupMessage.getFriendlist());
+		for(String s : groupMessage.getFriendlist()){
+			if(!s.equals(groupMessage.getName())){
+				SendBackJSON back = new SendBackJSON();
+				back.setJSONName(SendGroupMessage.class.getName());
+				back.setJSONStr(JSON.toJSONString(groupMessage));
+				ChannelManager.sendback(back, s);
+			}
+		}
+		
 		
 	}
 

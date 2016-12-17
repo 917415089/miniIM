@@ -26,11 +26,12 @@ public class GUIRmFriend extends JFrame {
 
 	private static final long serialVersionUID = -6894148656302454256L;
 	
-	private DefaultMutableTreeNode root;
+//	@SuppressWarnings("unused")
+//	private DefaultMutableTreeNode root;
 
 	public GUIRmFriend(final DefaultMutableTreeNode root) throws HeadlessException {
 		super();
-		this.root = root;
+//		this.root = root;
 		
 		Toolkit kit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = kit.getScreenSize();

@@ -6,13 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.crypto.SecretKey;
-import javax.swing.TransferHandler;
-
-import util.EnDeCryProcess;
 import com.alibaba.fastjson.JSON;
-
-import json.client.session.OfflineRequest;
-import json.util.JSONNameandString;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -30,6 +24,9 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
+import json.client.session.OfflineRequest;
+import json.util.JSONNameandString;
+import util.EnDeCryProcess;
 
 public class BaseClient extends Thread {
 

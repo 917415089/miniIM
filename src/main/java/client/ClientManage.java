@@ -4,6 +4,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
+import json.client.session.SendGroupMessage;
 import json.client.session.SendMessage;
 import json.util.JSONNameandString;
 import client.gui.GUILoginDialog;
@@ -94,5 +95,10 @@ public class ClientManage {
 	
 	public static void hasInit(){
 		init.countDown();
+	}
+
+	public static void displayMessage(SendGroupMessage groupMessage) {
+		mainwindow.displayMessage(groupMessage);
+		
 	}
 }
