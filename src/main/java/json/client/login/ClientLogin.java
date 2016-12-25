@@ -6,7 +6,7 @@ public class ClientLogin implements ClientJSON {
 
 	private String Name;
 	private String Password;
-	private int Random;
+
 	
 	public String getName() {
 		return Name;
@@ -19,12 +19,6 @@ public class ClientLogin implements ClientJSON {
 	}
 	public void setPassword(String password) {
 		Password = password;
-	}
-	public int getRandom() {
-		return Random;
-	}
-	public void setRandom(int random) {
-		Random = random;
 	}
 	
 }

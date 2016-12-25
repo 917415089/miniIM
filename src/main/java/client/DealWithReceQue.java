@@ -31,7 +31,7 @@ public class DealWithReceQue implements Runnable{
 		while(true){
 			try {
 				JSONNameandString take = receque.take();
-				System.out.println("receive json"+take.getJSONStr()+"(in DealWithReceQue 32 line)");
+				System.out.println("receive json"+take.getJSONStr()+"(in DealWithReceQue 34 line)");
 				switch(take.getJSONName()){
 				case "json.server.login.WrongNameorPassword":
 					dealwithWrongNameorPassword(take.getJSONStr());
@@ -137,10 +137,6 @@ public class DealWithReceQue implements Runnable{
 		}
 		ClientManage.setMainWindowVisible(true);
 		ClientManage.hasInit();
-		//unfinished;
-/*		JSONNameandString json = new JSONNameandString();
-		json.setJSONName(OfflineRequest.class.getName());
-		ClientManage.sendJSONNameandString(json);*/
 	}
 
 	private void dealwithRegisterResult(String jsonStr) {

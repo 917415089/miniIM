@@ -3,10 +3,12 @@ package json.server.access;
 import json.server.ServerJSON;
 
 public class SelectAlgorithmandPubkey implements ServerJSON{
+	
 	private String process;
 	private String selPubKey;
 	private String selSysKey;
 	private byte[] pubKeyEncode;
+	
 	public String getProcess() {
 		return process;
 	}

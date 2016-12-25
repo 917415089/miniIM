@@ -66,7 +66,7 @@ public class GUITest {
 		GUIMainWindow mainwindow = ClientManage.getMainwindow();
 		mainwindow.setVisible(true);
 		mainwindow.addSession("user2");
-		mainwindow.rmSession("user2");
+//		mainwindow.rmSession("user2");
 		Thread.sleep(2000);
 	}
 }

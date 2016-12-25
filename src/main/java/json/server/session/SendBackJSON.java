@@ -1,12 +1,16 @@
 package json.server.session;
 
+import javax.crypto.SecretKey;
+
+import io.netty.channel.Channel;
 import json.server.ServerJSON;
 
 public class SendBackJSON implements ServerJSON{
 
 	private String JSONName;
 	private String JSONStr;
-	private String ChannelID;
+	private Channel channel;
+	private SecretKey secretKey;
 	
 	
 	public String getJSONName() {
@@ -21,11 +25,17 @@ public class SendBackJSON implements ServerJSON{
 	public void setJSONStr(String jSONStr) {
 		JSONStr = jSONStr;
 	}
-	public String getChannelID() {
-		return ChannelID;
+	public Channel getChannel() {
+		return channel;
 	}
-	public void setChannelID(String channelID) {
-		ChannelID = channelID;
+	public void setChannel(Channel channel) {
+		this.channel = channel;
+	}
+	public SecretKey getSecretKey() {
+		return secretKey;
+	}
+	public void setSecretKey(SecretKey secretKey) {
+		this.secretKey = secretKey;
 	}
 	
 	

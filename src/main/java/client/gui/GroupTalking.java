@@ -15,6 +15,4 @@ public class GroupTalking implements ClientJSON {
 	public void setNamelist(List<String> namelist) {
 		this.namelist = namelist;
 	}
-	
-	
 }

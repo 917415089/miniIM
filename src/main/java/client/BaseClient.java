@@ -2,13 +2,7 @@ package client;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import javax.crypto.SecretKey;
-import com.alibaba.fastjson.JSON;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
@@ -18,15 +12,9 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
-import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
-import json.client.session.OfflineRequest;
-import json.util.JSONNameandString;
-import util.EnDeCryProcess;
 
 public class BaseClient extends Thread {
 
@@ -36,38 +24,14 @@ public class BaseClient extends Thread {
 	static final int QUEUE_LENGTH = 100;
 	static public  final int RECEQUE_LENGTH = 100; 
 	
-	private BlockingQueue<JSONNameandString> sendque = ClientManage.getSendque();
-	private BlockingQueue<JSONNameandString> receque = ClientManage.getReceque();
+
 	
-	private String userName;
-	private String userPassword;
-	private String userEmail;
-	private SecretKey secretKey;
-
-
-	public BaseClient(){
-		
-	}
-	
-	public BaseClient(String userName,String userPassword){
-		this.userName =userName;
-		this.userPassword = userPassword;
-	}
-	public BaseClient(String userName, String userPassword, String useremail) {
-		super();
-		this.userName = userName;
-		this.userPassword = userPassword;
-		this.userEmail = useremail;
-	}
-
 	@Override
 	public void run() {
 		EventLoopGroup group = new NioEventLoopGroup();
 		
 		try{
-			ExecutorService DealWithReceQueThreadPool = Executors.newFixedThreadPool(2);
-			DealWithReceQueThreadPool.submit(new DealWithReceQue(receque));
-			DealWithReceQueThreadPool.submit(new DealWithReceQue(receque));
+
 			URI uri = new URI(URL);
 			String scheme = uri.getScheme() ==null?"ws":uri.getScheme();
 	//		final String host = uri.getHost() == null ?"127.0.0.1":uri.getHost();
@@ -90,9 +54,9 @@ public class BaseClient extends Thread {
 			final MyWebSocketClientHandler handler = 
 					new MyWebSocketClientHandler(
 							WebSocketClientHandshakerFactory.newHandshaker(
-									uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()),receque);
+									uri, WebSocketVersion.V13, null, true, new DefaultHttpHeaders()),ClientManage.getReceque());
 			
-			handler.setClient(this);
+
 			Bootstrap b = new Bootstrap();
 			b.group(group)
 			.channel(NioSocketChannel.class)
@@ -108,51 +72,19 @@ public class BaseClient extends Thread {
 							handler);
 				}
 			});
-			
-			Channel ch = b.connect(uri.getHost(),port).sync().channel();
+			b.connect(uri.getHost(),port).sync();
 			handler.handshakeFuture().sync();
-			handler.getSession().setUserName(userName).setUserPassword(userPassword);
-			if(userEmail!=null) handler.getSession().setUserEmail(userEmail);
-
-			while(handler.getAccessHandler()==null || handler.getAccessHandler().getSecretKey()==null) Thread.sleep(1);//while bug
-			secretKey = handler.getAccessHandler().getSecretKey();
-			
-			Thread thread = new Thread(new Runnable() {
-				public void run() {
-					ClientManage.waitforinit();
-					JSONNameandString json = new JSONNameandString();
-					json.setJSONName(OfflineRequest.class.getName());
-					ClientManage.sendJSONNameandString(json);
-				}
-			},"requestforofflinedata");
-			thread.start();
-
-			
-			while(true){
-				JSONNameandString msg = sendque.take();
-				if(msg == null){
-					break;
-				}else if("json.client.access.ClosingChannel".equals(msg.getJSONName())) {
-                    ch.writeAndFlush(new CloseWebSocketFrame());
-                    ch.closeFuture().sync();
-                    break;
-                } else {
-                	String send = JSON.toJSONString(msg);
-                	System.out.println("Send:"+send+"in BaseClient 129 line");
-            		send = EnDeCryProcess.SysKeyEncryWithBase64(send, secretKey);
-                    WebSocketFrame frame = new TextWebSocketFrame(send);
-                    ch.writeAndFlush(frame);
-                }
-			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Object object = new Object();
+			object.wait();
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}finally{
 			group.shutdownGracefully();
 		}
 	}
-	
+
 }

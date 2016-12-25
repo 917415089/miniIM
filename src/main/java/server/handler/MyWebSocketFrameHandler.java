@@ -1,11 +1,7 @@
 package server.handler;
 
-import json.util.JSONNameandString;
-import com.alibaba.fastjson.JSON;
 import server.session.ChannelManager;
-import server.session.DealWithJSON;
-import server.session.ServerSession;
-import util.EnDeCryProcess;
+import server.session.state.ServerStatemanagement;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
@@ -18,10 +14,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 public class MyWebSocketFrameHandler extends
 		SimpleChannelInboundHandler<WebSocketFrame> {
 
-	private ServerAccessHandler accessHandler = null;
-	private ServerSession session;
-	private DealWithJSON dealexcutor;
-	
+	private final ServerStatemanagement State = new ServerStatemanagement();
 	
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame)
@@ -41,34 +34,8 @@ public class MyWebSocketFrameHandler extends
         }
 		if(frame instanceof TextWebSocketFrame){
 			String request  = ((TextWebSocketFrame) frame).text();
-			
-			if(accessHandler ==null){
-				accessHandler = new ServerAccessHandler();
-			}
-			
-			if(!accessHandler.getAccess()){
-				accessHandler.handle(request);
-				ctx.channel().writeAndFlush(new TextWebSocketFrame(accessHandler.getResult()));
-				if(accessHandler.getSecretKeySpec()!=null)
-					ChannelManager.addId2Secrekey(ctx.channel().id().asLongText(),accessHandler.getSecretKeySpec());
-			}else{
-				if(!session.isHasinit()){
-					session.init(request);
-/*					if(session.isHasinit()){//can't work cause quering program waste some time;
-						dealexcutor.setUsername(session.getUsername());
-						dealexcutor.setUserpassword(session.getUserpassword());
-					}*/
-					ChannelManager.addId2Username(ctx.channel().id().asLongText(), session.getUsername());
-				}else{
-					if(dealexcutor.getUsername() == null){
-						dealexcutor.setUsername(session.getUsername());
-						dealexcutor.setUserpassword(session.getUserpassword());
-					}
-					JSONNameandString jsons = JSON.parseObject(EnDeCryProcess.SysKeyDecryWithBase64(request, accessHandler.getSecretKeySpec()),JSONNameandString.class);
-					dealexcutor.dealwith(jsons,ctx.channel());
-//					System.out.println("receive");
-				}
-			}
+			State.handle(request);
+
 		}else{
 			String message = "unsupported frame type:" + frame.getClass().getName();
 			throw new UnsupportedOperationException(message);
@@ -80,18 +47,15 @@ public class MyWebSocketFrameHandler extends
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		super.channelActive(ctx);
 		System.out.println("active");
-		session = new ServerSession(ctx.channel());
-		dealexcutor = new DealWithJSON();
-		ChannelManager.addId2Channel(ctx.channel().id().asLongText(),ctx.channel());
+		State.setChannel(ctx.channel());
+//		ChannelManager.addId2Channel(ctx.channel().id().asLongText(),ctx.channel());
 	}
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		super.channelInactive(ctx);
-		System.out.println("user : "+ChannelManager.getUsernamebyId(ctx.channel().id().asLongText())+"close connection, (in MyWebSocketFrameHandler 91 line)");
-		ChannelManager.rmId2Channel(ctx.channel().id().asLongText());
-		ChannelManager.rmId2Secrekey(ctx.channel().id().asLongText());
-		ChannelManager.rmId2Username(ctx.channel().id().asLongText());
+		System.out.println("user : "+ChannelManager.getuserMeta(State.getUserName())+"close connection, (in MyWebSocketFrameHandler 91 line)");
+		ChannelManager.remove(State.getUserName());
 
 	}
 	

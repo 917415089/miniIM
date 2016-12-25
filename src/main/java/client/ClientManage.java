@@ -3,7 +3,6 @@ package client;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
-
 import json.client.session.SendGroupMessage;
 import json.client.session.SendMessage;
 import json.util.JSONNameandString;
@@ -18,6 +17,7 @@ public class ClientManage {
 	private final static CountDownLatch close = new CountDownLatch(1);
 	private final static CountDownLatch init = new CountDownLatch(1);
 	private static String name;
+	private static String password;
 	private final static BlockingQueue<JSONNameandString> sendque = new ArrayBlockingQueue<JSONNameandString>(QUEUE_LENGTH);
 	private final static BlockingQueue<JSONNameandString> receque = new ArrayBlockingQueue<JSONNameandString>(RECEQUE_LENGTH);
 	
@@ -41,8 +41,13 @@ public class ClientManage {
 		mainwindow.addPathNode(s);
 	}
 
-	public static boolean sendJSONNameandString( JSONNameandString json) {
-		return sendque.offer(json);
+	public static void sendJSONNameandString( JSONNameandString json) {
+		try {
+			sendque.put(json);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static String getName() {
@@ -65,7 +70,15 @@ public class ClientManage {
 	public static BlockingQueue<JSONNameandString> getReceque() {
 		return receque;
 	}
-
+	public static void putJSONintoRecequeue(JSONNameandString json){
+		try {
+			receque.put(json);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public static void rmPathNode(String name2) {
 		mainwindow.rmPathNode(name2);
 	}
@@ -99,6 +112,25 @@ public class ClientManage {
 
 	public static void displayMessage(SendGroupMessage groupMessage) {
 		mainwindow.displayMessage(groupMessage);
-		
 	}
+
+	public static String getPassword() {
+		return password;
+	}
+
+	public static void setPassword(String password) {
+		ClientManage.password = password;
+	}
+
+	public static JSONNameandString getSendqueueJSON() {
+		try {
+			return sendque.take();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 }

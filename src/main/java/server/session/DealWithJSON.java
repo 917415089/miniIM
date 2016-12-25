@@ -5,11 +5,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.crypto.SecretKey;
 import server.db.DBCallable;
 import server.db.StatementManager;
+import util.SessionTool;
 import util.VerifyLogin;
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.Channel;
+import json.client.login.ClientLogin;
+import json.client.login.ClientRegister;
 import json.client.session.AddFriend;
 import json.client.session.AddFriendResult;
 import json.client.session.RemoveFriend;
@@ -20,18 +24,31 @@ import json.server.session.FriendMeta;
 import json.server.session.RemoveFriendResult;
 import json.server.session.RmFriendSlid;
 import json.server.session.SendBackJSON;
+import json.server.login.RegisiterResult;
+import json.server.login.SuccessLogin;
+import json.server.login.WrongNameorPassword;
 import json.server.session.FriendList;
 import json.util.JSONNameandString;
 
 public class DealWithJSON {
 
-	private String username;
-	private String userpassword;
-	public void dealwith(JSONNameandString json, Channel channel) {
+	private volatile String username;
+	private volatile String userpassword;
+	private volatile String useremail;
+	private Channel ch;
+	private volatile SecretKey secretKey;
 
+	public void dealwith(JSONNameandString json, Channel channel) {
+			
 			String name = json.getJSONName();
-			System.out.println("receive :"+json.getJSONStr()+"(in DealWithJSON 30 line)");
+			System.out.println("receive :"+json.getJSONName()+"——"+json.getJSONStr()+"(in DealWithJSON 30 line)");
 			switch(name){
+			case "json.client.login.ClientLogin":
+				dealwithClientLogin(json.getJSONStr(),channel);
+				break;
+			case "json.client.login.ClientRegister":
+				dealwithClientRegister(json.getJSONStr(),channel);
+				break;
 			case "json.client.session.RequestFriendList":
 				dealwithFriendList(json,channel.id().asLongText());
 				break;
@@ -69,6 +86,96 @@ public class DealWithJSON {
 		
 	}
 
+	private void dealwithClientRegister(String jsonStr, final Channel channel) {
+		ClientRegister clientRegister = JSON.parseObject(jsonStr, ClientRegister.class);
+		username = clientRegister.getUserName();
+		userpassword = clientRegister.getUserPassword();
+		useremail = clientRegister.getEmail();
+		
+		StatementManager.sendDBCallable(new DBCallable(){
+
+			@Override
+			public SendBackJSON run(){
+				String sql = "insert into user (username,userpassword,useremail) values (\""+username+"\",\""+userpassword+"\",\""+useremail+"\");";
+				RegisiterResult regisiterResult = new RegisiterResult();
+				SendBackJSON sendBackJSON = new SendBackJSON();
+				sendBackJSON.setChannel(ch);
+				sendBackJSON.setJSONName(RegisiterResult.class.getName());
+				try {
+					int updatelinenumber = protectsta.executeUpdate(sql);
+					if(updatelinenumber==1){
+						regisiterResult.setSuccess(true);
+					}
+				} catch (SQLException e) {
+					regisiterResult.setSuccess(false);
+					if(e.getMessage().substring(0,15).equalsIgnoreCase("Duplicate entry")){
+						regisiterResult.setReason("username is exist");
+					}else{
+						regisiterResult.setReason("other");
+					}
+				}finally{
+/*					if(sta!=null)
+						StatementManager.backStatement(sta);*/
+				}
+				sendBackJSON.setJSONStr(JSON.toJSONString(regisiterResult));
+				sendBackJSON.setSecretKey(secretKey);
+				return sendBackJSON;
+			}
+			
+		});
+		
+	}
+
+	private void dealwithClientLogin(String jsonStr, final Channel channel) {
+
+			ClientLogin clientLogin = JSON.parseObject(jsonStr,ClientLogin.class);
+			username = clientLogin.getName();
+			userpassword = clientLogin.getPassword();
+
+			StatementManager.sendDBCallable(new DBCallable(){
+
+				@Override
+				public SendBackJSON run() {
+					String sql = "select * from user where username=\'"+username+"\';";
+					String ret;
+					try {
+						ResultSet resultSet = protectsta.executeQuery(sql);
+						SendBackJSON backJSON = new SendBackJSON();
+//						backJSON.setChannelID(channel.id().asLongText());
+						backJSON.setChannel(ch);
+						if(resultSet.next()
+								&& username.equals(resultSet.getString("username"))
+								&& userpassword.equals(resultSet.getString("userpassword"))){
+								ChannelManager.addusermeta(username,ch,secretKey);
+								SuccessLogin successLogin = new SuccessLogin();
+								successLogin.setToken(SessionTool.GenerateSID(username, userpassword));
+								ret = JSON.toJSONString(successLogin);
+								backJSON.setJSONName(SuccessLogin.class.getName());
+								backJSON.setJSONStr(ret);
+								backJSON.setChannel(ch);
+								backJSON.setSecretKey(secretKey);
+						}else{
+							WrongNameorPassword wrongNameorPassword = new WrongNameorPassword();
+							wrongNameorPassword.setVerifyName(false);
+							wrongNameorPassword.setVerfyPassword(false);
+							ret = JSON.toJSONString(wrongNameorPassword);
+							backJSON.setJSONName(WrongNameorPassword.class.getName());
+							backJSON.setJSONStr(ret);
+						}
+						
+						return backJSON;
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}finally{
+//						if(sta!=null)
+//							StatementManager.backStatement(sta);
+					}
+					return null;
+				}
+			});	
+	}
+
 	private void dealwithSendGroupMessage(JSONNameandString json, String asLongText) {
 		SendGroupMessage groupMessage = JSON.parseObject(json.getJSONStr(), SendGroupMessage.class);
 		groupMessage.getFriendlist().add(groupMessage.getName());
@@ -81,8 +188,6 @@ public class DealWithJSON {
 				ChannelManager.sendback(back, s);
 			}
 		}
-		
-		
 	}
 
 	private void dealwithOfflineRequest(final String asLongText) {
@@ -98,6 +203,8 @@ public class DealWithJSON {
 						SendBackJSON back = new SendBackJSON();
 						back.setJSONName(executeQuery.getString("jsonclass"));
 						back.setJSONStr(executeQuery.getString("jsonstring"));
+						back.setSecretKey(secretKey);
+						back.setChannel(ch);
 						ChannelManager.sendback(back, name);
 					}
 					String deletesql = "DELETE FROM offline WHERE username='"+name+"';";
@@ -131,7 +238,8 @@ public class DealWithJSON {
 				removeFriendResult.setSuccess(true);
 				
 				SendBackJSON back = new SendBackJSON();
-				back.setChannelID(asLongText);
+				back.setChannel(ch);
+				back.setSecretKey(secretKey);
 				back.setJSONName(RemoveFriendResult.class.getName());
 				back.setJSONStr(JSON.toJSONString(removeFriendResult));
 				
@@ -174,8 +282,7 @@ public class DealWithJSON {
 				
 			});
 		}
-		
-//		StatementManager.getService().submit(new Cal);
+
 	}
 
 	private void dealwithSendMessage(JSONNameandString json, String asLongText) {
@@ -193,6 +300,8 @@ public class DealWithJSON {
 
 			back.setJSONName(AddFriend.class.getName());
 			back.setJSONStr(JSON.toJSONString(addFriend));
+			back.setChannel(ch);
+			back.setSecretKey(secretKey);
 			ChannelManager.sendback(back,addFriend.getFriendname());
 		}else{
 			System.out.println("unfinished");
@@ -205,10 +314,8 @@ public class DealWithJSON {
 			 StatementManager.sendDBCallable(new DBCallable(){
 				@Override
 				public SendBackJSON run() {
-					SendBackJSON ret = new SendBackJSON();
-//					Statement sta = null;
+					SendBackJSON json = new SendBackJSON();
 					try{
-//						sta = StatementManager.getStatement();
 						String sql = "Select * from friend where mastername = \""+username+"\";";
 						ResultSet set = protectsta.executeQuery(sql);
 						FriendList list = new FriendList();
@@ -221,9 +328,10 @@ public class DealWithJSON {
 							friends.add(meta);
 						}
 						list.setFriends(friends);
-						ret.setJSONName(FriendList.class.getName());
-						ret.setJSONStr(JSON.toJSONString(list));
-						ret.setChannelID(channelid);
+						json.setJSONName(FriendList.class.getName());
+						json.setJSONStr(JSON.toJSONString(list));
+						json.setChannel(ch);
+						json.setSecretKey(secretKey);
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -231,26 +339,22 @@ public class DealWithJSON {
 //						if(sta!=null)
 //							StatementManager.backStatement(sta);
 					}
-					return ret;
+					return json;
 				}
 			 });
 		}
 		
 	}
 
-	public String getUsername() {
+	public void setSecretKey(SecretKey secretKey) {
+		this.secretKey = secretKey;
+	}
+	
+	public void setChannel(Channel ch){
+		this.ch = ch;
+	}
+	
+	public String getUserName(){
 		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getUserpassword() {
-		return userpassword;
-	}
-
-	public void setUserpassword(String userpassword) {
-		this.userpassword = userpassword;
 	}
 }

@@ -15,7 +15,7 @@ public class BaseClientFriendSession {
 	@Test
 	public void TestshowAllFriendList() throws InterruptedException{
 		
-		BaseClient baseclient = new BaseClient("user1","123");
+		BaseClient baseclient = new BaseClient();
 		BaseServer baseserver = new BaseServer();
 		ExecutorService threadPool = Executors.newCachedThreadPool();
 		threadPool.submit(baseserver);
@@ -35,8 +35,8 @@ public class BaseClientFriendSession {
 	
 	@Test
 	public void TestAddFriend() throws InterruptedException{
-		BaseClient baseclient1 = new BaseClient("user1","123");
-		BaseClient baseclient4 = new BaseClient("user4","123");
+		BaseClient baseclient1 = new BaseClient();
+		BaseClient baseclient4 = new BaseClient();
 		BaseServer baseserver = new BaseServer();
 		ExecutorService threadPool = Executors.newCachedThreadPool();
 		threadPool.submit(baseserver);

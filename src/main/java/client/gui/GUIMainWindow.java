@@ -205,8 +205,8 @@ public class GUIMainWindow extends JFrame{
 			GUIButtun guiButtun = new GUIButtun(friendname);
 			JPanel buildSessionwindow = buildSessionwindow(friendname);
 			GUISession guiSession = new GUISession(guiButtun,buildSessionwindow);
-			guiSession.button.getClose().addActionListener(new CloseSession(friendname));
-			guiSession.button.getSession().addActionListener(new SessionSwitch(friendname));
+			guiSession.button.getClose().addActionListener(new CloseSession(list));
+			guiSession.button.getSession().addActionListener(new SessionSwitch(list));
 			center.removeAll();
 			right.add(guiSession.button);
 			center.add(guiSession.jpanel);
@@ -229,8 +229,8 @@ public class GUIMainWindow extends JFrame{
 			GUIButtun guiButtun = new GUIButtun(str);
 			JPanel buildSessionwindow = buildSessionwindow(friendname);
 			GUISession guiSession = new GUISession(guiButtun,buildSessionwindow);
-			guiSession.button.getClose().addActionListener(new CloseSession(str));
-			guiSession.button.getSession().addActionListener(new SessionSwitch(str));
+			guiSession.button.getClose().addActionListener(new CloseSession(friendname));
+			guiSession.button.getSession().addActionListener(new SessionSwitch(friendname));
 			center.removeAll();
 			right.add(guiSession.button);
 			center.add(guiSession.jpanel);
@@ -243,13 +243,11 @@ public class GUIMainWindow extends JFrame{
 		}
 	}
 	@Guaranty("this")
-	public synchronized void rmSession(String friendname){
-		List<String> list = new ArrayList<>();
-		list.add(friendname);
-		right.remove(name2GUISession.get(list).button);
-		center.remove(name2GUISession.get(list).jpanel);
+	public synchronized void rmSession(List<String> friendname){
+		right.remove(name2GUISession.get(friendname).button);
+		center.remove(name2GUISession.get(friendname).jpanel);
 		this.repaint();
-		name2GUISession.remove(list);
+		name2GUISession.remove(friendname);
 	}
 	public void displayMessage(SendGroupMessage groupMessage) {
 		displaymessage.lock();
@@ -469,8 +467,8 @@ public class GUIMainWindow extends JFrame{
 		}
 	}
 	private class CloseSession implements ActionListener{
-		private String name;
-		public CloseSession(String name) {
+		private List<String> name;
+		public CloseSession(List<String> name) {
 			this.name = name;
 		}
 		@Override
@@ -492,16 +490,14 @@ public class GUIMainWindow extends JFrame{
 	 *
 	 */
 	private class SessionSwitch implements ActionListener{
-		private String name;
-		public SessionSwitch(String name){
+		private List<String> name;
+		public SessionSwitch(List<String> name){
 			this.name=name;
 		}
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			center.removeAll();
-			List<String> list = new ArrayList<>();
-			list.add(name);
-			center.add(name2GUISession.get(list).jpanel);
+			center.add(name2GUISession.get(name).jpanel);
 			center.updateUI();
 		}
 	}
@@ -666,7 +662,7 @@ public class GUIMainWindow extends JFrame{
 					
 					addSession(groupTalking.getNamelist());
 					//unfinished
-					
+					GUIGrouptalking.this.dispose();
 				}
 			});
 			

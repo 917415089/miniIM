@@ -13,8 +13,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+
+import com.alibaba.fastjson.JSON;
+
 import client.BaseClient;
 import client.ClientManage;
+import json.client.login.ClientLogin;
+import json.util.JSONNameandString;
 
 public class GUILoginDialog extends JFrame{
 
@@ -69,10 +74,21 @@ public class GUILoginDialog extends JFrame{
 			
 			String name = textField.getText();
 			ClientManage.setName(name);
-			String pass = new String(password.getPassword());
-			BaseClient baseClient = new BaseClient(name,pass);
+			ClientManage.setPassword(new String(password.getPassword()));
+			BaseClient baseClient = new BaseClient();
 			ExecutorService singleBaseClient = Executors.newSingleThreadExecutor();
 			singleBaseClient.submit(baseClient);
+			
+			ClientLogin login = new ClientLogin();
+			login.setName(name);
+			login.setPassword(ClientManage.getPassword());
+			
+			JSONNameandString json = new JSONNameandString();
+			json.setJSONName(ClientLogin.class.getName());
+			json.setJSONStr(JSON.toJSONString(login));
+			
+			ClientManage.sendJSONNameandString(json);
+			setVisible(false);
 		}
 		
 	}
