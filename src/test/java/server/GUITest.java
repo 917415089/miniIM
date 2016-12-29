@@ -11,7 +11,7 @@ public class GUITest {
 
 	@Test
 	public void starBaseServer() throws InterruptedException{
-		Thread thread = new Thread(new BaseServer());
+		Thread thread = new Thread(new BaseServer(),"baseServer");
 		thread.start();
 		while(true) Thread.sleep(10000);
 	}

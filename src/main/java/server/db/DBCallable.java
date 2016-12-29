@@ -5,17 +5,19 @@ import java.util.concurrent.Callable;
 import json.server.session.SendBackJSON;
 
 public abstract class DBCallable implements Callable<SendBackJSON> {
-	protected Statement protectsta;
 	
-	public DBCallable() {
-		// TODO Auto-generated constructor stub
-	}
+	static protected ThreadLocal<Statement> sta = new ThreadLocal<Statement>(){
+		@Override
+		protected Statement initialValue() {
+			Thread thread = Thread.currentThread();
+			System.out.println("Statement is created : "+thread.getName());
+			return StatementManager.createStatement();
+		}
+	};
 	
 	@Override
 	public SendBackJSON call(){
-		protectsta = StatementManager.getStatement();
 		SendBackJSON json = run();
-		StatementManager.backStatement(protectsta);
 		return json;
 	}
 

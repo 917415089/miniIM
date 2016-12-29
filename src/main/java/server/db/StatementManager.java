@@ -11,13 +11,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import server.session.SendBackJSONThread;
 import json.server.session.SendBackJSON;
 
 @SuppressWarnings("unused")
 public class StatementManager {
-	
 
 	static final private int MAX_STATEMTN_NUMBER = 100;
 	static final private int THREAD_NUMBER_OF_DATABASE_ACCESS=4;
@@ -28,7 +30,7 @@ public class StatementManager {
 	static volatile private StatementManager UniqueInstance = new StatementManager();
 	static private ExecutorCompletionService<SendBackJSON> service;
 	static private BlockingQueue<Future<SendBackJSON>> JSONque;
-	static private BlockingQueue<Statement> statementque;
+	static private Connection conn;
 	
 	private StatementManager(){
 		try {
@@ -36,17 +38,20 @@ public class StatementManager {
 			String url = "jdbc:mysql://localhost:3306/test" ;    
 		    String username = "root" ;   
 		    String userpassword = "123456" ;   
-		    Connection conn = DriverManager.getConnection(url , username , userpassword);
-		    statementque = new ArrayBlockingQueue<Statement>(STATEMENT_NUMBER,false);
-		    for(int i = 0 ; i < STATEMENT_NUMBER ; i++){
-		    	statementque.add(conn.createStatement());
-		    }
+		    conn = DriverManager.getConnection(url , username , userpassword);
 		    
 		    JSONque = new LinkedBlockingQueue<Future<SendBackJSON>>(MAX_JSONque);
-		    ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_NUMBER_OF_DATABASE_ACCESS);
+		    
+		    final ThreadFactory DBStatementName = new ThreadFactoryBuilder()
+		    	    .setNameFormat("DBStatementThread-%d")
+		    	    .build();
+		    ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_NUMBER_OF_DATABASE_ACCESS,DBStatementName);
 		    service = new ExecutorCompletionService<SendBackJSON>(threadPool,JSONque);
 		    
-		    ExecutorService sendBackPool = Executors.newFixedThreadPool(THREAD_NUMER_OF_SENDBACK_JSON);
+		    final ThreadFactory SendBackName = new ThreadFactoryBuilder()
+		    	    .setNameFormat("SendbackThread-%d")
+		    	    .build();
+		    ExecutorService sendBackPool = Executors.newFixedThreadPool(THREAD_NUMER_OF_SENDBACK_JSON,SendBackName);
 		    for(int i = 0 ; i <THREAD_NUMER_OF_SENDBACK_JSON ; i++){
 		    	sendBackPool.submit(new SendBackJSONThread(JSONque));
 		    }
@@ -60,23 +65,22 @@ public class StatementManager {
 		}
 	}
 
-	@SuppressWarnings("static-access")
-	static  Statement getStatement() {
+	
+	static Statement createStatement(){
+		Statement statement = null;
 		try {
-			return UniqueInstance.statementque.take();
-		} catch (InterruptedException e) {
+			return statement  = conn.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
-	}
-	
-	@SuppressWarnings("static-access")
-	static  void backStatement(Statement sta){
-		UniqueInstance.statementque.add(sta);
+		return statement;
 	}
 
 	@SuppressWarnings("static-access")
 	public static Future<SendBackJSON> sendDBCallable(DBCallable task){
 		return UniqueInstance.service.submit(task);
 	}
+
+
 }

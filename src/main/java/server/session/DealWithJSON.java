@@ -102,7 +102,7 @@ public class DealWithJSON {
 				sendBackJSON.setChannel(ch);
 				sendBackJSON.setJSONName(RegisiterResult.class.getName());
 				try {
-					int updatelinenumber = protectsta.executeUpdate(sql);
+					int updatelinenumber = sta.get().executeUpdate(sql);
 					if(updatelinenumber==1){
 						regisiterResult.setSuccess(true);
 					}
@@ -139,7 +139,7 @@ public class DealWithJSON {
 					String sql = "select * from user where username=\'"+username+"\';";
 					String ret;
 					try {
-						ResultSet resultSet = protectsta.executeQuery(sql);
+						ResultSet resultSet = sta.get().executeQuery(sql);
 						SendBackJSON backJSON = new SendBackJSON();
 //						backJSON.setChannelID(channel.id().asLongText());
 						backJSON.setChannel(ch);
@@ -198,7 +198,7 @@ public class DealWithJSON {
 			protected SendBackJSON run() {
 				String sql = "SELECT * FROM offline WHERE username='"+name+"';";
 				try {
-					ResultSet executeQuery = protectsta.executeQuery(sql);
+					ResultSet executeQuery = sta.get().executeQuery(sql);
 					while(executeQuery.next()){
 						SendBackJSON back = new SendBackJSON();
 						back.setJSONName(executeQuery.getString("jsonclass"));
@@ -208,7 +208,7 @@ public class DealWithJSON {
 						ChannelManager.sendback(back, name);
 					}
 					String deletesql = "DELETE FROM offline WHERE username='"+name+"';";
-					protectsta.executeUpdate(deletesql);
+					sta.get().executeUpdate(deletesql);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -228,7 +228,7 @@ public class DealWithJSON {
 			protected SendBackJSON run() {
 				String sql = "DELETE FROM friend WHERE (mastername='"+username+"' and friendname='"+removeFriend.getName()+"') OR (mastername='"+removeFriend.getName()+"' and friendname='"+username+"');";
 				try {
-					protectsta.executeUpdate(sql);
+					sta.get().executeUpdate(sql);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -271,7 +271,7 @@ public class DealWithJSON {
 				protected SendBackJSON run() {
 					String  sql = "INSERT INTO friend VALUES (\'"+friendResult.getRequestorname()+"\',\'"+friendResult.getReceivername()+"\',\'"+friendResult.getRequestorgroup()+"\'),(\'"+friendResult.getReceivername()+"\',\'"+friendResult.getRequestorname()+"\',\'"+friendResult.getReceivergroup()+"\');";
 					try {
-						protectsta.executeUpdate(sql);
+						sta.get().executeUpdate(sql);
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -317,7 +317,7 @@ public class DealWithJSON {
 					SendBackJSON json = new SendBackJSON();
 					try{
 						String sql = "Select * from friend where mastername = \""+username+"\";";
-						ResultSet set = protectsta.executeQuery(sql);
+						ResultSet set = sta.get().executeQuery(sql);
 						FriendList list = new FriendList();
 						List<FriendMeta> friends = new ArrayList<FriendMeta>();
 						while(set.next()){

@@ -48,7 +48,7 @@ public class MyWebSocketFrameHandler extends
 		super.channelActive(ctx);
 		System.out.println("active");
 		State.setChannel(ctx.channel());
-//		ChannelManager.addId2Channel(ctx.channel().id().asLongText(),ctx.channel());
+
 	}
 
 	@Override

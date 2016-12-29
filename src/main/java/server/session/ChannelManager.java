@@ -79,7 +79,7 @@ public class ChannelManager {
 					String sql = "INSERT INTO offline (username,jsonclass,jsonstring) VALUES('"+name+"','"+back.getJSONName()+"','"+back.getJSONStr()+"');";
 					System.out.println(JSON.toJSONString(sql));
 					try {
-						protectsta.executeUpdate(sql);
+						sta.get().executeUpdate(sql);
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

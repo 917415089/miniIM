@@ -19,7 +19,9 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.util.CharsetUtil;
-import io.netty.example.http.websocketx.server.WebSocketServerIndexPage;
+//import io.netty.example.http.websocketx.server.WebSocketServerIndexPage;
+
+
 public class MyWebSocketSeverHandler extends
 		SimpleChannelInboundHandler<FullHttpRequest> {
 
@@ -54,8 +56,9 @@ public class MyWebSocketSeverHandler extends
 		}
 		
 		if("/".equals(msg.uri()) || "/index.html".equals(msg.uri())){
-			String webSocketLocation = getWebSocketLocation(msg);
-			ByteBuf content = WebSocketServerIndexPage.getContent(webSocketLocation);
+//			String webSocketLocation = getWebSocketLocation(msg);
+//			ByteBuf content = WebSocketServerIndexPage.getContent(webSocketLocation);
+			ByteBuf content = Unpooled.buffer();
 			FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK,content);
 			
 			res.headers().set(HttpHeaderNames.CONTENT_TYPE,"text/html; charset=UTF-8");
