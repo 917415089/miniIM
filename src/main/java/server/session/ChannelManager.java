@@ -8,8 +8,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
 import javax.crypto.SecretKey;
 import com.alibaba.fastjson.JSON;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import json.server.session.SendBackJSON;
 import json.util.JSONNameandString;
 import server.db.DBCallable;
@@ -43,7 +47,8 @@ public class ChannelManager {
 	private static BlockingQueue<SendBackJSON> sendback = new ArrayBlockingQueue<SendBackJSON>(100);
 
 	static {
-		ExecutorService sendBackThreadPool = Executors.newFixedThreadPool(2);
+		final ThreadFactory ThreadName = new ThreadFactoryBuilder().setNameFormat("SendBackThreadnoDB-%d").build();
+		ExecutorService sendBackThreadPool = Executors.newFixedThreadPool(2,ThreadName);
 		sendBackThreadPool.submit(new Runnable() {
 			
 			@Override

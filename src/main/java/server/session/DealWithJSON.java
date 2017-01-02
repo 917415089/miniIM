@@ -1,5 +1,9 @@
 package server.session;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,6 +22,7 @@ import json.client.session.AddFriend;
 import json.client.session.AddFriendResult;
 import json.client.session.RemoveFriend;
 import json.client.session.RequestFriendList;
+import json.client.session.SendFile;
 import json.client.session.SendGroupMessage;
 import json.client.session.SendMessage;
 import json.server.session.FriendMeta;
@@ -41,7 +46,10 @@ public class DealWithJSON {
 	public void dealwith(JSONNameandString json, Channel channel) {
 			
 			String name = json.getJSONName();
-			System.out.println("receive :"+json.getJSONName()+"——"+json.getJSONStr()+"(in DealWithJSON 30 line)");
+			if(json.getJSONName()==null || json.getJSONStr().length()<100)
+				System.out.println("receive :"+json.getJSONName()+"——"+json.getJSONStr()+"(in DealWithJSON 45 line)");
+			else
+				System.out.println("receive :"+json.getJSONName()+"——(in DealWithJSON 45 line)");
 			switch(name){
 			case "json.client.login.ClientLogin":
 				dealwithClientLogin(json.getJSONStr(),channel);
@@ -70,6 +78,9 @@ public class DealWithJSON {
 			case "json.client.session.SendGroupMessage":
 				dealwithSendGroupMessage(json,channel.id().asLongText());
 				break;
+			case "json.client.session.SendFile":
+				dealwithSendFile(json,channel.id().asLongText());
+				break;
 			default:
 				System.out.println("Server: can't deal with "+name);
 				/*System.out.println("can't find command"+name+" from"+ChannelManager.getUsernamebyId(channel.id().asLongText()));
@@ -83,6 +94,23 @@ public class DealWithJSON {
 				send = EnDeCryProcess.SysKeyEncryWithBase64(send, ChannelManager.getSecreKeybyId(channel.id().asLongText()));
 				channel.writeAndFlush(new TextWebSocketFrame(send));*/
 			}
+		
+	}
+
+	@SuppressWarnings("resource")
+	private void dealwithSendFile(JSONNameandString json, String asLongText) {
+		SendFile sendfile = JSON.parseObject(json.getJSONStr(),SendFile.class);
+		File file = new File(System.getProperty("user.dir")+"/resource/Receive/"+sendfile.getFilename());
+		try {
+			FileOutputStream output = new FileOutputStream(file);
+			BufferedOutputStream bufferOutput = new BufferedOutputStream(output);
+			bufferOutput.write(sendfile.getContent());
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 	}
 

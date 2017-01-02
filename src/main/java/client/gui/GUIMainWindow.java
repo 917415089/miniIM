@@ -88,6 +88,9 @@ public class GUIMainWindow extends JFrame{
 		JButton grouptalking = new JButton("grouptalking");
 		buttonJpanel.add(grouptalking);
 		grouptalking.addActionListener(new GroupTalkingButton());
+		JButton sendFile = new JButton("sendFile");
+		sendFile.addActionListener(new SendFileButton());
+		buttonJpanel.add(sendFile);
 		
 		right = new JPanel();
 		add(right,BorderLayout.EAST);
@@ -553,7 +556,15 @@ public class GUIMainWindow extends JFrame{
 		}
 
 	}
+	private class SendFileButton implements ActionListener{
 
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			new GUISendFile(root);
+			
+		}
+		
+	}
 	/*
 	 * private ActionAdapter
 	 */	

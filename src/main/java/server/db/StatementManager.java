@@ -49,7 +49,7 @@ public class StatementManager {
 		    service = new ExecutorCompletionService<SendBackJSON>(threadPool,JSONque);
 		    
 		    final ThreadFactory SendBackName = new ThreadFactoryBuilder()
-		    	    .setNameFormat("SendbackThread-%d")
+		    	    .setNameFormat("SendbackThreadDB-%d")
 		    	    .build();
 		    ExecutorService sendBackPool = Executors.newFixedThreadPool(THREAD_NUMER_OF_SENDBACK_JSON,SendBackName);
 		    for(int i = 0 ; i <THREAD_NUMER_OF_SENDBACK_JSON ; i++){

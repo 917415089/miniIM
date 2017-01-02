@@ -15,6 +15,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import client.BaseClient;
 import client.ClientManage;
@@ -76,7 +77,8 @@ public class GUILoginDialog extends JFrame{
 			ClientManage.setName(name);
 			ClientManage.setPassword(new String(password.getPassword()));
 			BaseClient baseClient = new BaseClient();
-			ExecutorService singleBaseClient = Executors.newSingleThreadExecutor();
+			
+			ExecutorService singleBaseClient = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("BaseClient").build());
 			singleBaseClient.submit(baseClient);
 			
 			ClientLogin login = new ClientLogin();

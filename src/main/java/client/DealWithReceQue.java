@@ -39,7 +39,7 @@ public class DealWithReceQue implements Runnable{
 				case "json.server.session.FriendList":
 					DealWithFriendList(take.getJSONStr());
 					break;
-				case "json.server.login.RegisiterResult"://json.server.login.RegisiterResult
+				case "json.server.login.RegisiterResult":
 					dealwithRegisterResult(take.getJSONStr());
 					break;
 				case "json.client.session.AddFriend":

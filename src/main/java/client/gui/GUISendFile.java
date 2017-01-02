@@ -3,30 +3,31 @@ package client.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import com.alibaba.fastjson.JSON;
-
 import client.ClientManage;
-import json.client.session.RemoveFriend;
+import json.client.session.SendFile;
 import json.util.JSONNameandString;
 
-public class GUIRmFriend extends JFrame {
+@SuppressWarnings("serial")
+public class GUISendFile extends JFrame {
 
-	private static final long serialVersionUID = -6894148656302454256L;
-	
-	public GUIRmFriend(final DefaultMutableTreeNode root) throws HeadlessException {
+	public GUISendFile(final DefaultMutableTreeNode root) {
 		super();
 
 		Toolkit kit = Toolkit.getDefaultToolkit();
@@ -93,22 +94,37 @@ public class GUIRmFriend extends JFrame {
 		JButton enter = new JButton("Enter");
 		add(enter,BorderLayout.SOUTH);
 		enter.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				RemoveFriend mf = new RemoveFriend();
-				mf.setName((String)(friendname.getSelectedItem()));
+				JFileChooser jfc = new JFileChooser();
+				jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+				jfc.showDialog(new JLabel(), "选择");
+				File file = jfc.getSelectedFile();
 				
-				JSONNameandString json = new JSONNameandString();
-				json.setJSONName(RemoveFriend.class.getName());
-				json.setJSONStr(JSON.toJSONString(mf));
-				ClientManage.sendJSONNameandString(json);
+				SendFile sendFile = new SendFile();
+				sendFile.setFriendname((String)(friendname.getSelectedItem()));
+				sendFile.setFilename(file.getName());
+				try {
+					sendFile.setContent(Files.readAllBytes(file.toPath()));
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				if(sendFile.getContent()!=null){
+					JSONNameandString json = new JSONNameandString();
+					json.setJSONName(SendFile.class.getName());
+					json.setJSONStr(JSON.toJSONString(sendFile));
+					ClientManage.sendJSONNameandString(json);
+				}else{
+					JOptionPane.showMessageDialog(null, "can't read file", "SendFileError", JOptionPane.ERROR_MESSAGE);
+				}
 				dispose();
 			}
 		});
 		
 		setVisible(true);
 	}
-	
 
+	
 }

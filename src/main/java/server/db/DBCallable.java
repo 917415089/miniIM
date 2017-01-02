@@ -9,8 +9,6 @@ public abstract class DBCallable implements Callable<SendBackJSON> {
 	static protected ThreadLocal<Statement> sta = new ThreadLocal<Statement>(){
 		@Override
 		protected Statement initialValue() {
-			Thread thread = Thread.currentThread();
-			System.out.println("Statement is created : "+thread.getName());
 			return StatementManager.createStatement();
 		}
 	};

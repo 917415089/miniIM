@@ -2,6 +2,10 @@ package client;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.ThreadFactory;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -28,7 +32,8 @@ public class BaseClient extends Thread {
 	
 	@Override
 	public void run() {
-		EventLoopGroup group = new NioEventLoopGroup();
+		final ThreadFactory threadname = new ThreadFactoryBuilder().setNameFormat("NIOThread-%d").build();
+		EventLoopGroup group = new NioEventLoopGroup(0,threadname);
 		
 		try{
 

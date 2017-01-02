@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import client.ClientManage;
 import client.DealWithReceQue;
@@ -16,8 +17,8 @@ public class ClientDealwithJSON implements State {
 	static final int  DealWithJSONThread = 2;
 	
 	private final ClientStatemanagement management;
-	private ExecutorService sendJSON = Executors.newSingleThreadExecutor();
-	private ExecutorService dealwithJSON = Executors.newFixedThreadPool(DealWithJSONThread);
+	private ExecutorService sendJSON = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("SendThread-%d").build());
+	private ExecutorService dealwithJSON = Executors.newFixedThreadPool(DealWithJSONThread,new ThreadFactoryBuilder().setNameFormat("DeaiwithJSONThread-%d").build());
 	private volatile boolean init = false;
 	
 	public ClientDealwithJSON(ClientStatemanagement clientStatemanagement) {
@@ -49,7 +50,10 @@ public class ClientDealwithJSON implements State {
 				                    break;
 				                } else {
 				                	String send = JSON.toJSONString(msg);
-				                	System.out.println("Send:"+send+"in BaseClient 129 line");
+				                	if(send.length()<100)
+				                		System.out.println("Send:"+send+" ——in BaseClient 129 line");
+				                	else
+				                		System.out.println("Send:"+msg.getJSONName()+" ——in BaseClient 129 line");
 				            		send = EnDeCryProcess.SysKeyEncryWithBase64(send, management.getSecretKey());
 				                    management.WriteWebSocketChannel(send);
 				                }
