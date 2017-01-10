@@ -8,6 +8,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import com.alibaba.fastjson.JSON;
+
+import exception.UnsupportedSysEncryAlthgorithm;
 import json.client.access.SendRandandSysKey;
 import json.server.access.SelectAlgorithmandPubkey;
 import server.session.state.State;
@@ -17,12 +19,10 @@ public class SendSysKeyandRandom implements State {
 
 	private ClientStatemanagement management;
 	
-	
 	public SendSysKeyandRandom(ClientStatemanagement management) {
 		super();
 		this.management = management;
 	}
-
 
 	@Override
 	public void handle(String request) throws Exception {
@@ -39,6 +39,8 @@ public class SendSysKeyandRandom implements State {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(SelectedSysKey);
         if(SelectedSysKey.equalsIgnoreCase("AES")){
         	keyGenerator.init(128);
+        }else{
+        	throw new UnsupportedSysEncryAlthgorithm();
         }
         SecretKey secretKey = keyGenerator.generateKey();
         Random ran = new Random();
@@ -50,10 +52,7 @@ public class SendSysKeyandRandom implements State {
         
         String ret = JSON.toJSONString(sendRandandSysKey);
         ret = EnDeCryProcess.pubKeyEncryWithBase64(ret, publicKey);
-        
-//        management.setPublicKey(publicKey);
-//        management.setSelectedPubKey(SelectedPubKey);
-//        management.setSelectedSysKey(SelectedSysKey);
+
         management.setSecretKey(secretKey);
         management.downAccessSign();
         management.WriteWebSocketChannel(ret);

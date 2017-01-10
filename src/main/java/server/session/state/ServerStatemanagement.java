@@ -3,8 +3,10 @@ package server.session.state;
 import java.security.PrivateKey;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.crypto.SecretKey;
+import com.alibaba.fastjson.JSON;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import json.util.AccessReset;
 
 public class ServerStatemanagement {
 
@@ -14,6 +16,7 @@ public class ServerStatemanagement {
 	private AtomicInteger Random;
 	private SecretKey secretKey;
 	private Channel ch;
+	private int ResetTime = 0; 
 	
 	private volatile State state;
 	
@@ -36,7 +39,16 @@ public class ServerStatemanagement {
 			state.handle(s);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			if(ResetTime>=10){
+				ch.close();
+			}
 			e.printStackTrace();
+			AccessReset reset = new AccessReset();
+			reset.setReset(true);
+			reset.setFromclient(false);
+			state = serverInitState;
+			WriteWebSocketChannel(JSON.toJSONString(reset));
+			ResetTime++;
 		}
 	}
 
@@ -131,4 +143,7 @@ public class ServerStatemanagement {
 		return ch;
 	}
 	
+	void cleanReset(){
+		ResetTime=0;
+	}
 }

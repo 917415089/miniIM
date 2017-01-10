@@ -2,6 +2,7 @@ package server.session.state;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.util.List;
 import com.alibaba.fastjson.JSON;
@@ -21,8 +22,7 @@ public class ServerInitState implements State {
 
 	@SuppressWarnings("unused")
 	@Override
-	public void handle(String request) throws Exception {
-		
+	public void handle(String request) throws NullSelectPubKey, NullSelectSysKey, NoSuchAlgorithmException {
 		
 		SupportedAlgorithm supportedAlgorithm = JSON.parseObject(request, SupportedAlgorithm.class);
 

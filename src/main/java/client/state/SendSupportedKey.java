@@ -5,6 +5,7 @@ import java.util.List;
 import com.alibaba.fastjson.JSON;
 import exception.CannottransforSupportedAlgorithmJson;
 import exception.InvalidParameterforSendSupportedKey;
+import exception.NullKeyAlgorithm;
 import json.client.access.SupportedAlgorithm;
 import server.session.state.State;
 
@@ -20,8 +21,8 @@ public class SendSupportedKey implements State {
 
 	@SuppressWarnings("unused")
 	@Override
-	public void handle(String s) throws InvalidParameterforSendSupportedKey, CannottransforSupportedAlgorithmJson {		
-		
+	public void handle(String s) throws InvalidParameterforSendSupportedKey, CannottransforSupportedAlgorithmJson, NullKeyAlgorithm {		
+
 		if(s!=null) throw new InvalidParameterforSendSupportedKey();
 		SupportedAlgorithm supportedAlgorithm = new SupportedAlgorithm();
 		if(supportedAlgorithm!=null){
@@ -35,13 +36,19 @@ public class SendSupportedKey implements State {
 			}
 			supportedAlgorithm.setSupPubKey(pubkeyList);
 			supportedAlgorithm.setSupSysKey(syskeyList);
-			
+			check(supportedAlgorithm);
 			management.WriteWebSocketChannel(JSON.toJSONString(supportedAlgorithm));
+			
 			management.setState(management.getSendSysKeyandRandom());
 		}else{
+			
 			throw new CannottransforSupportedAlgorithmJson();
 		}
 
 	}
-
+	
+	private void check(SupportedAlgorithm supportedAlgorithm) throws NullKeyAlgorithm {
+		if(supportedAlgorithm.getSupPubKey()==null || supportedAlgorithm.getSupSysKey()==null)
+			throw new NullKeyAlgorithm();
+	}
 }

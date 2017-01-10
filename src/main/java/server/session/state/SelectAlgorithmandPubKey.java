@@ -17,7 +17,7 @@ public class SelectAlgorithmandPubKey implements State {
 	}
 
 	@Override
-	public void  handle(String request) throws Exception {
+	public void  handle(String request) {
 		
 		String jsonstr = EnDeCryProcess.priKeyDecryWithBase64(request, management.getPrivateKey());
 		SendRandandSysKey sendRandandSysKey = JSON.parseObject(jsonstr,SendRandandSysKey.class);

@@ -3,17 +3,24 @@ package client.state;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.crypto.SecretKey;
+
+import com.alibaba.fastjson.JSON;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import json.util.AccessReset;
 import server.session.state.State;
 
 public class ClientStatemanagement {
 
+	static private final String resetString;
+	static {
+		AccessReset reset = new AccessReset();
+		reset.setReset(true);
+		reset.setFromclient(false);
+		resetString = JSON.toJSONString(reset);
+	}
 	private volatile State state;
-//	private String SelectedPubKey;
-//	private String SelectedSysKey;
-//	private PublicKey publicKey;
 	private SecretKey secretKey;
 	private AtomicInteger random;
 	private CountDownLatch accessSign = new CountDownLatch(1);
@@ -35,13 +42,24 @@ public class ClientStatemanagement {
 	
 	public void handle(String str){
 		try {
+			if(str!=null&&str.equals(resetString)){
+				state = sendSupportedKey;
+				str = "";
+			}
 			state.handle(str);
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			handleException(e);
 		}
+	}
 
+	private void handleException(Exception e) {
+		e.printStackTrace();
+		AccessReset reset = new AccessReset();
+		reset.setFromclient(true);
+		reset.setFromclient(true);
+		state= sendSupportedKey;
+		WriteWebSocketChannel(JSON.toJSONString(reset));
 	}
 	
 	public void waitforAccessSign(){
@@ -64,19 +82,6 @@ public class ClientStatemanagement {
 	SendSysKeyandRandom getSendSysKeyandRandom() {
 		return sendSysKeyandRandom;
 	}
-
-/*	synchronized void setSelectedPubKey(String selectedPubKey) {
-		SelectedPubKey = selectedPubKey;
-	}
-*/
-//	synchronized void setSelectedSysKey(String selectedSysKey) {
-//		SelectedSysKey = selectedSysKey;
-//	}
-
-//	synchronized void setPublicKey(PublicKey publicKey) {
-//		this.publicKey = publicKey;
-//	}
-
 	SecretKey getSecretKey() {
 		return secretKey;
 	}

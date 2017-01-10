@@ -14,7 +14,7 @@ public class ServerACK implements State {
 	}
 
 	@Override
-	public void handle(String jsonStr) throws Exception {
+	public void handle(String jsonStr) throws WrongRandom {
 		
 		String rejson = EnDeCryProcess.SysKeyDecryWithBase64(jsonStr, management.getSecretKey());
 		ClientACKwithRandom clientAckwithRandom = JSON.parseObject(rejson,ClientACKwithRandom.class);

@@ -18,7 +18,8 @@ public class ServerDealwithJSON implements State {
 	}
 
 	@Override
-	public void handle(String s) throws Exception {
+	public void handle(String s) {
+		management.cleanReset();
 		s = EnDeCryProcess.SysKeyDecryWithBase64(s, management.getSecretKey());
 		dealwithJSON.dealwith(JSON.parseObject(s, JSONNameandString.class),management.getCh());
 	}

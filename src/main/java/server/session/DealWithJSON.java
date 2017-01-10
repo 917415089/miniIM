@@ -46,7 +46,7 @@ public class DealWithJSON {
 	public void dealwith(JSONNameandString json, Channel channel) {
 			
 			String name = json.getJSONName();
-			if(json.getJSONName()==null || json.getJSONStr().length()<100)
+			if(json.getJSONName()==null || (json.getJSONStr()!=null && json.getJSONStr().length()<100))
 				System.out.println("receive :"+json.getJSONName()+"——"+json.getJSONStr()+"(in DealWithJSON 45 line)");
 			else
 				System.out.println("receive :"+json.getJSONName()+"——(in DealWithJSON 45 line)");
