@@ -1,9 +1,5 @@
 package server.session;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -100,17 +96,20 @@ public class DealWithJSON {
 	@SuppressWarnings("resource")
 	private void dealwithSendFile(JSONNameandString json, String asLongText) {
 		SendFile sendfile = JSON.parseObject(json.getJSONStr(),SendFile.class);
-		File file = new File(System.getProperty("user.dir")+"/resource/Receive/"+sendfile.getFilename());
-		try {
-			FileOutputStream output = new FileOutputStream(file);
-			BufferedOutputStream bufferOutput = new BufferedOutputStream(output);
-			bufferOutput.write(sendfile.getContent());
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+//		File file = new File(System.getProperty("user.dir")+"/resource/Receive/"+sendfile.getFilename());
+//		try {
+//			FileOutputStream output = new FileOutputStream(file);
+//			BufferedOutputStream bufferOutput = new BufferedOutputStream(output);
+//			bufferOutput.write(sendfile.getContent());
+//			
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		SendBackJSON sendback = new SendBackJSON();
+		sendback.setJSONName(SendFile.class.getName());
+		sendback.setJSONStr(JSON.toJSONString(sendfile));
+		ChannelManager.sendback(sendback	, sendfile.getFriendname());
 		
 	}
 

@@ -1,13 +1,19 @@
 package client;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.concurrent.BlockingQueue;
+
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import client.gui.GUIVerifyAddFriend;
 import client.gui.GUILoginDialog;
 import com.alibaba.fastjson.JSON;
 import json.client.session.AddFriend;
 import json.client.session.AddFriendResult;
 import json.client.session.RequestFriendList;
+import json.client.session.SendFile;
 import json.client.session.SendGroupMessage;
 import json.client.session.SendMessage;
 import json.server.login.RegisiterResult;
@@ -63,6 +69,9 @@ public class DealWithReceQue implements Runnable{
 				case "json.client.session.SendGroupMessage":
 					dealwithSendGroupMessage(take.getJSONStr());
 					break;
+				case "json.client.session.SendFile":
+					dealwithSendFile(take.getJSONStr());
+					break;
 				default:
 					System.err.println("Client : can't deal "+take.getJSONName());
 				}
@@ -72,6 +81,33 @@ public class DealWithReceQue implements Runnable{
 			}
 		}
 	}
+	private void dealwithSendFile(String jsonStr) {
+		SendFile sendfile = JSON.parseObject(jsonStr, SendFile.class);
+		JFileChooser chooser = new JFileChooser();
+
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);//设置保存路径
+		int returnVal = chooser.showSaveDialog(new JPanel());
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			String path = chooser.getSelectedFile().getPath();
+			try {
+
+				File f = new File(path);
+				if(f.isDirectory()){
+					String string = System.getProperty("user.dir");
+					string = string+System.getProperty("file.separator")+"resource"+System.getProperty("file.separator")+"Receive"+System.getProperty("file.separator")+sendfile.getFilename();
+					f = new File(string);
+				}
+				f.createNewFile();
+				FileOutputStream out = new FileOutputStream(f);
+				out.write(sendfile.getContent());
+				out.close();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
 	private void dealwithSendGroupMessage(String jsonStr) {
 		SendGroupMessage groupMessage = JSON.parseObject(jsonStr,SendGroupMessage.class);
 		for(int i = 0 ;i< groupMessage.getFriendlist().size();i++){

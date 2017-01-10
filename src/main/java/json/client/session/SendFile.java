@@ -3,6 +3,7 @@ package json.client.session;
 public class SendFile {
 
 	private String friendname;
+	private String usernmae;
 	private byte[] content;
 	private String filename;
 	
@@ -24,5 +25,10 @@ public class SendFile {
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
-	
+	public String getUsernmae() {
+		return usernmae;
+	}
+	public void setUsernmae(String usernmae) {
+		this.usernmae = usernmae;
+	}	
 }
