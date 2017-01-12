@@ -9,8 +9,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -26,7 +29,8 @@ import json.util.JSONNameandString;
 
 @SuppressWarnings("serial")
 public class GUISendFile extends JFrame {
-
+	
+	private final static long FILESIZETHREAD = 60000;
 	public GUISendFile(final DefaultMutableTreeNode root) {
 		super();
 
@@ -102,21 +106,12 @@ public class GUISendFile extends JFrame {
 				jfc.showDialog(new JLabel(), "选择");
 				File file = jfc.getSelectedFile();
 				
-				SendFile sendFile = new SendFile();
-				sendFile.setFriendname((String)(friendname.getSelectedItem()));
-				sendFile.setFilename(file.getName());
 				try {
-					sendFile.setContent(Files.readAllBytes(file.toPath()));
+					BigFileReader reader = new BigFileReader(file,(String)(friendname.getSelectedItem()));
+					reader.read();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
-				if(sendFile.getContent()!=null){
-					JSONNameandString json = new JSONNameandString();
-					json.setJSONName(SendFile.class.getName());
-					json.setJSONStr(JSON.toJSONString(sendFile));
-					ClientManage.sendJSONNameandString(json);
-				}else{
 					JOptionPane.showMessageDialog(null, "can't read file", "SendFileError", JOptionPane.ERROR_MESSAGE);
 				}
 				dispose();
@@ -124,6 +119,78 @@ public class GUISendFile extends JFrame {
 		});
 		
 		setVisible(true);
+	}
+	
+	private class BigFileReader{
+		private MappedByteBuffer[] mappedBufArray;
+		private int count = 0;
+		private int number;
+		private FileInputStream input;
+		private long filesize;
+		private File file;
+		private String name;
+		
+
+		public BigFileReader(File file,String name) throws IOException {
+			try{
+				this.file = file;
+				this.name = name;
+				input = new FileInputStream(file);
+				FileChannel channel = input.getChannel();
+				filesize = channel.size();
+				number = 	(int) Math.ceil((double) filesize/(double) FILESIZETHREAD);
+				mappedBufArray = new MappedByteBuffer[number];
+				
+				//map memory
+				long current = 0;
+				long regionSize = FILESIZETHREAD;
+				for(int i =0 ; i < number;i++){
+					if(filesize - current < FILESIZETHREAD){
+						regionSize = filesize-current;
+					}
+					mappedBufArray[i] = channel.map(FileChannel.MapMode.READ_ONLY, current, regionSize);
+					current += regionSize;
+				}
+			}catch(FileNotFoundException e){
+				System.err.println("File chooser has been closed");
+			}
+		}
+		
+		private int read0() throws IOException{
+			if(count >= number)return -1;
+			int limit = mappedBufArray[count].limit();
+			int position = mappedBufArray[count].position();
+			if(limit-position > FILESIZETHREAD){
+				byte[] sendbyte = new byte[(int) FILESIZETHREAD];
+				warp(sendbyte);
+				mappedBufArray[count].get(sendbyte);
+				return (int) FILESIZETHREAD;
+			}else{
+				byte[] sendbyte = new byte[limit-position];
+				warp(sendbyte);
+				mappedBufArray[count].get(sendbyte);
+				if(count<number){
+					count++;
+				}
+				return limit-position;
+			}
+		}
+		
+		private void warp(byte[] sendbyte) {
+			SendFile sendFile = new SendFile();
+			sendFile.setFriendname(name);
+			sendFile.setFilename(file.getName());
+			sendFile.setContent(sendbyte);
+		
+			JSONNameandString json = new JSONNameandString();
+			json.setJSONName(SendFile.class.getName());
+			json.setJSONStr(JSON.toJSONString(sendFile));
+			ClientManage.sendJSONNameandString(json);
+		}
+
+		void read() throws IOException{
+			while(read0()!=-1);
+		}
 	}
 
 	

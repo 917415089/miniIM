@@ -10,8 +10,8 @@ import client.gui.GUILoginDialog;
 import client.gui.GUIMainWindow;
 
 public class ClientManage {
-	static public final int QUEUE_LENGTH = 100;
-	static public final int RECEQUE_LENGTH = 100; 
+	private final static int QUEUE_LENGTH = 100;
+	private final static int RECEQUE_LENGTH = 100; 
 	private final static GUILoginDialog logindaialog = new GUILoginDialog();
 	private final static GUIMainWindow mainwindow = new GUIMainWindow();
 	private final static CountDownLatch close = new CountDownLatch(1);

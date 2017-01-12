@@ -2,10 +2,8 @@ package client.state;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import com.alibaba.fastjson.JSON;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
 import client.ClientManage;
 import client.DealWithReceQue;
 import json.util.JSONNameandString;
@@ -28,7 +26,6 @@ public class ClientDealwithJSON implements State {
 	@Override
 	public void handle(String s) throws Exception {
 		init();
-		
 		String str = EnDeCryProcess.SysKeyDecryWithBase64(s, management.getSecretKey());
 		JSONNameandString parseObject = JSON.parseObject(str, JSONNameandString.class);
 		ClientManage.putJSONintoRecequeue(parseObject);

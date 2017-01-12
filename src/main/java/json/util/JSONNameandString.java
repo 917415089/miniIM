@@ -2,8 +2,10 @@ package json.util;
 
 public class JSONNameandString {
 
-	String JSONName; 
-	String JSONStr;
+	private String JSONName; 
+	private String JSONStr;
+	private int JSONID;
+	
 	public String getJSONName() {
 		return JSONName;
 	}
@@ -16,6 +18,10 @@ public class JSONNameandString {
 	public void setJSONStr(String jSONStr) {
 		JSONStr = jSONStr;
 	}
-	
-	
+	public int getJSONID() {
+		return JSONID;
+	}
+	public void setJSONID(int jSONID) {
+		JSONID = jSONID;
+	}
 }

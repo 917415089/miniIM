@@ -81,6 +81,7 @@ public class DealWithReceQue implements Runnable{
 			}
 		}
 	}
+
 	private void dealwithSendFile(String jsonStr) {
 		SendFile sendfile = JSON.parseObject(jsonStr, SendFile.class);
 		JFileChooser chooser = new JFileChooser();

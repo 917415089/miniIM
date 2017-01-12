@@ -9,6 +9,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
+import io.netty.handler.stream.ChunkedWriteHandler;
 
 public class BaseServerInitializer extends ChannelInitializer<SocketChannel>
 		implements ChannelHandler {
@@ -21,6 +22,7 @@ public class BaseServerInitializer extends ChannelInitializer<SocketChannel>
         pipeline.addLast("compress",new WebSocketServerCompressionHandler());
         pipeline.addLast("aggregator",new HttpObjectAggregator(65536));
         pipeline.addLast("shaker",new MyWebSocketSeverHandler());
+        pipeline.addLast("bigfile",new ChunkedWriteHandler());
         pipeline.addLast("frame",new MyWebSocketFrameHandler());
 	}
 

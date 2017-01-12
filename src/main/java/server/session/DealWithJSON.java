@@ -79,38 +79,16 @@ public class DealWithJSON {
 				break;
 			default:
 				System.out.println("Server: can't deal with "+name);
-				/*System.out.println("can't find command"+name+" from"+ChannelManager.getUsernamebyId(channel.id().asLongText()));
-				CannotFindCommand cannotFindCommand = new CannotFindCommand();
-				cannotFindCommand.setWrongCommand(name);
-				String Jsonstr = JSON.toJSONString(cannotFindCommand);
-				JSONNameandString sendjson = new JSONNameandString();
-				sendjson.setJSONName(CannotFindCommand.class.getName());
-				sendjson.setJSONStr(Jsonstr);
-				String send = JSON.toJSONString(sendjson);
-				send = EnDeCryProcess.SysKeyEncryWithBase64(send, ChannelManager.getSecreKeybyId(channel.id().asLongText()));
-				channel.writeAndFlush(new TextWebSocketFrame(send));*/
 			}
-		
 	}
 
-	@SuppressWarnings("resource")
+
 	private void dealwithSendFile(JSONNameandString json, String asLongText) {
 		SendFile sendfile = JSON.parseObject(json.getJSONStr(),SendFile.class);
-//		File file = new File(System.getProperty("user.dir")+"/resource/Receive/"+sendfile.getFilename());
-//		try {
-//			FileOutputStream output = new FileOutputStream(file);
-//			BufferedOutputStream bufferOutput = new BufferedOutputStream(output);
-//			bufferOutput.write(sendfile.getContent());
-//			
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		SendBackJSON sendback = new SendBackJSON();
 		sendback.setJSONName(SendFile.class.getName());
 		sendback.setJSONStr(JSON.toJSONString(sendfile));
 		ChannelManager.sendback(sendback	, sendfile.getFriendname());
-		
 	}
 
 	private void dealwithClientRegister(String jsonStr, final Channel channel) {
@@ -140,9 +118,6 @@ public class DealWithJSON {
 					}else{
 						regisiterResult.setReason("other");
 					}
-				}finally{
-/*					if(sta!=null)
-						StatementManager.backStatement(sta);*/
 				}
 				sendBackJSON.setJSONStr(JSON.toJSONString(regisiterResult));
 				sendBackJSON.setSecretKey(secretKey);
@@ -168,7 +143,6 @@ public class DealWithJSON {
 					try {
 						ResultSet resultSet = sta.get().executeQuery(sql);
 						SendBackJSON backJSON = new SendBackJSON();
-//						backJSON.setChannelID(channel.id().asLongText());
 						backJSON.setChannel(ch);
 						if(resultSet.next()
 								&& username.equals(resultSet.getString("username"))
@@ -194,9 +168,6 @@ public class DealWithJSON {
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					}finally{
-//						if(sta!=null)
-//							StatementManager.backStatement(sta);
 					}
 					return null;
 				}
@@ -362,9 +333,6 @@ public class DealWithJSON {
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					}finally{
-//						if(sta!=null)
-//							StatementManager.backStatement(sta);
 					}
 					return json;
 				}
