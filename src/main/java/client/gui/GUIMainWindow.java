@@ -31,6 +31,8 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSON;
 import client.ClientManage;
 import json.client.access.ClosingChannel;
@@ -50,6 +52,7 @@ public class GUIMainWindow extends JFrame{
 	private final ConcurrentHashMap<List<String>, GUISession> name2GUISession = new ConcurrentHashMap<List<String>, GUISession>();
 	private final AtomicBoolean isClosing = new AtomicBoolean(false);
 	private final Lock displaymessage = new ReentrantLock();
+	private final Logger logger = LoggerFactory.getLogger(GUIMainWindow.class);
 
 	public GUIMainWindow(){
 		Toolkit kit = Toolkit.getDefaultToolkit();
@@ -640,7 +643,7 @@ public class GUIMainWindow extends JFrame{
 					if(selRow != -1) {
 						if(e.getClickCount() == 2) {
 							if(selPath.getPathCount()==3)
-								System.out.println("click"+selPath.getLastPathComponent().toString());
+								logger.debug("click {}",selPath.getLastPathComponent().toString());
 								String name = selPath.getLastPathComponent().toString();
 								int count = talkinglist.getChildCount();
 								for(int i = 0 ; i < count;i++){

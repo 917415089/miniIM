@@ -6,11 +6,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.crypto.SecretKey;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import server.db.DBCallable;
 import server.db.StatementManager;
 import util.SessionTool;
 import util.VerifyLogin;
 import com.alibaba.fastjson.JSON;
+
+import client.state.ClientDealwithJSON;
 import io.netty.channel.Channel;
 import json.client.login.ClientLogin;
 import json.client.login.ClientRegister;
@@ -38,14 +44,12 @@ public class DealWithJSON {
 	private volatile String useremail;
 	private Channel ch;
 	private volatile SecretKey secretKey;
+	private final Logger logger = LoggerFactory.getLogger(DealWithJSON.class);
 
 	public void dealwith(JSONNameandString json, Channel channel) {
 			
 			String name = json.getJSONName();
-			if(json.getJSONName()==null || (json.getJSONStr()!=null && json.getJSONStr().length()<100))
-				System.out.println("receive :"+json.getJSONName()+"——"+json.getJSONStr()+"(in DealWithJSON 45 line)");
-			else
-				System.out.println("receive :"+json.getJSONName()+"——(in DealWithJSON 45 line)");
+			logger.info("Receive: {}——{}",name,json.getJSONStr());
 			switch(name){
 			case "json.client.login.ClientLogin":
 				dealwithClientLogin(json.getJSONStr(),channel);
@@ -78,7 +82,7 @@ public class DealWithJSON {
 				dealwithSendFile(json,channel.id().asLongText());
 				break;
 			default:
-				System.out.println("Server: can't deal with "+name);
+				logger.info("Server: can't deal with {}",name);
 			}
 	}
 
@@ -302,7 +306,7 @@ public class DealWithJSON {
 			back.setSecretKey(secretKey);
 			ChannelManager.sendback(back,addFriend.getFriendname());
 		}else{
-			System.out.println("unfinished");
+			logger.info("unfinished");
 		}
 	}
 

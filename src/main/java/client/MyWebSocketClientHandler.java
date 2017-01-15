@@ -1,6 +1,10 @@
 package client;
 
 import java.util.concurrent.BlockingQueue;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import client.state.ClientStatemanagement;
 import json.util.JSONNameandString;
 import io.netty.channel.Channel;
@@ -21,7 +25,8 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
     private final WebSocketClientHandshaker handshaker;
     private ChannelPromise handshakeFuture;
     private final ClientStatemanagement State = new ClientStatemanagement();
-
+    private final Logger logger = LoggerFactory.getLogger(MyWebSocketClientHandler.class);
+    
     public MyWebSocketClientHandler(WebSocketClientHandshaker handshaker, BlockingQueue<JSONNameandString> receque) {
         this.handshaker = handshaker;
     }
@@ -42,7 +47,7 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        System.out.println("WebSocket Client disconnected!");
+        logger.info("WebSocket Client disconnected!");
         ClientManage.hasSendCloseSign();
         ClientManage.waiteforclose();
     }
@@ -51,7 +56,7 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
     public void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (!handshaker.isHandshakeComplete()) {
             handshaker.finishHandshake(ch, (FullHttpResponse) msg);
-            System.out.println("WebSocket Client connected!");
+            logger.info("WebSocket Client connected!");
             State.handle(null);
             return;
         }
@@ -61,9 +66,9 @@ public class MyWebSocketClientHandler extends SimpleChannelInboundHandler<Object
         	String request = ((TextWebSocketFrame) frame).text();
         	State.handle(request);
         } else if (frame instanceof PongWebSocketFrame) {
-            System.out.println("WebSocket Client received pong");
+            logger.info("WebSocket Client received pong");
         } else if (frame instanceof CloseWebSocketFrame) {
-            System.out.println("WebSocket Client received closing");
+            logger.info("WebSocket Client received closing");
             ch.close();
         }
     }

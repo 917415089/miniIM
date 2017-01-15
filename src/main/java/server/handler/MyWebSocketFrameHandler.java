@@ -2,6 +2,8 @@ package server.handler;
 
 import server.session.ChannelManager;
 import server.session.state.ServerStatemanagement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
@@ -15,6 +17,7 @@ public class MyWebSocketFrameHandler extends
 		SimpleChannelInboundHandler<WebSocketFrame> {
 
 	private final ServerStatemanagement State = new ServerStatemanagement();
+	private final Logger logger = LoggerFactory.getLogger(MyWebSocketFrameHandler.class);
 	
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame)
@@ -46,7 +49,7 @@ public class MyWebSocketFrameHandler extends
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		super.channelActive(ctx);
-		System.out.println("active");
+		logger.info("active");
 		State.setChannel(ctx.channel());
 
 	}
@@ -54,10 +57,8 @@ public class MyWebSocketFrameHandler extends
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		super.channelInactive(ctx);
-		System.out.println("user : "+ChannelManager.getuserMeta(State.getUserName())+"close connection, (in MyWebSocketFrameHandler 91 line)");
+		logger.info("user : {} close connection",ChannelManager.getuserMeta(State.getUserName()));
 		ChannelManager.remove(State.getUserName());
-
 	}
 	
-
 }

@@ -67,7 +67,6 @@ public class GUIRegister extends JFrame {
 				JSONNameandString json = new JSONNameandString();
 				json.setJSONName(ClientRegister.class.getName());
 				json.setJSONStr(JSON.toJSONString(register));
-				System.out.println(json.getJSONStr());
 				ClientManage.sendJSONNameandString(json);
 			}
 		});

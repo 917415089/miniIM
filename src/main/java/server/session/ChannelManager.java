@@ -11,9 +11,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 import javax.crypto.SecretKey;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.alibaba.fastjson.JSON;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import client.state.ClientDealwithJSON;
 import json.server.session.SendBackJSON;
 import json.util.JSONNameandString;
 import server.db.DBCallable;
@@ -22,6 +27,7 @@ import util.EnDeCryProcess;
 
 public class ChannelManager {
 
+	private static final Logger logger = LoggerFactory.getLogger(ChannelManager.class);
 	private static class userMeta{
 		final Channel ch;
 		final SecretKey key;
@@ -80,9 +86,8 @@ public class ChannelManager {
 				
 				@Override
 				protected SendBackJSON run() {
-//					back.setChannelID("defalut");
 					String sql = "INSERT INTO offline (username,jsonclass,jsonstring) VALUES('"+name+"','"+back.getJSONName()+"','"+back.getJSONStr()+"');";
-					System.out.println(JSON.toJSONString(sql));
+					logger.info(JSON.toJSONString(sql));
 					try {
 						sta.get().executeUpdate(sql);
 					} catch (SQLException e) {

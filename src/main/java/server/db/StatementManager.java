@@ -1,5 +1,6 @@
 package server.db;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -12,6 +13,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -34,11 +40,32 @@ public class StatementManager {
 	
 	private StatementManager(){
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			String url = "jdbc:mysql://localhost:3306/test" ;    
-		    String username = "root" ;   
-		    String userpassword = "123456" ;   
+			SAXReader saxReader = new SAXReader();
+
+			StringBuilder pathbuilder = new StringBuilder();
+			String path = pathbuilder.append(System.getProperty("user.dir"))
+						.append(System.getProperty("file.separator"))
+						.append("resource")
+						.append(System.getProperty("file.separator"))
+						.append("database.xml").toString();
+
+			Document read = saxReader.read(new File(path));
+			Element root = read.getRootElement();
+
+			Class.forName(root.element("class").getText());
+			StringBuilder dbmetabuilder = new StringBuilder();
+			String url = dbmetabuilder.append("jdbc:")
+						.append(root.element("db").getText())
+						.append("://")
+						.append(root.element("ip").getText())
+						.append(":")
+						.append(root.element("port").getText())
+						.append("/")
+						.append(root.element("usebd").getText()).toString();
+		    String username = root.element("username").getText();
+		    String userpassword = root.element("password").getText();
 		    conn = DriverManager.getConnection(url , username , userpassword);
+		    
 		    
 		    JSONque = new LinkedBlockingQueue<Future<SendBackJSON>>(MAX_JSONque);
 		    
@@ -61,6 +88,9 @@ public class StatementManager {
 			e.printStackTrace();
 		} catch (SQLException e) {
 			System.err.println("");
+			e.printStackTrace();
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

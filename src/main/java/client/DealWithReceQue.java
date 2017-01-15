@@ -3,10 +3,11 @@ package client;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.concurrent.BlockingQueue;
-
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import client.gui.GUIVerifyAddFriend;
 import client.gui.GUILoginDialog;
 import com.alibaba.fastjson.JSON;
@@ -26,6 +27,7 @@ import json.util.JSONNameandString;
 public class DealWithReceQue implements Runnable{
 
     private BlockingQueue<JSONNameandString> receque;
+    private final Logger logger = LoggerFactory.getLogger(DealWithReceQue.class);
     
 	public DealWithReceQue(BlockingQueue<JSONNameandString> receque) {
 		super();
@@ -37,7 +39,7 @@ public class DealWithReceQue implements Runnable{
 		while(true){
 			try {
 				JSONNameandString take = receque.take();
-				System.out.println("receive json"+take.getJSONStr()+"(in DealWithReceQue 34 line)");
+				logger.info("Receive: {}",take.getJSONStr());
 				switch(take.getJSONName()){
 				case "json.server.login.WrongNameorPassword":
 					dealwithWrongNameorPassword(take.getJSONStr());
@@ -149,7 +151,7 @@ public class DealWithReceQue implements Runnable{
 	}
 
 	private void dealwithSuccessLogin() {
-		System.out.println("try to enable main windows");
+		logger.info("try to enable main windows");
 		GUILoginDialog logindaialog = ClientManage.getLogindaialog();
 		logindaialog.setVisible(false);
 		
@@ -186,7 +188,7 @@ public class DealWithReceQue implements Runnable{
 	}
 
 	private void dealwithWrongNameorPassword(String jsonStr) {
-		System.out.println("send wrong name or password message to gui");
+		logger.info("send wrong name or password message to gui");
 		JOptionPane.showMessageDialog(null, "Wrong name or password");
 		ClientManage.getLogindaialog().setEnabled(true);
 	}
