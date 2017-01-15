@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datameta>
+	<class>com.mysql.jdbc.Driver</class>
+	<db>mysql</db>
+	<ip>localhost</ip>
+	<port>3306</port>
+	<usebd>test</usebd>
+	<username>root</username>
+	<password>123456</password>
+</datameta>
